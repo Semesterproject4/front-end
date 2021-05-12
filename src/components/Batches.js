@@ -21,12 +21,13 @@ export class Batches extends Component {
     }
 
     search = (e) => {
-        fetch('http://localhost:8080/api/batches/' + document.getElementById("searchField").value)
+		//This request is likely not correct but would be removed by the dashboard view anyways so that method remains unchanged for now
+        fetch('http://localhost:8080/api/batches/' + document.getElementById("searchField").value) 
             .then(response => {
                 let json = response.json();
                 json.then(data => {
                     if (response.status === 200) {
-                        this.setState({ selectedBatchID: data.id, selectSuccess: true, errorMessage: "", link: "http://localhost:8080/api/batches/" + data.id + "/get-report"});
+                        this.setState({ selectedBatchID: data.id, selectSuccess: true, errorMessage: "", link: "http://localhost:8080/api/batches/" + data.id + "/pdf"});
                     } else if (response.status === 400) {
                         this.setState({ selectedBatchID: "", selectSuccess: false, errorMessage: "Something went wrong, have you entered a valid UUID?", link: "" })
                     } else {
@@ -49,7 +50,7 @@ export class Batches extends Component {
         if(e.target.value === "search"){
             window.location.href = this.state.link;
         } else if(e.target.value === "pages"){
-            window.location.href = "http://localhost:8080/api/batches/" + this.state.selectedBatch + "/get-report"
+            window.location.href = "http://localhost:8080/api/batches/" + this.state.selectedBatch + "/pdf"
         }
     }
 
