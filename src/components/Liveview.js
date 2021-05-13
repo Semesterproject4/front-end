@@ -113,7 +113,7 @@ export class Liveview extends Component {
                 <br></br>
                 <div style={{display: "inline-flex", align: "center", padding: "10px"}}>
                     <div style={{padding: "0px 25px"}}>
-                        <Icon icon="carbon-humidity" style={{width: "80px", height: "80px", color: "#42a7f5"}}/>
+                        <Icon icon="carbon:rain-drop" style={{width: "80px", height: "80px"}}/>
                         <p>Humidity</p>
                         <h1>{Math.round(this.state.livedata.humidity)}</h1>
                     </div>
@@ -125,7 +125,7 @@ export class Liveview extends Component {
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
-                        <Icon icon="emojione-v1:thermometer" style={{width: "80px", height: "80px"}}/>
+                        <Icon icon="fluent:temperature-24-regular" style={{width: "80px", height: "80px"}}/>
                         <p>Temperature</p>
                         <h1>{Math.round(this.state.livedata.temperature)}</h1>
                     </div>
@@ -144,7 +144,7 @@ export class Liveview extends Component {
                 <div style={{display: "inline-flex", align: "center", padding: "10px"}}>
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="jam-bottle-f" style={{width: "80px", height: "80px"}}/>
-                        <p>Beer type</p>
+                        <p>Beer type</p>~
                         <h1>{this.state.livedata.beerType}</h1>
                     </div>
                     <div style={{padding: "0px 25px"}}>
@@ -154,19 +154,19 @@ export class Liveview extends Component {
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
-                        <Icon icon="jam-bottle" style={{width: "80px", height: "80px", color: "#148432"}}/>
+                        <Icon icon="jam-bottle" style={{width: "80px", height: "80px"}}/>
                         <p>Produced</p>
                         <h1>{this.state.livedata.totalProducts}</h1>
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
-                        <Icon icon="subway-tick" style={{width: "80px", height: "80px", color: "#11a839"}}/>
+                        <Icon icon="fluent:checkmark-16-regular" style={{width: "80px", height: "80px"}}/>
                         <p>Acceptable</p>
                         <h1>{this.state.livedata.acceptableProducts}</h1>
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
-                        <Icon icon="emojione-cross-mark" style={{width: "80px", height: "80px"}}/>
+                        <Icon icon="akar-icons:cross" style={{width: "80px", height: "80px"}}/>
                         <p>Defect</p>
                         <h1>{this.state.livedata.defectProducts}</h1>
                     </div>
@@ -182,7 +182,7 @@ export class Liveview extends Component {
                 <br></br>
                 <div style={{display: "inline-flex", align: "center", padding: "10px"}}>
                     <div style={{padding: "0px 25px"}}>
-                        <Icon icon="mdi-archive" style={{width: "80px", height: "80px", color: "#dbd202"}}/>
+                        <Icon icon="mdi-archive" style={{width: "80px", height: "80px"}}/>
                         <p>Batch id</p>
                         <h1>{this.state.livedata.batchID}</h1>
                     </div>
