@@ -21,6 +21,7 @@ export class Header extends Component {
                     <Link style={linkStyle} to="/">Home</Link>
                     <Link style={linkStyle} to="/control">Control</Link>
                     <Link style={linkStyle} to="/batch">Batches</Link>
+                    <Link style={linkStyle} to="/schedule">Schedule</Link>
                 </div>
 
             </header>

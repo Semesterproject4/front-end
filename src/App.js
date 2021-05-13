@@ -5,6 +5,7 @@ import MachineList from './components/MachineList';
 import Control from './components/Control';
 import Batches from "./components/Batches"
 import Liveview from './components/Liveview'
+import Scheduling from './components/Scheduling'
 import './App.css';
 
 export class App extends Component {
@@ -59,6 +60,11 @@ export class App extends Component {
 								<Liveview
 									currentMachine={this.state.currentMachine}
 								/>
+							</React.Fragment>
+						)} />
+						<Route exact path="/schedule" render={props => (
+							<React.Fragment>
+								<Scheduling/>
 							</React.Fragment>
 						)} />
 
