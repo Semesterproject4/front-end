@@ -42,8 +42,8 @@ export class Control extends Component {
         }
 
         //Sends the HTTP request to the API
-        fetch("http://localhost:8080/api/machines/" + this.props.currentMachine.id + "/command", {
-            method: "PUT",
+        fetch("http://localhost:8080/api/machines/" + this.props.currentMachine.id + "?command=" + data.command, {
+            method: "PATCH",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         })

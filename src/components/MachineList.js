@@ -29,7 +29,7 @@ export class MachineList extends Component {
                 response.json().then(data => {
                     //Loops through and add all machines to the list of machines
                     data.forEach(element => {
-                        this.setState({ machines: [...this.state.machines, {label: element.ip, value: element.id}] });
+                        this.setState({ machines: [...this.state.machines, {label: element.name, value: element.id}] });
                     });
 
                     //Sets first machine as default as the list will have it selected initially
