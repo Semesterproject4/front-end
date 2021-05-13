@@ -144,7 +144,7 @@ export class Liveview extends Component {
                 <div style={{display: "inline-flex", align: "center", padding: "10px"}}>
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="jam-bottle-f" style={{width: "80px", height: "80px"}}/>
-                        <p>Beer type</p>~
+                        <p>Beer type</p>
                         <h1>{this.state.livedata.beerType}</h1>
                     </div>
                     <div style={{padding: "0px 25px"}}>
