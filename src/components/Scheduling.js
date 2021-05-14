@@ -72,18 +72,13 @@ export class MachineList extends Component {
 	removeScheduledBatch = (e) => {
 		e.preventDefault(); 
 
-
-
         fetch("http://localhost:8080/api/scheduled-batches/" + this.state.selected, {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'}
         }).then(response => {
-            if(response.status !== 200){
-                console.log("Batch not found in database")
-            }else{
-                console.log("Batch deleted")
+            if(response.status === 200){
                 this.updateScheduledList();
-            }
+			}
         })
 	}
 
@@ -152,7 +147,7 @@ export class MachineList extends Component {
 	        return (
             
             <div>
-                {invalidInputMessage}
+
                 <form style={formStyle}>
 
                     <select 
@@ -181,6 +176,7 @@ export class MachineList extends Component {
                         Add
                     </button>           
                 </form>
+				{invalidInputMessage}
 
 				<br></br>
 				
