@@ -8,7 +8,8 @@ export class MachineList extends Component {
         beerType: "pilsner",
         validInput: true,
         products: [],
-		scheduled: []
+		scheduled: [],
+		selected: ""
     };
 
 
@@ -50,7 +51,6 @@ export class MachineList extends Component {
             "type": this.state.beerType.toUpperCase().replace(" ", "_"),
             "amount": this.state.amount
         };
-		console.log(data);
 
         fetch("http://localhost:8080/api/scheduled-batches", {
             method: 'POST',
@@ -70,7 +70,21 @@ export class MachineList extends Component {
     }
 
 	removeScheduledBatch = (e) => {
-		console.log("removed batch")
+		e.preventDefault(); 
+
+
+
+        fetch("http://localhost:8080/api/scheduled-batches/" + this.state.selected, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            if(response.status !== 200){
+                console.log("Batch not found in database")
+            }else{
+                console.log("Batch deleted")
+                this.updateScheduledList();
+            }
+        })
 	}
 
     resetInputs = () => {
@@ -90,6 +104,10 @@ export class MachineList extends Component {
     changeBeerType = (e) => {
         this.setState({beerType: e.target.value});
     }
+
+	change = (e) => {
+        this.setState({selected: e.target.value});
+	}
 
 	formatOptions = (type, amount, speed) => {
 		let result = "🍺"
@@ -168,6 +186,7 @@ export class MachineList extends Component {
 				
 				<select style={selectStyle}
                         size="10"
+						onChange={this.change}
                 >
 
 	
