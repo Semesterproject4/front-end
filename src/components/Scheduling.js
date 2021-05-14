@@ -1,55 +1,55 @@
-import React, { Component } from 'react'
+import React, {useState, useEffect} from 'react'
+ 
+export const Scheduling = () => {
+	//Hooks
+	const [amount, setAmount] = useState('');
+	const [speed, setSpeed] = useState('');
+	const [type, setType] = useState('pilsner');
+	const [validInput, setValidInput] = useState(true);
+	const [products, setProducts] = useState([]);
+	const [scheduled, setScheduled] = useState([]);
+	const [selected, setSelected] = useState('');
 
-export class MachineList extends Component {
-    //State contains all the variables of the class
-    state = { 
-        amount: "",
-        speed: "",
-        beerType: "pilsner",
-        validInput: true,
-        products: [],
-		scheduled: [],
-		selected: ""
-    };
-
-
-    componentDidMount(){
-        fetch("http://localhost:8080/api/machines/products", {
+	//On load
+	useEffect(() => {
+		//Get products
+		fetch("http://localhost:8080/api/machines/products", {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
         }).then( async (res) => {
             let data = await res.json();
 
             if(res.status === 200){
-                this.setState({products: data.products});
+				setProducts(data.products);
             }else{
                 console.log("Some error message, because products endpoint wasn't reachable");
             }
         });
+		updateList();
 
-		this.updateScheduledList();
-    }
+	}, [])
 
-    updateScheduledList = () => {
-		this.setState({scheduled: []})
+	const updateList = () => {
+		//Reset list
+		setScheduled([]);
 
+		//Get batches
         fetch('http://localhost:8080/api/scheduled-batches')
         .then(response => {
             if (response.status === 200) {
                 response.json().then(data => {
-                    this.setState({scheduled: data});
+					setScheduled(data);
                 })
             }
         });
+	}
 
-    }
-
-    addButtonPress = (e) => {
+    const addScheduledBatch = (e) => {
         e.preventDefault(); 
         let data = {
-            "speed": this.state.speed,
-            "type": this.state.beerType.toUpperCase().replace(" ", "_"),
-            "amount": this.state.amount
+            "speed": speed,
+            "type": type.toUpperCase().replace(" ", "_"),
+            "amount": amount
         };
 
         fetch("http://localhost:8080/api/scheduled-batches", {
@@ -58,57 +58,52 @@ export class MachineList extends Component {
             body: JSON.stringify(data)
         }).then(response => {
             if(response.status !== 200){
-                this.setState({validInput: false});
+				setValidInput(false);
             }else{
-                this.setState({validInput: true});
-                this.updateScheduledList();
-                this.resetInputs();
-                
+				setValidInput(true);
+				setAmount("");
+                setSpeed("");
+				setType("Pilsner");
+                updateList();
             }
         })
-		this.updateScheduledList();
     }
 
-	removeScheduledBatch = (e) => {
+	const removeScheduledBatch = (e) => {
 		e.preventDefault(); 
 
-        fetch("http://localhost:8080/api/scheduled-batches/" + this.state.selected, {
+        fetch("http://localhost:8080/api/scheduled-batches/" + selected, {
             method: 'DELETE',
             headers: {'Content-Type': 'application/json'}
         }).then(response => {
             if(response.status === 200){
-                this.updateScheduledList();
+                updateList();
 			}
         })
 	}
+	
 
-    resetInputs = () => {
-        this.setState({speed: ""});
-        this.setState({amount: ""});
-        this.setState({type: "Pilsner"});
+    const onSpeedChanged = (e) =>{
+		setSpeed(e.target.value);
     }
 
-    onSpeedChanged = (e) =>{
-        this.setState({speed: e.target.value});
+    const onAmountChanged = (e) =>{
+		setAmount(e.target.value);
     }
 
-    onAmountChanged = (e) =>{
-        this.setState({amount: e.target.value});
+    const changeBeerType = (e) => {
+		setType(e.target.value);
     }
 
-    changeBeerType = (e) => {
-        this.setState({beerType: e.target.value});
-    }
-
-	change = (e) => {
-        this.setState({selected: e.target.value});
+	const changeSelected = (e) => {
+		setSelected(e.target.value);
 	}
 
-	formatOptions = (type, amount, speed) => {
+	const formatOptions = (iType, iAmount, iSpeed) => {
 		let result = "🍺"
 		let size = 0;
 
-		result += type.charAt(0) + type.slice(1).toLowerCase().replace('_', '\u00A0');
+		result += iType.charAt(0) + iType.slice(1).toLowerCase().replace('_', '\u00A0');
 		size = 20 - result.length;
 		
 		for (var i = 0; i < size; i++) {
@@ -116,7 +111,7 @@ export class MachineList extends Component {
 		}
 
 
-		result += "🧮" + amount;
+		result += "🧮" + iAmount;
 		size = 38 - result.length;
 
 
@@ -124,7 +119,7 @@ export class MachineList extends Component {
 			result +=  '\u00A0';
 		}
 
-		result += "🚄" + speed;
+		result += "🚄" + iSpeed;
 
 		size = 48 - result.length;
 		for (var k = 0; k < size; k++) {
@@ -134,27 +129,24 @@ export class MachineList extends Component {
 		return result;
 	}
 
-    //Contains the HTML that is to be rendered for the user
-    render() {
-        let invalidInputMessage;
-
-        if (this.state.validInput){
-            invalidInputMessage = <p></p>
+	const errorMessage = () => {
+		if (validInput){
+            return <p></p>
         } else {
-            invalidInputMessage = <p>Invalid inputs</p>
+            return <p>Invalid inputs</p>
         }
-
-	        return (
-            
-            <div>
+	}
+	
+	return (
+			<div>
 
                 <form style={formStyle}>
 
                     <select 
-                            onChange={this.changeBeerType}
+                            onChange={changeBeerType}
                             style={formStyle}
                     >
-                        {this.state.products.map((option) => (
+                        {products.map((option) => (
                             <option
                                 value={option.name}
                                 key={option.name}
@@ -166,46 +158,47 @@ export class MachineList extends Component {
                     </select>
 					
 
-                    <input placeholder = "Amount" value = {this.state.amount} onChange = {this.onAmountChanged} style = {formStyle}/>
-                    <input placeholder = "Speed" value = {this.state.speed} onChange = {this.onSpeedChanged} style = {formStyle}/>
+                    <input placeholder = "Amount" value = {amount} onChange = {onAmountChanged} style = {formStyle}/>
+                    <input placeholder = "Speed" value = {speed} onChange = {onSpeedChanged} style = {formStyle}/>
 
                     <button 
                         style={btnStyle}
-                        onClick={this.addButtonPress}
+                        onClick={addScheduledBatch}
                     >
                         Add
                     </button>           
                 </form>
-				{invalidInputMessage}
+				{errorMessage}
 
 				<br></br>
 				
 				<select style={selectStyle}
                         size="10"
-						onChange={this.change}
+						onChange={changeSelected}
                 >
 
 	
-                    {this.state.scheduled.map((option) => (
+                    {scheduled.map((option) => (
                         <option 
                             style={optionStyle}
                             value={option.id}
                             key={option.id}
                         >
-                            {/* &#x1F37A; {option.type} &#x3000; &#x1F9EE; {option.amount} &#x00A0; &#x1F684; {option.speed} */}
-							{this.formatOptions(option.type, option.amount, option.speed)}
+							{formatOptions(option.type, option.amount, option.speed)}
 						</option>
                     ))}
                 </select> 
 				<br></br>
-				<button onClick={this.removeScheduledBatch} style={btnStyle2}>Remove</button>
+				<button onClick={removeScheduledBatch} style={btnStyle2}>Remove</button>
 
             </div>
-        )
-    }
-}
+		
+		
+	);
+};
 
-  const formStyle = {
+
+const formStyle = {
     margin: "5px 5px"
 }
 
@@ -249,5 +242,3 @@ const selectStyle = {
     padding: "8px", 
     backgroundColor: "#D0D0D0"
 }
-
-export default MachineList

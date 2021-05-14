@@ -5,7 +5,7 @@ import MachineList from './components/MachineList';
 import Control from './components/Control';
 import Batches from "./components/Batches"
 import Liveview from './components/Liveview'
-import Scheduling from './components/Scheduling'
+import { Scheduling } from './components/Scheduling'
 import './App.css';
 
 export class App extends Component {
