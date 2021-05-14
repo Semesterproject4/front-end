@@ -1,6 +1,5 @@
 import React, { useState }  from 'react'
 import styled from 'styled-components';
- 
 
 export const SchedulingList = (props) => {
 	const [selected, setSelected] = useState('');

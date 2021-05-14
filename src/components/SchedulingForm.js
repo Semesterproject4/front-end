@@ -84,7 +84,6 @@ export const SchedulingForm = (props) => {
 					))}
 				</select>
 
-				{console.log("HER:", getMaxSpeed(type))}
 				<input placeholder="Amount..." value={amount} onChange={onAmountChanged}/>
 				<input placeholder={"Speed < " + getMaxSpeed(type) } value={speed} onChange={onSpeedChanged}/>
 
