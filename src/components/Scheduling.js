@@ -7,7 +7,7 @@ export class MachineList extends Component {
         speed: "",
         beerType: "pilsner",
         validInput: true,
-        products: ""
+        products: []
     };
 
 
@@ -15,28 +15,14 @@ export class MachineList extends Component {
         fetch("http://localhost:8080/api/machines/products", {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
-        }).then(res => {
-            let data = res.json();
+        }).then( async (res) => {
+            let data = await res.json();
 
             if(res.status === 200){
                 this.setState({products: data.products});
-                console.log(data);
             }else{
                 console.log("Some error message, because products endpoint wasn't reachable");
             }
-
-
-
-
-
-
-        /*}).then(json => {
-            if(json.success){
-                this.setState({products: json.products});
-                console.log(json.products);
-            }else{
-                console.log("Some error message, because products endpoint wasn't reachable");
-            }*/
         });
     }
 
@@ -51,8 +37,6 @@ export class MachineList extends Component {
             "type": this.state.beerType.toUpperCase(),
             "amount": this.state.amount
         };
-
-        console.log(data);
 
         fetch("http://localhost:8080/api/scheduled-batches", {
             method: 'POST',
@@ -88,29 +72,38 @@ export class MachineList extends Component {
         this.setState({beerType: e.target.value});
     }
 
+
     //Contains the HTML that is to be rendered for the user
     render() {
         let invalidInputMessage;
 
-        if(this.state.validInput){
+        if (this.state.validInput){
             invalidInputMessage = <p></p>
-        }else{
+        } else {
             invalidInputMessage = <p>Invalid inputs</p>
         }
 
-        return (
+	        return (
             
             <div>
                 {invalidInputMessage}
                 <form style={formStyle}>
-                    <select style={formStyle} onChange={this.changeBeerType}>
-                        <option value="pilsner">Pilsner</option>
-                        <option value="wheat">Wheat</option>
-                        <option value="stout">Stout</option>
-                        <option value="ipa">IPA</option>
-                        <option value="ale">Ale</option>
-                        <option value="alcohol_free">Alcohol Free</option>
+
+                    <select 
+                            onChange={this.changeBeerType}
+                            style={formStyle}
+                    >
+                        {this.state.products.map((option) => (
+                            <option
+                                value={option.name}
+                                key={option.name}
+                            >
+                                {option.name} 
+                            </option>
+                            
+                        ))}
                     </select>
+					
 
                     <input placeholder = "Amount" value = {this.state.amount} onChange = {this.onAmountChanged} style = {formStyle}/>
                     <input placeholder = "Speed" value = {this.state.speed} onChange = {this.onSpeedChanged} style = {formStyle}/>
