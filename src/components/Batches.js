@@ -1,180 +1,155 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Column, Row } from 'simple-flexbox';
 
-export class Batches extends Component {
-    //State contains all the variables of the class
+function Batches() {
     
+    const [selectedBatchID, setSelectedBatchID] = useState("");
+    const [selectSucess, setSelectSuccess] = useState(false);
+    const [errorMessage, seterrorMessage] = useState("");
+    const [link, setLink] = useState("");
+    const [pageBatches, setPagebatches] = useState([]);
+    const [page, setPage] = useState(0);
+    const [maxPage, setMaxPage] = useState(0);
 
-    state = {
-        searchVar: "",
-        selectedBatchID: "",
-        selectSuccess: false,
-        errorMessage: "",
-        link: "",
-        Pagebatches: [],
-        selectedBatch: "", 
-        page: 0,
-        maxpage: 0,
-    };
+    useEffect(() => {
+        fetchBatches();
+    }, []);
 
-    componentDidMount(){
-        this.getBatches(0);
-    }
-
-    search = (e) => {
+    const search = (e) => {
 		//This request is likely not correct but would be removed by the dashboard view anyways so that method remains unchanged for now
         fetch('http://localhost:8080/api/batches/' + document.getElementById("searchField").value) 
             .then(response => {
                 let json = response.json();
                 json.then(data => {
                     if (response.status === 200) {
-                        this.setState({ selectedBatchID: data.id, selectSuccess: true, errorMessage: "", link: "http://localhost:8080/api/batches/" + data.id + "/pdf"});
+                        setSelectedBatchID(data.id);
+                        setSelectSuccess(true);
+                        seterrorMessage("");
+                        setLink("http://localhost:8080/api/batches/" + data.id + "/pdf")
                     } else if (response.status === 400) {
-                        this.setState({ selectedBatchID: "", selectSuccess: false, errorMessage: "Something went wrong, have you entered a valid UUID?", link: "" })
+                        setSelectedBatchID("");
+                        setSelectSuccess(false);
+                        seterrorMessage("Something went wrong, have you entered a valid UUID");
+                        setLink("")
                     } else {
-                        this.setState({ selectedBatchID: "", selectSuccess: false, errorMessage: data.response, link: "" });
+                        setSelectedBatchID("");
+                        setSelectSuccess(false);
+                        seterrorMessage(data.response);
+                        setLink("")
                     }
                 })
-            }
-            )
+            })
+    };
 
-    }
+/*     const change = (e) => {
+        setSelectedBatchID(e.target.value);
+    }; */
 
-    change = (e) => {
-        this.setState({selectedBatch: e.target.value
-        });
-    }
-
-
-
-    generatePDF = (e) => {
+    const generatePDF = (e) => {
         if(e.target.value === "search"){
-            window.location.href = this.state.link;
+            window.location.href = link;
         } else if(e.target.value === "pages"){
-            window.location.href = "http://localhost:8080/api/batches/" + this.state.selectedBatch + "/pdf"
+            window.location.href = "http://localhost:8080/api/batches/" + selectedBatchID + "/pdf"
         }
+    };
+
+    const fetchBatches = async (page) => {
+        setPagebatches([]);
+        const url = 'http://localhost:8080/api/batches?page=' + page +'&size=10';
+        const data = await fetch(url);
+        const result = await data.json();
+        setPagebatches(result);
+        // this is broken, please fix :)
+        setMaxPage(data.length%10);
+        // this is probably needed
+        setPage(page);
     }
 
-    getBatches(page){
-        this.setState({
-            Pagebatches: []
-        });
-        console.log("fetching.. ", this.state.page)
-        this.setState({page: page})
-        fetch('http://localhost:8080/api/batches?page=' + page +'&size=10')
-        .then(response => {
-            if(response.status === 200){
-                response.json().then(data => {
-                    console.log(data)
-                    this.setState({Pagebatches: data})
-                    // this is broken, please fix :)
-                    this.setState({maxpage: data.length%10});
-                })
-            }
-        })
-    }
-
-
-    updatePage = (e) => {
+    const updatePage = (e) => {
         if(e.target.value === "prev"){
-            if(this.state.page > 0){
-                let page = this.state.page - 1;
-                console.log("Current page:", this.state.page);
-                console.log("New page:", page);
-                this.getBatches(page);
+            if(page > 0){
+                let newPage = page - 1;
+                console.log("Current page:", page);
+                console.log("New page:", newPage);
+                fetchBatches(newPage);
             } 
         } else if(e.target.value === "next"){
-            if(this.state.page < this.state.maxpage){
-                let page = this.state.page + 1;
-                console.log("Current page:", this.state.page);
-                console.log("New page:", page);
-                this.getBatches(page);
+            if(page < maxPage){
+                let newPage = page + 1;
+                console.log("Current page:", page);
+                console.log("New page:", newPage);
+                fetchBatches(newPage);
             } 
         }
-    }
+    }; 
 
-    render() {
-        let selectedBatchMessage;
-        let errorMessage;
-
-        if (this.state.selectSuccess) {
-            selectedBatchMessage = <p>Selected batch: {this.state.selectedBatchID}</p>
-            errorMessage = <p></p>
-        } else {
-            selectedBatchMessage = <p>Selected batch: none</p>
-            errorMessage = <p style={{ color: "red" }}>{this.state.errorMessage}</p>
-        }
-
-        return (
-            <Column flexGrow={1}>
-                <Row
-                    horizontal='center'
-                    style={searchStyle}
-                >
-                    <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
-                    <button style={btnStyle} onClick={this.search}>Search</button>
-                </Row>
-                <Row
-                    horizontal='space-between'
-                    breakpoints={{ 1024: 'column' }}
-                >
-                    <Column
-                        flexGrow={2}
-                        horizontal='center'
-                        style={itemStyle}
-                    >
-                        <h3> Batch List </h3>
-                        <Row style={itemStyle}>
-                            <select 
-                                    size="10"
-                                    onChange={this.change}
-                                    style={selectStyle}
-                            >
-                                {this.state.Pagebatches.map((option) => (
-                                    <option style={optionStyle}
-                                        value={option.id}
-                                        key={option.id}
-                                    >
-                                        {option.productType} {option.amountToProduce} {option.data[0].timestamp}
-
-                                    </option>
-                                ))}
-                            </select>
-                        </Row>
-                        <Row style={itemStyle}>
-                            <button style={btnStyle} onClick={this.updatePage} value="prev">&lt; prev</button>
-                            <p style={{margin: 10, fontSize: "20px"}}>{this.state.page+1} of {this.state.maxpage+1}</p>
-                            <button style={btnStyle} onClick={this.updatePage} value="next">next &gt;</button>
-                        </Row>
-                        <Row style={itemStyle}>
-                            {/* {this.state.selectSuccess === true ? (<button value="search" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>): (<button value="pages" style={btnStyle} onClick={alert("Please choose a batch first")}>Generate Report</button>)  }  */}
-                            <button value="pages" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>
-                        </Row>
-                    </Column>
-                    <Column
-                        flexGrow={4}
-                        horizontal='center'
-                        style={itemStyle}
-                    >
-                        <h3> Batch Overview </h3>
-                        <span> Values from a chosen batch </span>
-                        <span>{selectedBatchMessage}</span>
-                        <p>{errorMessage}</p>
-                    </Column>
-                </Row>
-                <Row
+    return (
+        <Column>
+            <Row
+                horizontal='center'
+                style={searchStyle}
+            >
+                <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
+                <button style={btnStyle} onClick={search}>Search</button>
+            </Row>
+            <Row
+                horizontal='space-between'
+                breakpoints={{ 1024: 'column' }}
+            >
+                <Column
+                    flexGrow={2}
                     horizontal='center'
                     style={itemStyle}
                 >
-                    <Column>
-                        <h3> Graph over chosen datavalue </h3>
-                        <span> Values from a chosen batch </span>
-                    </Column>
-                </Row>
-            </Column>            
-        )
-    }
-}
+                    <h3> Batch List </h3>
+                    <Row style={itemStyle}>
+                        {/* <select 
+                                size="10"
+                                onChange={change}
+                                style={selectStyle}
+                        >
+                            {pageBatches.map((option) => (
+                                <option style={optionStyle}
+                                    value={option.id}
+                                    key={option.id}
+                                >
+                                    {option.productType} | {option.amountToProduce} | {option.data[0].timestamp[0]}-{option.data[0].timestamp[1]}-{option.data[0].timestamp[2]}
+                                </option>
+                            ))}
+                        </select> */}
+                    </Row>
+                    <Row style={itemStyle}>
+                        <button style={btnStyle} onClick={updatePage} value="prev">&lt; prev</button>
+                        <p style={{margin: 10, fontSize: "20px"}}>{page+1} of {maxPage+1}</p>
+                        <button style={btnStyle} onClick={updatePage} value="next">next &gt;</button>
+                    </Row>
+                    <Row style={itemStyle}>
+                        {/* </Row> {this.state.selectSuccess === true ? (<button value="search" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>): (<button value="pages" style={btnStyle} onClick={alert("Please choose a batch first")}erate Report</button>)  }  */}
+                        <button value="pages" style={btnStyle} onClick={generatePDF}>Generate Report</button>
+                    </Row>
+                </Column>
+                <Column
+                    flexGrow={4}
+                    horizontal='center'
+                    style={itemStyle}
+                >
+                    <h3> Batch Overview </h3>
+                    <span> Values from a chosen batch </span>
+
+                </Column>
+            </Row>
+            <Row
+                horizontal='center'
+                style={itemStyle}
+            >
+                <Column>
+                    <h3> Graph over chosen datavalue </h3>
+                    <span> Values from a chosen batch </span>
+                </Column>
+            </Row>
+        </Column>            
+    );
+};
 
 const itemStyle = {
     backgroundColor: "#eee",
@@ -222,4 +197,4 @@ const optionStyle = {
   backgroundColor: "#D0D0D0"
 }
 
-export default Batches
+export default Batches;
