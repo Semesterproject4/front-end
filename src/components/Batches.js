@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Column, Row } from 'simple-flexbox';
 
 export class Batches extends Component {
     //State contains all the variables of the class
@@ -41,8 +42,8 @@ export class Batches extends Component {
 
     change = (e) => {
         this.setState({selectedBatch: e.target.value
-    });
-}
+        });
+    }
 
 
 
@@ -64,12 +65,10 @@ export class Batches extends Component {
         .then(response => {
             if(response.status === 200){
                 response.json().then(data => {
-                    data.batches.forEach(element => {
-                        this.setState({
-                            Pagebatches: [...this.state.Pagebatches, {id:element.id}]
-                        });
-                    });
-                    this.setState({maxpage: data.totalPages-1});
+                    console.log(data)
+                    this.setState({Pagebatches: data})
+                    // this is broken, please fix :)
+                    this.setState({maxpage: data.length%10});
                 })
             }
         })
@@ -107,55 +106,86 @@ export class Batches extends Component {
         }
 
         return (
-            <div>
-                <div>
-                    {selectedBatchMessage}
-                </div>
-                <div>
-                    {errorMessage}
-                </div>
-                <div>
+            <Column flexGrow={1}>
+                <Row
+                    horizontal='center'
+                    style={searchStyle}
+                >
                     <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
                     <button style={btnStyle} onClick={this.search}>Search</button>
-                </div>
-                <div style={{padding:"10px"}}>
-                    {this.state.selectSuccess === true ? (<button value="search" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>) : (<p></p>)}
-                </div>
-                <div style={{margin:"25px"}}>
-                <div>
-                    <h1>All batches</h1>
-                </div>
-                    <select 
-                            size="10"
-                            onChange={this.change}
-                            style={selectStyle}
+                </Row>
+                <Row
+                    horizontal='space-between'
+                    breakpoints={{ 1024: 'column' }}
+                >
+                    <Column
+                        flexGrow={2}
+                        horizontal='center'
+                        style={itemStyle}
                     >
-                        {this.state.Pagebatches.map((option) => (
-                            <option style={optionStyle}
-                                value={option.id}
-                                key={option.id}
+                        <h3> Batch List </h3>
+                        <Row style={itemStyle}>
+                            <select 
+                                    size="10"
+                                    onChange={this.change}
+                                    style={selectStyle}
                             >
-                                {option.id} 
-                            </option>
-                            
-                        ))}
-                    </select>
-                    <div>
-                        <p style={{fontSize: "20px"}}>{this.state.page+1} of {this.state.maxpage+1}</p>
-                    </div>
-                    <div>
-                        <button style={btnStyle} onClick={this.updatePage} value="prev">&lt;prev</button>
-                        <button style={btnStyle} onClick={this.updatePage} value="next">&gt;next</button>
-                    
-                    </div>
-                    <div style={{padding:"10px"}}>
-                        <button value="pages" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>
-                    </div>
-                </div>
-            </div>
+                                {this.state.Pagebatches.map((option) => (
+                                    <option style={optionStyle}
+                                        value={option.id}
+                                        key={option.id}
+                                    >
+                                        {option.productType} {option.amountToProduce} {option.data[0].timestamp}
+
+                                    </option>
+                                ))}
+                            </select>
+                        </Row>
+                        <Row style={itemStyle}>
+                            <button style={btnStyle} onClick={this.updatePage} value="prev">&lt; prev</button>
+                            <p style={{margin: 10, fontSize: "20px"}}>{this.state.page+1} of {this.state.maxpage+1}</p>
+                            <button style={btnStyle} onClick={this.updatePage} value="next">next &gt;</button>
+                        </Row>
+                        <Row style={itemStyle}>
+                            {/* {this.state.selectSuccess === true ? (<button value="search" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>): (<button value="pages" style={btnStyle} onClick={alert("Please choose a batch first")}>Generate Report</button>)  }  */}
+                            <button value="pages" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>
+                        </Row>
+                    </Column>
+                    <Column
+                        flexGrow={4}
+                        horizontal='center'
+                        style={itemStyle}
+                    >
+                        <h3> Batch Overview </h3>
+                        <span> Values from a chosen batch </span>
+                        <span>{selectedBatchMessage}</span>
+                        <p>{errorMessage}</p>
+                    </Column>
+                </Row>
+                <Row
+                    horizontal='center'
+                    style={itemStyle}
+                >
+                    <Column>
+                        <h3> Graph over chosen datavalue </h3>
+                        <span> Values from a chosen batch </span>
+                    </Column>
+                </Row>
+            </Column>            
         )
     }
 }
+
+const itemStyle = {
+    backgroundColor: "#eee",
+    outlineStyle: "solid",
+    margin: "10px"
+}
+
+const searchStyle = {
+    marginBottom: "10px"
+}
+
 const btnStyle = {
     backgroundColor: "#696969",
     border: "1px solid #000",
@@ -165,10 +195,8 @@ const btnStyle = {
     fontWeight: "bold",
     padding: "8px 12px",
     margin: "0px 5px",
-    textDecoration: "none",
-    width: "10%"
+    textDecoration: "none"
 }
-
 
 const inputStyle =   {
     width: "50%",
@@ -177,22 +205,21 @@ const inputStyle =   {
     boxSizing: "border-box",
     border: "none",
     borderBottom: "4px solid grey"
-  }
+}
 
-  const selectStyle = {
-    overflow: "hidden",
-    height: "470px", 
-    width: "60%",
-    textAlign: "center", 
-    fontSize: "26px",
-    boxSizing: "border-box",
-    border: "hidden"
-  }
+const selectStyle = {
+  overflow: "hidden",
+  height: "470px",
+  textAlign: "center", 
+  fontSize: "26px",
+  boxSizing: "border-box",
+  border: "hidden"
+}
 
-  const optionStyle = {
-    padding: "8px", 
-    outlineStyle:"solid 1px", 
-    backgroundColor: "#D0D0D0"
-  }
+const optionStyle = {
+  padding: "8px", 
+  outlineStyle:"solid 1px", 
+  backgroundColor: "#D0D0D0"
+}
 
 export default Batches
