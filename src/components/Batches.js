@@ -85,17 +85,23 @@ const Batches = () => {
 
     return (
         <Grid>
-            <Row colwrap="xs"> 
-                <Col size={2}>
-                    Length of two
-                </Col>
-                <Col size={3}>
-                    Length of three
+            <Row>
+                <Col size={1}>
+                    <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
+                    <button style={btnStyle} onClick={search}>Search</button>
                 </Col>
             </Row>
-            <Row height={300}>
+            <Row colwrap="m" height={300}> 
+                <Col size={2}>
+                    <h3>List of batches</h3>
+                </Col>
+                <Col size={3}>
+                    <h3>Data from chosen batch</h3>
+                </Col>
+            </Row>
+            <Row height={400}>
                 <Col size={1}>
-                    Full length
+                    <h3>Graph over data</h3>
                 </Col>
             </Row>
         </Grid>
@@ -103,11 +109,14 @@ const Batches = () => {
 };
 
 const Grid = styled.div`
+    display: flex;
+    flex-flow: column wrap;
+    gap: 12px;
 `;
 
 const media = {
-    xs: (styles) => `
-        @media only screen and (max-width: 480px) {
+    m: (styles) => `
+        @media only screen and (max-width: 1024px) {
             ${styles}
         }
     `,
@@ -116,22 +125,21 @@ const media = {
 const Row = styled.div`
     display: flex;
     flex-flow: wrap;
+    gap: 12px;
     ${(props) => props.colwrap && media[props.colwrap](`
         flex-flow: column wrap;
     `)};
     height: ${(props) => props.height}px;
-    outline-style: solid;
 `;
 
 const Col = styled.div`
     flex: ${(props) => props.size};
-    outline-style: solid;
+    background-color: lightgray;
 
 `;
 
 const itemStyle = {
     backgroundColor: "#eee",
-    outlineStyle: "solid",
     margin: "10px"
 }
 
@@ -179,13 +187,6 @@ export default Batches;
 
 {/* <Column>
 <Row
-  horizontal='center'
-  style={searchStyle}
->
-    <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
-    <button style={btnStyle} onClick={search}>Search</button>
-</Row>
-<Row
   horizontal='space-between'
   breakpoints={{ 1024: 'column' }}
 >
@@ -230,15 +231,6 @@ export default Batches;
         <p>{errorMessage}</p>
         <p>{selectSucess}</p>
                 
-    </Column>
-</Row>
-<Row
-  horizontal='center'
-  style={itemStyle}
->
-    <Column>
-        <h3> Graph over chosen datavalue </h3>
-        <span> Values from a chosen batch </span>
     </Column>
 </Row>
 </Column> */}
