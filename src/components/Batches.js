@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Column, Row } from 'simple-flexbox';
+import styled from 'styled-components';
 
-function Batches() {
+const Batches = () => {
     
     const [selectedBatchID, setSelectedBatchID] = useState("");
     const [selectSucess, setSelectSuccess] = useState(false);
@@ -41,9 +41,9 @@ function Batches() {
             })
     };
 
-/*     const change = (e) => {
+    const change = (e) => {
         setSelectedBatchID(e.target.value);
-    }; */
+    };
 
     const generatePDF = (e) => {
         if(e.target.value === "search"){
@@ -84,72 +84,50 @@ function Batches() {
     }; 
 
     return (
-        <Column>
-            <Row
-                horizontal='center'
-                style={searchStyle}
-            >
-                <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
-                <button style={btnStyle} onClick={search}>Search</button>
+        <Grid>
+            <Row colwrap="xs"> 
+                <Col size={2}>
+                    Length of two
+                </Col>
+                <Col size={3}>
+                    Length of three
+                </Col>
             </Row>
-            <Row
-                horizontal='space-between'
-                breakpoints={{ 1024: 'column' }}
-            >
-                <Column
-                    flexGrow={2}
-                    horizontal='center'
-                    style={itemStyle}
-                >
-                    <h3> Batch List </h3>
-                    <Row style={itemStyle}>
-                        {/* <select 
-                                size="10"
-                                onChange={change}
-                                style={selectStyle}
-                        >
-                            {pageBatches.map((option) => (
-                                <option style={optionStyle}
-                                    value={option.id}
-                                    key={option.id}
-                                >
-                                    {option.productType} | {option.amountToProduce} | {option.data[0].timestamp[0]}-{option.data[0].timestamp[1]}-{option.data[0].timestamp[2]}
-                                </option>
-                            ))}
-                        </select> */}
-                    </Row>
-                    <Row style={itemStyle}>
-                        <button style={btnStyle} onClick={updatePage} value="prev">&lt; prev</button>
-                        <p style={{margin: 10, fontSize: "20px"}}>{page+1} of {maxPage+1}</p>
-                        <button style={btnStyle} onClick={updatePage} value="next">next &gt;</button>
-                    </Row>
-                    <Row style={itemStyle}>
-                        {/* </Row> {this.state.selectSuccess === true ? (<button value="search" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>): (<button value="pages" style={btnStyle} onClick={alert("Please choose a batch first")}erate Report</button>)  }  */}
-                        <button value="pages" style={btnStyle} onClick={generatePDF}>Generate Report</button>
-                    </Row>
-                </Column>
-                <Column
-                    flexGrow={4}
-                    horizontal='center'
-                    style={itemStyle}
-                >
-                    <h3> Batch Overview </h3>
-                    <span> Values from a chosen batch </span>
-
-                </Column>
+            <Row height={300}>
+                <Col size={1}>
+                    Full length
+                </Col>
             </Row>
-            <Row
-                horizontal='center'
-                style={itemStyle}
-            >
-                <Column>
-                    <h3> Graph over chosen datavalue </h3>
-                    <span> Values from a chosen batch </span>
-                </Column>
-            </Row>
-        </Column>            
+        </Grid>
     );
 };
+
+const Grid = styled.div`
+`;
+
+const media = {
+    xs: (styles) => `
+        @media only screen and (max-width: 480px) {
+            ${styles}
+        }
+    `,
+}
+
+const Row = styled.div`
+    display: flex;
+    flex-flow: wrap;
+    ${(props) => props.colwrap && media[props.colwrap](`
+        flex-flow: column wrap;
+    `)};
+    height: ${(props) => props.height}px;
+    outline-style: solid;
+`;
+
+const Col = styled.div`
+    flex: ${(props) => props.size};
+    outline-style: solid;
+
+`;
 
 const itemStyle = {
     backgroundColor: "#eee",
@@ -198,3 +176,69 @@ const optionStyle = {
 }
 
 export default Batches;
+
+{/* <Column>
+<Row
+  horizontal='center'
+  style={searchStyle}
+>
+    <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
+    <button style={btnStyle} onClick={search}>Search</button>
+</Row>
+<Row
+  horizontal='space-between'
+  breakpoints={{ 1024: 'column' }}
+>
+    <Column
+      flexGrow={2}
+      horizontal='center'
+      style={itemStyle}
+    >
+        <h3> Batch List </h3>
+        <Row style={itemStyle}>
+            <select 
+              size="10"
+              onChange={change}
+              style={selectStyle}
+            >
+                {pageBatches.map((option) => (
+                    <option style={optionStyle}
+                      value={option.id}
+                      key={option.id}
+                    >
+                        {option.productType} | {option.amountToProduce} | {option.data[0].timestamp[0]}-{option.data[0].timestamp[1]}-{option.data[0].timestamp[2]}
+                    </option>
+                ))}
+            </select>
+        </Row>
+        <Row style={itemStyle}>
+            <button style={btnStyle} onClick={updatePage} value="prev">&lt; prev</button>
+            <p style={{margin: 10, fontSize: "20px"}}>{page+1} of {maxPage+1}</p>
+            <button style={btnStyle} onClick={updatePage} value="next">next &gt;</button>
+        </Row>
+        <Row style={itemStyle}>
+            <button value="pages" style={btnStyle} onClick={generatePDF}>Generate Report</button>
+        </Row>
+    </Column>
+    <Column
+      flexGrow={4}
+      horizontal='center'
+      style={itemStyle}
+    >
+        <h3> Batch Overview </h3>
+        <span> Values from a chosen batch </span>
+        <p>{errorMessage}</p>
+        <p>{selectSucess}</p>
+                
+    </Column>
+</Row>
+<Row
+  horizontal='center'
+  style={itemStyle}
+>
+    <Column>
+        <h3> Graph over chosen datavalue </h3>
+        <span> Values from a chosen batch </span>
+    </Column>
+</Row>
+</Column> */}
