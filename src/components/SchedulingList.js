@@ -2,9 +2,6 @@ import React, { useState }  from 'react'
 import styled from 'styled-components';
 import { Icon as Cross } from '@iconify/react';
 import crossIcon from '@iconify-icons/akar-icons/cross';
-import { InlineIcon as Hamburger } from '@iconify/react';
-import hamburgerMenu from '@iconify-icons/cil/hamburger-menu';
-
 
 
 export const SchedulingList = (props) => {
@@ -16,13 +13,11 @@ export const SchedulingList = (props) => {
 	}
 
 	const dragStart = (e) => {
-		console.log(e.target);
 		setDraggedRow(e.target) 
 	}
 
 	const dragOver = (e) => {
 		let allRows = Array.from(e.target.parentNode.parentNode.children);
-		console.log(allRows)
 		
 		if(allRows.indexOf(e.target.parentNode)>allRows.indexOf(draggedRow))
 		  	e.target.parentNode.after(draggedRow);
@@ -93,7 +88,7 @@ export const SchedulingList = (props) => {
 				<Styledbody>
 					{props.scheduled.map((element) => (
 						<tr id={element.id} key={element.id} style={selected === element.id ? {background: "#7ac8ff"} : {fontSize: "1.0em"}} draggable='true' onDragStart={dragStart} onDragOver={dragOver} onDragEnd={dragStop}>
-							<td style={{textAlign: "center", width: "6%", borderRight: "1px solid whitesmoke", cursor: "grab"}}><Hamburger icon={hamburgerMenu} width="20" height="20" style={{transform: "translate(0px, 3px)"}}/></td>
+							<td style={{textAlign: "center", width: "6%", borderRight: "1px solid whitesmoke", cursor: "grab"}}>☰</td>
 							<td>{element.type.charAt(0) + element.type.slice(1).toLowerCase().replace('_', '\u00A0')}</td>
 							<td>{element.amount}</td>
 							<td>{element.speed}</td>
@@ -136,7 +131,8 @@ const Styledbody = styled.tbody`
 		counter-increment: row-num;
 
 		& td:first-child::after {
-			content: "  #" counter(row-num);
+			content: " #" counter(row-num);
+			font-size: 0.8em;
 		}
 
 		& td {
