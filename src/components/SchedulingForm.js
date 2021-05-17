@@ -5,17 +5,18 @@ export const SchedulingForm = (props) => {
 	const [amount, setAmount] = useState('');
 	const [speed, setSpeed] = useState('');
 	const [type, setType] = useState('');
-	const [validInput, setValidInput] = useState(false);
+	const [validAmount, setValidAmount] = useState(false);
+	const [validSpeed, setValidSpeed] = useState(false);
 
 	useEffect(() => {
 		setType(props.products[0].name)
-	}, [])
+	}, [props.products])
 
 
 	const addScheduledBatch = (e) => {
         e.preventDefault(); 
 
-		if (validInput) {
+		if (validAmount && validSpeed) {
 			let data = {
 				"speed": speed,
 				"type": type.toUpperCase().replace(" ", "_"),
@@ -39,21 +40,24 @@ export const SchedulingForm = (props) => {
     const onSpeedChanged = (e) =>{
 		setSpeed(e.target.value);
 
-
 		//Check that speed only contains numbers
-		const regex = /^\d+$/;;
-		setValidInput(regex.test(e.target.value));
+		const regex = /^\d+$/;
+		setValidSpeed(regex.test(e.target.value));
 
 		//Check that value is within acceptable range
 		if (e.target.value > 0 && e.target.value <= getMaxSpeed(type)) {
-			setValidInput(true);
+			setValidSpeed(true);
 		} else {
-			setValidInput(false);
+			setValidSpeed(false);
 		}
 
     }
 
-    const onAmountChanged = (e) =>{
+    const onAmountChanged = (e) => {
+		//Check that amount only contains numbers
+		const regex = /^\d+$/;
+		setValidAmount(regex.test(e.target.value));
+
 		setAmount(e.target.value);
     }
 
@@ -87,7 +91,7 @@ export const SchedulingForm = (props) => {
 				<input placeholder="Amount" value={amount} onChange={onAmountChanged}/>
 				<input placeholder={"Speed < " + getMaxSpeed(type) } value={speed} onChange={onSpeedChanged}/>
 
-				<button onClick={addScheduledBatch} disabled={!validInput}>
+				<button onClick={addScheduledBatch} disabled={!(validAmount && validSpeed)}>
 					ADD
 				</button>           
 			</Styledform>
