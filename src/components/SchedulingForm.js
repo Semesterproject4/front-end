@@ -31,6 +31,8 @@ export const SchedulingForm = (props) => {
 				if(response.status === 200){
 					setAmount("");
 					setSpeed("");
+					setValidAmount(false);
+					setValidSpeed(false);
 					props.update();
 				}
 			})
