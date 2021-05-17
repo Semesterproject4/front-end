@@ -92,7 +92,7 @@ export const SchedulingList = (props) => {
 							<td>{element.type.charAt(0) + element.type.slice(1).toLowerCase().replace('_', '\u00A0')}</td>
 							<td>{element.amount}</td>
 							<td>{element.speed}</td>
-							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}> <Cross icon={crossIcon} color="#fff" width="20" /></Deletebutton></td>
+							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}> <Cross icon={crossIcon} color="#fff" width="20" pointerEvents="none" /></Deletebutton></td>
 						</tr>
 					))}
 				</Styledbody>
