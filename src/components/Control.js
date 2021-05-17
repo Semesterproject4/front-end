@@ -18,7 +18,7 @@ export const Control = (props) => {
         setSpeed(e.target.value);
     }
 
-	const buttonPress = (e) => {
+	const controlMachineButtonPress = (e) => {
         //Created a JSON object with "command: {the command stored on the respective button}"
         let data = {
             command: e.target.value
@@ -53,6 +53,17 @@ export const Control = (props) => {
 		setAmount("");
     }
 
+	const autoBrewPress = (e) => {
+		//Sends a Patch request
+		fetch("http://localhost:8080/api/machines/" + props.currentMachine.id + "/autobrew/" + e.target.value, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            if(response.status === 200){
+			}
+        })
+	}
+
 	return (
 		<div>
 			<div>
@@ -72,20 +83,26 @@ export const Control = (props) => {
 				</Styledform>
 			</div>
 			<div>
-				<Styledbutton value="start"	onClick={buttonPress}>
+				<Styledbutton value="start"	onClick={controlMachineButtonPress}>
 					Start
 				</Styledbutton>
-				<Styledbutton value="stop" onClick={buttonPress}>
+				<Styledbutton value="stop" onClick={controlMachineButtonPress}>
 					Stop
 				</Styledbutton>
-				<Styledbutton value="reset" onClick={buttonPress}>
+				<Styledbutton value="reset" onClick={controlMachineButtonPress}>
 					Reset
 				</Styledbutton>
-				<Styledbutton value="clear" onClick={buttonPress}>
+				<Styledbutton value="clear" onClick={controlMachineButtonPress}>
 					Clear
 				</Styledbutton>
-				<Styledbutton value="abort" onClick={buttonPress}>
+				<Styledbutton value="abort" onClick={controlMachineButtonPress}>
 					Abort
+				</Styledbutton>
+				<Styledbutton value="start"	onClick={autoBrewPress}>
+					Start Auto Brew
+				</Styledbutton>
+				<Styledbutton value="stop"	onClick={autoBrewPress}>
+					Stop Auto Brew
 				</Styledbutton>
 			</div>
 		</div>
