@@ -45,11 +45,6 @@
     ]
   },
   "devDependencies": {
-    "@iconify-icons/akar-icons": "^1.1.10",
-    "@iconify-icons/bi": "^1.1.5",
-    "@iconify-icons/cil": "^1.1.0",
-    "@iconify-icons/el": "^1.1.0",
-    "@iconify-icons/ion": "^1.1.2",
     "@iconify/react": "^1.1.4",
     "@iconify/react-with-api": "^1.0.0-rc.2"
   }
