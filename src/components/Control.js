@@ -1,15 +1,24 @@
-import React, { Component } from 'react'
+import React, { useState }  from 'react'
+import styled from 'styled-components';
 
-export class Control extends Component {
-    state = { 
-        beerType: "pilsner",
-        batchSize: "",
-        speed: "",
-        validInput: true
-    };
+export const Control = (props) => {
+	const [type, setType] = useState("Pilsner");
+	const [amount, setAmount] = useState("");
+	const [speed, setSpeed] = useState("");
 
-    //Handler method for the buttons.
-    buttonPress = (e) => {
+    const changeType = (e) => {
+		setType(e.target.value);
+    }
+
+    const changeAmount = (e) => {
+        setAmount(e.target.value);
+    }
+
+    const changeSpeed = (e) => {
+        setSpeed(e.target.value);
+    }
+
+	const buttonPress = (e) => {
         //Created a JSON object with "command: {the command stored on the respective button}"
         let data = {
             command: e.target.value
@@ -19,141 +28,90 @@ export class Control extends Component {
         if (data.command === "start") {
             //Set variables as json
             let variables = {
-                beerType: this.state.beerType,
-                batchSize: this.state.batchSize,
-                speed: this.state.speed
+                beerType: type,
+                batchSize: amount,
+                speed: speed
             }
 
             //Fetch the api with the variables as body
-            fetch("http://localhost:8080/api/machines/" + this.props.currentMachine.id + "/variables", {
+            fetch("http://localhost:8080/api/machines/" + props.currentMachine.id + "/variables", {
                 method: "PUT",
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(variables)
             })
-            //Gets the response and sets a variable true or false depending on it
-            .then(response => {
-                if (response.status !== 200) {
-                    this.setState({validInput: false});
-                } else {
-                    this.setState({validInput: true});
-                }
-            })
-
         }
 
         //Sends the HTTP request to the API
-        fetch("http://localhost:8080/api/machines/" + this.props.currentMachine.id + "?command=" + data.command, {
+        fetch("http://localhost:8080/api/machines/" + props.currentMachine.id + "?command=" + data.command, {
             method: "PATCH",
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         })
 
         //Reset input fields
-        this.setState({speed: ""});
-        this.setState({batchSize: ""});
+		setSpeed("");
+		setAmount("");
     }
 
-    changeBeerType = (e) => {
-        this.setState({beerType: e.target.value});
-    }
+	return (
+		<div>
+			<div>
+				<Styledform>
+					<select onChange={changeType}>
+						<option value="pilsner">Pilsner</option>
+						<option value="wheat">Wheat</option>
+						<option value="stout">Stout</option>
+						<option value="ipa">IPA</option>
+						<option value="ale">Ale</option>
+						<option value="alcohol_free">Alcohol Free</option>
+					</select>
 
-    changeAmount = (e) => {
-        this.setState({batchSize: e.target.value});
-    }
+					<input placeholder = "Amount" value={amount} onChange={changeAmount}></input>
+					<input placeholder = "Speed (%)" value={speed} onChange={changeSpeed}></input>
 
-    changeSpeed = (e) => {
-        this.setState({speed: e.target.value});
-    }
-
-    //Contains the HTML that is to be rendered for the user
-    render() {
-        //Set an error message depending on a state variable
-        let invalidInputMessage;
-
-        if(this.state.validInput){
-            invalidInputMessage = <p></p>
-        }else{
-            invalidInputMessage = <p>Invalid inputs</p>
-        }
-
-        return (
-            <div>
-                <div>
-                    {invalidInputMessage}
-                    <form style={formStyle}>
-                        <select style={formStyle} onChange={this.changeBeerType}>
-                            <option value="pilsner">Pilsner</option>
-                            <option value="wheat">Wheat</option>
-                            <option value="stout">Stout</option>
-                            <option value="ipa">IPA</option>
-                            <option value="ale">Ale</option>
-                            <option value="alcohol_free">Alcohol Free</option>
-                        </select>
- 
-                        <input style={formStyle} placeholder = "Amount" value={this.state.batchSize} onChange={this.changeAmount}></input>
-                        <input style={formStyle} placeholder = "Speed (%)" value={this.state.speed} onChange={this.changeSpeed}></input>
-
-                    </form>
-                </div>
-                <div>
-                    <button 
-                        style={btnStyle} 
-                        value="start"
-                        onClick={this.buttonPress}
-                    >
-                        Start
-                    </button>
-                    <button 
-                        style={btnStyle} 
-                        value="stop"
-                        onClick={this.buttonPress}
-                    >
-                        Stop
-                    </button>
-                    <button 
-                        style={btnStyle} 
-                        value="reset"
-                        onClick={this.buttonPress}
-                    >
-                        Reset
-                    </button>
-                    <button 
-                        style={btnStyle} 
-                        value="clear"
-                        onClick={this.buttonPress}
-                    >
-                        Clear
-                    </button>
-                    <button 
-                        style={btnStyle} 
-                        value="abort"
-                        onClick={this.buttonPress}
-                    >
-                        Abort
-                    </button>
-                </div>
-            </div>
-        )
-    }
+				</Styledform>
+			</div>
+			<div>
+				<Styledbutton value="start"	onClick={buttonPress}>
+					Start
+				</Styledbutton>
+				<Styledbutton value="stop" onClick={buttonPress}>
+					Stop
+				</Styledbutton>
+				<Styledbutton value="reset" onClick={buttonPress}>
+					Reset
+				</Styledbutton>
+				<Styledbutton value="clear" onClick={buttonPress}>
+					Clear
+				</Styledbutton>
+				<Styledbutton value="abort" onClick={buttonPress}>
+					Abort
+				</Styledbutton>
+			</div>
+		</div>
+	);
 }
 
-//Styling for the buttons
-const btnStyle = {
-    backgroundColor: "#696969",
-    border: "1px solid #000",
-    display: "inline-block",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "bold",
-    padding: "8px 12px",
-    margin: "0px 5px",
-    textDecoration: "none",
-}
+const Styledbutton = styled.button`
+    background-color: #696969;
+    border: 1px solid #000;
+    display: inline-block;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    margin: 0px 5px;
+    text-decoration: none;
+`
 
+const Styledform = styled.form`
+    margin: 5px 5px;
+	
+	& select {
+		margin: 5px 5px;
+	}
+	& input {
+		margin: 5px 5px;
+	}
 
-//Styling for the forms
-const formStyle = {
-    margin: "5px 5px"
-}
-
-export default Control
+`

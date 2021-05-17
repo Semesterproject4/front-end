@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route} from 'react-router-dom';
 import Header from "./components/layout/Header";
 import MachineList from './components/MachineList';
-import Control from './components/Control';
 import Batches from "./components/Batches"
 import Liveview from './components/Liveview'
 import { Scheduling } from './components/Scheduling'
+import { Control } from './components/Control'
 import './App.css';
 
 export class App extends Component {
