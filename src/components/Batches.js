@@ -32,31 +32,16 @@ const Batches = () => {
         fetchBatches();
     }, []);
 
-/*     const search = (e) => {
-		//This request is likely not correct but would be removed by the dashboard view anyways so that method remains unchanged for now
-        fetch('http://localhost:8080/api/batches/' + document.getElementById("searchField").value) 
-            .then(response => {
-                let json = response.json();
-                json.then(data => {
-                    if (response.status === 200) {
-                        setSelectedBatchID(data.id);
-                        setSelectSuccess(true);
-                        seterrorMessage("");
-                        setLink("http://localhost:8080/api/batches/" + data.id + "/pdf")
-                    } else if (response.status === 400) {
-                        setSelectedBatchID("");
-                        setSelectSuccess(false);
-                        seterrorMessage("Something went wrong, have you entered a valid UUID");
-                        setLink("")
-                    } else {
-                        setSelectedBatchID("");
-                        setSelectSuccess(false);
-                        seterrorMessage(data.response);
-                        setLink("")
-                    }
-                })
-            })
-    }; */
+    const search = async () => {
+        let checkForHexRegExp = /^[a-f\d]{24}$/i
+        let id = document.getElementById("searchField").value;
+        if (checkForHexRegExp.test(id)) {
+            setSelectedBatchID(id);
+            fetchChosenBatch(id);
+        } else {
+            alert("Please provide a valid ID");
+        }
+    }
 
     const generatePDF = (e) => {
         if(e.target.value === "search"){
@@ -76,7 +61,7 @@ const Batches = () => {
         setMaxPage(data.length%10);
         // this is probably needed
         setPage(page);
-    }
+    };
 
     const updatePage = (e) => {
         if(e.target.value === "prev"){
@@ -95,7 +80,7 @@ const Batches = () => {
             } 
         }
     };
-
+    
 
     const fetchChosenBatch = async (id) => {
         const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
@@ -141,7 +126,7 @@ const Batches = () => {
             <Row>
                 <Col size={1} padding={10}>
                     <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
-                    <button style={btnStyle} /* onClick={} */>Search</button>
+                    <button style={btnStyle} onClick={search}>Search</button>
                 </Col>
             </Row>
             <Row colwrap="m"> 
