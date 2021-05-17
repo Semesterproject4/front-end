@@ -1,7 +1,10 @@
 import React, { useState }  from 'react'
 import styled from 'styled-components';
-import { Icon } from '@iconify/react';
+import { Icon as Cross } from '@iconify/react';
 import crossIcon from '@iconify-icons/akar-icons/cross';
+import { InlineIcon as Hamburger } from '@iconify/react';
+import hamburgerMenu from '@iconify-icons/cil/hamburger-menu';
+
 
 
 export const SchedulingList = (props) => {
@@ -13,6 +16,7 @@ export const SchedulingList = (props) => {
 	}
 
 	const dragStart = (e) => {
+		console.log(e.target);
 		setDraggedRow(e.target) 
 	}
 
@@ -79,6 +83,7 @@ export const SchedulingList = (props) => {
 			<Styledtable id="table" onClick={selectRow}>
 				<Styledthead>
 					<tr>
+						<th></th>
 						<th>Product</th>
 						<th>Amount</th>
 						<th>Speed</th>
@@ -88,11 +93,11 @@ export const SchedulingList = (props) => {
 				<Styledbody>
 					{props.scheduled.map((element) => (
 						<tr id={element.id} key={element.id} style={selected === element.id ? {background: "#7ac8ff"} : {fontSize: "1.0em"}} draggable='true' onDragStart={dragStart} onDragOver={dragOver} onDragEnd={dragStop}>
-							<td style={{textAlign: "center", width: "2%", borderRight: "1px solid whitesmoke", cursor: "grab"}}>☰</td>
+							<td style={{textAlign: "center", width: "6%", borderRight: "1px solid whitesmoke", cursor: "grab"}}><Hamburger icon={hamburgerMenu} width="20" height="20" style={{transform: "translate(0px, 3px)"}}/></td>
 							<td>{element.type.charAt(0) + element.type.slice(1).toLowerCase().replace('_', '\u00A0')}</td>
 							<td>{element.amount}</td>
 							<td>{element.speed}</td>
-							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}> <Icon icon={crossIcon} color="#fff" width="20" /></Deletebutton></td>
+							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}> <Cross icon={crossIcon} color="#fff" width="20" /></Deletebutton></td>
 						</tr>
 					))}
 				</Styledbody>
@@ -107,6 +112,7 @@ const Styledtable = styled.table`
 	width: 60%;
 	border-collapse: collapse;
 	background: white;  
+	counter-reset: row-num;
 	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
 		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1); 
 
@@ -127,6 +133,11 @@ const Styledthead = styled.thead`
 const Styledbody = styled.tbody`
 	& tr {
 		cursor: pointer;
+		counter-increment: row-num;
+
+		& td:first-child::after {
+			content: "  #" counter(row-num);
+		}
 
 		& td {
 			font-size: 1.0em;
