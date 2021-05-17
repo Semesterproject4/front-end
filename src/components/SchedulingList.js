@@ -1,5 +1,8 @@
 import React, { useState }  from 'react'
 import styled from 'styled-components';
+import { Icon } from '@iconify/react';
+import crossIcon from '@iconify-icons/akar-icons/cross';
+
 
 export const SchedulingList = (props) => {
 	const [selected, setSelected] = useState('');
@@ -27,9 +30,9 @@ export const SchedulingList = (props) => {
 			<Styledtable id="table" onClick={selectRow}>
 				<Styledthead>
 					<tr>
-						<th>🍺 Product</th>
-						<th>#️⃣ Amount</th>
-						<th>⏲️ Speed</th>
+						<th>Product</th>
+						<th>Amount</th>
+						<th>Speed</th>
 						<th></th>
 					</tr>
 				</Styledthead>
@@ -39,7 +42,7 @@ export const SchedulingList = (props) => {
 							<td>{element.type.charAt(0) + element.type.slice(1).toLowerCase().replace('_', '\u00A0')}</td>
 							<td>{element.amount}</td>
 							<td>{element.speed}</td>
-							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}>🗑️</Deletebutton></td>
+							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}> <Icon icon={crossIcon} color="#fff" width="20" /></Deletebutton></td>
 						</tr>
 					))}
 				</Styledbody>
@@ -54,18 +57,18 @@ const Styledtable = styled.table`
 	width: 60%;
 	border-collapse: collapse;
 	background: white;  
-  	-webkit-box-shadow: 0px 0px 10px 8px rgba(0, 0, 0, 0.1);
-			box-shadow: 0px 0px 10px 8px rgba(0, 0, 0, 0.1);  
+	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1); 
 
 `
 
 const Styledthead = styled.thead`
 	& tr {
 		& th {
-			font-size: 1.0em;
+			font-size: 1.2em;
 			height: 25px;
 			font-weight: bold;
-			padding: 30px;
+			padding: 20px;
 			user-select: none;
 		}
 	}
@@ -99,8 +102,8 @@ const Styledbody = styled.tbody`
 `
 
 const Deletebutton = styled.button`
-	background-color: #f44336;
-	width: 50px;
+	background-color: #eb5f54;
+	width: 40px;
 	height: 100%;
 	border-top-left-radius: 8px;
   	border-bottom-left-radius: 8px;
@@ -109,6 +112,6 @@ const Deletebutton = styled.button`
   	cursor: pointer;
 
 	&:hover {
-		background-color: #ff1200;		
+		background-color: #f44336;		
 	}
 `

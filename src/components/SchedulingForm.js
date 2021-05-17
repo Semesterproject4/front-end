@@ -84,7 +84,7 @@ export const SchedulingForm = (props) => {
 					))}
 				</select>
 
-				<input placeholder="Amount..." value={amount} onChange={onAmountChanged}/>
+				<input placeholder="Amount" value={amount} onChange={onAmountChanged}/>
 				<input placeholder={"Speed < " + getMaxSpeed(type) } value={speed} onChange={onSpeedChanged}/>
 
 				<button onClick={addScheduledBatch} disabled={!validInput}>
@@ -100,12 +100,10 @@ const Styleddiv = styled.div`
 	width: 60%;
 `
 
-const Addbutton = styled.button`
-  	cursor: pointer;
-	background: #36f459;
-`
-
 const Styledform = styled.form`
+	
+	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);  
 
 	& select {
 		font-size: 1.1em;
@@ -113,7 +111,6 @@ const Styledform = styled.form`
 		height: 40px;
 		padding: 0px 15px 0px 15px;
 		border: 0px;
-		transform: translate(0px, 1px);
 
 		&:focus {
 			outline: none;
@@ -125,6 +122,9 @@ const Styledform = styled.form`
 		height: 40px;
 		border: 0px;
 		padding: 15px;
+		transform: translate(0px, -1px);
+		border-left: 1px solid #efefef;
+		
 
 		&:focus {
 			outline: none;
@@ -135,7 +135,7 @@ const Styledform = styled.form`
 	& button {
 		font-size: 1.1em;
 		width: 20%;
-		height: 40px;
+		height: 41px;
 		cursor: pointer;
 		background: #7ac8ff;
 		outline: none;
