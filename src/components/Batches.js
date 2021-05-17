@@ -132,7 +132,7 @@ const Batches = () => {
 
     const selectRow = (e) => {
         let id = e.target.parentNode.getAttribute('id');
-        setSelectedBatchID(id);
+        setSelectedBatchID(id); 
         fetchChosenBatch(id);
 	};
 
