@@ -7,12 +7,15 @@ export class MachineList extends Component {
         machines: [],
         selectedMachine: {
             ip: "default",
-            id: "default"
+            id: "default",
+            name: "default"
         },
         machineIP: "",
         machineName: "",
         success: true,
-        statusMessage: ""
+        statusMessage: "",
+        validIP: false,
+        validName: false
     };
 
 
@@ -47,7 +50,7 @@ export class MachineList extends Component {
 
     addMachineHandler = (e) =>{
         e.preventDefault(); 
-        let data = {ip: this.state.machineIP};
+        let data = {ip: this.state.machineIP, name: this.state.machineName};
 
         fetch("http://localhost:8080/api/machines/",{
             method: 'POST',
@@ -62,16 +65,17 @@ export class MachineList extends Component {
             }
 
             return response.text();
-        }).then(data => JSON.parse(data))
-        .then(json => this.setState({statusMessage: json.response, machineIP: ""}));
+        })
     }
 
     ipChanged = (e) =>{
         this.setState({machineIP: e.target.value});
+        this.setState({validIP: e.target.value !== ""});
     }
 
     machineNameChanged = (e) =>{
         this.setState({machineName: e.target.value});
+        this.setState({validName: e.target.value !== ""});
     }
 
     //When button is pressed we send the 
@@ -86,7 +90,8 @@ export class MachineList extends Component {
 
         this.setState({selectedMachine: {
             ip: selectedJSON.label,
-            id: selectedJSON.value
+            id: selectedJSON.value,
+            name: selectedJSON.name
         }})
     }
     
@@ -104,8 +109,8 @@ export class MachineList extends Component {
             <div>
                 <form>
                     <input placeholder = "opc.tcp://<ip address>:<port>" value = {this.state.machineIP} onChange = {this.ipChanged} style = {inputStyle}></input>
-                    <input placeholder = "machine name" value = {this.state.machineName} onChange = {this.machineNameChanged} style = {inputStyle} />
-                    <button onClick={this.addMachineHandler} style={btnStyle}>Add machine</button>
+                    <input placeholder = "machine name" value = {this.state.machineName} onChange = {this.machineNameChanged} style = {inputStyle}/>
+                    <button onClick = {this.addMachineHandler} style={btnStyle} disabled = {!(this.state.validIP && this.state.validName)}>Add machine</button>
                 </form>
                 {errorMessage}
 
