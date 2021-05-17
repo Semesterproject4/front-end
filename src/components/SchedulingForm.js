@@ -50,7 +50,6 @@ export const SchedulingForm = (props) => {
 		} else {
 			setValidSpeed(false);
 		}
-
     }
 
     const onAmountChanged = (e) => {
@@ -63,6 +62,8 @@ export const SchedulingForm = (props) => {
 
     const changeBeerType = (e) => {
 		setType(e.target.value);
+		setSpeed("");
+		setValidSpeed(false);
     }
 
 	const getMaxSpeed = (selectedProduct) => {
@@ -89,7 +90,7 @@ export const SchedulingForm = (props) => {
 				</select>
 
 				<input placeholder="Amount" value={amount} onChange={onAmountChanged}/>
-				<input placeholder={"Speed < " + getMaxSpeed(type) } value={speed} onChange={onSpeedChanged}/>
+				<input placeholder={"Speed <= " + getMaxSpeed(type) } value={speed} onChange={onSpeedChanged}/>
 
 				<button onClick={addScheduledBatch} disabled={!(validAmount && validSpeed)}>
 					ADD

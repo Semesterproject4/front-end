@@ -1,8 +1,6 @@
 import React, { useState }  from 'react'
 import styled from 'styled-components';
-import { Icon as Cross } from '@iconify/react';
-import crossIcon from '@iconify-icons/akar-icons/cross';
-
+import { Icon } from '@iconify/react-with-api';
 
 export const SchedulingList = (props) => {
 	const [selected, setSelected] = useState('');
@@ -92,7 +90,8 @@ export const SchedulingList = (props) => {
 							<td>{element.type.charAt(0) + element.type.slice(1).toLowerCase().replace('_', '\u00A0')}</td>
 							<td>{element.amount}</td>
 							<td>{element.speed}</td>
-							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}> <Cross icon={crossIcon} color="#fff" width="20" pointerEvents="none" /></Deletebutton></td>
+																															
+							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none"/></Deletebutton></td>
 						</tr>
 					))}
 				</Styledbody>
