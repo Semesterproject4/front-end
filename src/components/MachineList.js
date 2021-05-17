@@ -10,6 +10,7 @@ export class MachineList extends Component {
             id: "default"
         },
         machineIP: "",
+        machineName: "",
         success: true,
         statusMessage: ""
     };
@@ -69,6 +70,10 @@ export class MachineList extends Component {
         this.setState({machineIP: e.target.value});
     }
 
+    machineNameChanged = (e) =>{
+        this.setState({machineName: e.target.value});
+    }
+
     //When button is pressed we send the 
     selectMachineHandler = () => {
         //Sends the current machine to App.js
@@ -98,7 +103,8 @@ export class MachineList extends Component {
         return (
             <div>
                 <form>
-                    <input placeholder = "opc.tcp://<ip address>:<port>" value = {this.state.machineIP} onChange = {this.ipChanged} style={inputStyle}></input>
+                    <input placeholder = "opc.tcp://<ip address>:<port>" value = {this.state.machineIP} onChange = {this.ipChanged} style = {inputStyle}></input>
+                    <input placeholder = "machine name" value = {this.state.machineName} onChange = {this.machineNameChanged} style = {inputStyle} />
                     <button onClick={this.addMachineHandler} style={btnStyle}>Add machine</button>
                 </form>
                 {errorMessage}
@@ -160,9 +166,9 @@ const selectStyle = {
   }
 
   const inputStyle =   {
-    width: "50%",
+    width: "25%",
     padding: "12px 20px",
-    margin: "8px 0",
+    margin: "8px 8px",
     boxSizing: "border-box",
     border: "none",
     borderBottom: "4px solid grey"
