@@ -13,7 +13,9 @@ export class App extends Component {
 	state = { 
 		currentMachine: {
 			ip: "none",
-			id: ""
+			id: "",
+			name: "",
+			autobrewing: false
 		},
 		updated: false
 	};
@@ -39,12 +41,10 @@ export class App extends Component {
 					<div className="container">
 						
 						<Route exact path="/" render={props => (
-							<React.Fragment>
 								<MachineList 
+									currentMachine={this.state.currentMachine}
 									setCurrentMachine = {this.setCurrentMachine}
-									updated = {this.state.updated}
 								/>
-							</React.Fragment>
 						)} />
 
 						<Route exact path="/batch" render={props => (

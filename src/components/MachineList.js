@@ -6,12 +6,9 @@ import { Icon } from '@iconify/react-with-api';
 
 export const MachineList = (props) => {
 	const [machines, setMachines] = useState([]);
-	const [selected, setSelected] = useState('');
-	const [selectedMachine, setSelectedMachine]= useState("");
+	const [selected, setSelected] = useState(null);
 	const [machineIP, setMachineIP] = useState("");
 	const [machineName, setMachineName] = useState("");
-	const [success, setSuccess] = useState(true);
-	const [statusMessage, setStatusMessage] = useState("");
 	const [validIP, setValidIP] = useState(false);
 	const [validName, setValidName] = useState(false);
 
@@ -28,7 +25,7 @@ export const MachineList = (props) => {
 
                     //Sets first machine as default as the list will have it selected initially
                     if (machines.length !== 0) {
-						setSelectedMachine(machines[0])
+						setSelected(machines[0].id)
                     }
                 })
             }
@@ -44,16 +41,38 @@ export const MachineList = (props) => {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         }).then(response => {
-            if(response.status !== 200){
-				setSuccess(false);
-            }else{
-                setSuccess(true);
+            if(response.status === 200){
+				setMachineIP("");
+				setMachineName("");
                 updateMachineList();
             }
-
-            return response.text();
         })
     }
+
+	const removeConnection = (e) => {
+		e.preventDefault(); 
+		let id = e.target.parentNode.parentNode.getAttribute('id');
+		
+        fetch("http://localhost:8080/api/machines/" + id, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            if(response.status === 200){
+				updateMachineList();
+
+				if (id === props.currentMachine.id) {
+					props.setCurrentMachine({			
+						ip: "none",
+						id: "",
+						name: "",
+						autobrewing: false
+					})
+				}
+			}
+        })	
+
+		
+	}
 
 	const ipChanged = (e) =>{
 		setMachineIP(e.target.value);
@@ -65,20 +84,11 @@ export const MachineList = (props) => {
 		setValidName(e.target.value !== "");
     }
 
-	//When button is pressed we send the 
+	//When button is pressed we send the selected machine to App.js
 	const selectMachineHandler = () => {
-		//Sends the current machine to App.js
-		props.setCurrentMachine(selectedMachine)
-	}
-
-	//Handler for the selection of a new machine in the list
-	const change = (e) => {
-		let selectedJSON = JSON.parse(e.target.value)
-		setSelectedMachine({
-			ip: selectedJSON.label,
-			id: selectedJSON.value,
-			name: selectedJSON.name,
-			autobrewing: selectedJSON.autobrewing
+		machines.forEach((element) => {
+			if (element.id === selected)
+				props.setCurrentMachine(element);
 		})
 	}
 
@@ -90,11 +100,9 @@ export const MachineList = (props) => {
 		<div>
 			<Styledform>
 				<input placeholder = "opc.tcp://<ip address>:<port>" value = {machineIP} onChange = {ipChanged} ></input>
-				<input placeholder = "machine name" value = {machineName} onChange = {machineNameChanged} />
+				<input placeholder = "Machine name" value = {machineName} onChange = {machineNameChanged} style={{borderLeft: "1px solid #efefef"}}/>
 				<button onClick = {addMachineHandler} disabled = {!(validIP && validName)}>Add machine</button>
 			</Styledform>
-			{console.log("Machines:", machines)}
-			{console.log("Machine:", machines[0])}
 
 			<Styledtable id="table" onClick={selectRow}>
 				<Styledthead>
@@ -107,20 +115,24 @@ export const MachineList = (props) => {
 				</Styledthead>
 				<Styledbody>
 					{machines.map((element) => (
-						<tr id={element.id} autobrewing={element.autobrewing} machine={element} key={element.id} style={selected === element.id ? {background: "#7ac8ff"} : {fontSize: "1.0em"}}>
+						<tr id={element.id} autobrewing={element.autobrewing.toString()} machine={element} key={element.id} style={selected === element.id ? {background: "#7ac8ff"} : {fontSize: "1.0em"}}>
 							<td>{element.name}</td>
 							<td>{element.ip}</td>
-							<td>{element.autobrewing}</td>
+							<td style={{width: "23%"}}>{element.autobrewing ? 
+								<Icon icon="bi:circle-fill" color="#2cb833" width="20" pointerEvents="none" style={{transform: "translateX(0px) translateY(2px)"}}/>
+								: 
+								<Icon icon="bi:slash-circle-fill" color="#b8352c" width="20" pointerEvents="none" style={{transform: "translateX(0px) translateY(2px)"}}/>}
+							</td>
 																															
-							<td style={{textAlign: "right", width: "10px"}}><Deletebutton> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none"/></Deletebutton></td>
+							<td style={{textAlign: "right", width: "10px"}} onClick={removeConnection}><Deletebutton> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none" /></Deletebutton></td>
 						</tr>
 					))}
 				</Styledbody>
 			</Styledtable>
 
 			<Link to="/control">
-				<Styledbutton onClick={selectMachineHandler}>Connect</Styledbutton>
-			</Link> 
+				<Styledbutton onClick={selectMachineHandler} disabled={selected === null ? true : false}>Connect</Styledbutton>
+			</Link>
 
 		</div>
 	);
@@ -129,16 +141,17 @@ export const MachineList = (props) => {
 
 const Styledbutton = styled.button`
 	font-size: 1.1em;
-	width: 20%;
+	width: 60%;
 	height: 41px;
 	cursor: pointer;
-	background: #7ac8ff;
+	background: #35b856;
 	outline: none;
-	border: none;
+	border: 1px solid black;
+	margin: 5px;
 	color: black;
 
 	&:hover {
-		background: #99d5ff;
+		background: #3dd463;
 	}
 
 	&:disabled {
@@ -148,26 +161,18 @@ const Styledbutton = styled.button`
 `
 
 const Styledform = styled.form`
-	& select {
-		font-size: 1.1em;
-		width: 30%;
-		height: 40px;
-		padding: 0px 15px 0px 15px;
-		border: 0px;
+	margin: auto;
+	width: 60%;
+	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);  
 
-		&:focus {
-			outline: none;
-		}
-	}
 	& input {
 		font-size: 1.1em;
-		width: 25%;
+		width: 40%;
 		height: 40px;
 		border: 0px;
 		padding: 15px;
-		transform: translate(0px, -1px);
-		border-left: 1px solid #efefef;
-		
+		transform: translate(0px, -1px);	
 
 		&:focus {
 			outline: none;
