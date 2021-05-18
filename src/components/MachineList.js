@@ -101,7 +101,10 @@ export const MachineList = (props) => {
 			<Styledform>
 				<input placeholder = "opc.tcp://<ip address>:<port>" value = {machineIP} onChange = {ipChanged} ></input>
 				<input placeholder = "Machine name" value = {machineName} onChange = {machineNameChanged} style={{borderLeft: "1px solid #efefef"}}/>
-				<button onClick = {addMachineHandler} disabled = {!(validIP && validName)}>Add machine</button>
+				<button onClick = {addMachineHandler} disabled = {!(validIP && validName)} style={{borderRight: "1px solid #efefef"}}>Add machine</button>
+				<Link to="/control">
+					<button onClick={selectMachineHandler} disabled={selected === null ? true : false}>Connect</button>
+				</Link>
 			</Styledform>
 
 			<Styledtable id="table" onClick={selectRow}>
@@ -129,36 +132,10 @@ export const MachineList = (props) => {
 					))}
 				</Styledbody>
 			</Styledtable>
-
-			<Link to="/control">
-				<Styledbutton onClick={selectMachineHandler} disabled={selected === null ? true : false}>Connect</Styledbutton>
-			</Link>
-
 		</div>
 	);
 }
 
-
-const Styledbutton = styled.button`
-	font-size: 1.1em;
-	width: 60%;
-	height: 41px;
-	cursor: pointer;
-	background: #35b856;
-	outline: none;
-	border: 1px solid black;
-	margin: 5px;
-	color: black;
-
-	&:hover {
-		background: #3dd463;
-	}
-
-	&:disabled {
-		background: grey;
-		color: white;
-	}
-`
 
 const Styledform = styled.form`
 	margin: auto;
@@ -168,7 +145,7 @@ const Styledform = styled.form`
 
 	& input {
 		font-size: 1.1em;
-		width: 40%;
+		width: 30%;
 		height: 40px;
 		border: 0px;
 		padding: 15px;
