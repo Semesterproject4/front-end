@@ -35,6 +35,7 @@ const Batches = () => {
     const [searchVal, setSearchVal] = useState('');
     const [prevBtnDisable, setPrevBtnDisable] = useState(true);
     const [nextBtnDisable, setNextBtnDisable] = useState(true);
+    const [intervalVal, setIntervalVal] = useState(0)
 
     const arrayDict = {
         Humidity: humArray,
@@ -109,16 +110,12 @@ const Batches = () => {
         if(e.target.value === "prev"){
             if(page > 0){
                 let newPage = page - 1;
-                console.log("Current page:", page);
-                console.log("New page:", newPage);
                 fetchBatches(newPage);
                 setPage(newPage);
             } 
         } else if(e.target.value === "next"){
             if(page < maxPage){
                 let newPage = page + 1;
-                console.log("Current page:", page);
-                console.log("New page:", newPage);
                 fetchBatches(newPage);
                 setPage(newPage);
             } 
@@ -131,10 +128,18 @@ const Batches = () => {
     };
 
     const fetchChosenBatch = (id) => {
+
+        humArray.length = 0;
+        vibArray.length = 0;
+        tempArray.length = 0;
+        stateArray.length = 0;
+
         const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
         fetch(url).then(response => {
             if (response.status === 200) {
                 response.json().then(result => {
+
+
                     result.batch.data.forEach(element => {
                         let timestamp = CanvasJS.formatDate(
                             new Date(
@@ -144,16 +149,16 @@ const Batches = () => {
                                 element.timestamp.time.hour,
                                 element.timestamp.time.minute,
                                 element.timestamp.time.second),
-                                "HH:mm:ss");
+                                "HH:mm:ss"
+                            );
                         
                         humArray.push({label: timestamp, y: element.humidity});
                         vibArray.push({label: timestamp, y: element.vibration});
                         tempArray.push({label: timestamp, y: element.temperature});
                         stateArray.push({label: timestamp, y: element.state});
                     });
-                
+                    
                     let lastDataEntry = result.batch.data.length - 1;
-                
                     setHumVal(result.avgHumidity);
                     setVibVal(result.avgVibration);
                     setTempVal(result.avgTemp);
@@ -165,6 +170,7 @@ const Batches = () => {
                     setRejVal(result.batch.data[lastDataEntry].defectProducts);
                     setOeeVal(round(result.oee));
 
+                    setIntervalVal(lastDataEntry / 10);
                 });
             }
         });
@@ -175,6 +181,7 @@ const Batches = () => {
         setSelectedBatchID(id);
 	};
 
+    // When state is chosen, make a step graph instead of a line graph
     const options = {
         animationEnabled: true,
         exportEnabled: true,
@@ -189,22 +196,21 @@ const Batches = () => {
         axisX: {
             title: "",
             prefix: "",
-            interval: 10
+            interval: intervalVal
         },
         data: [{
             type: "line",
-            toolTipContent: "After {x} seconds: {y}",
+            toolTipContent: "At {label}, value: {y}",
             dataPoints: selectedArray
         }]
     }
 
     const setGraphData = (e) => {
         let id = e.target.parentNode.id;
-        console.log(id);
         setSelectedValue(id);
         setSelectedArray(arrayDict[id]);
+        console.log(id);
         console.log(arrayDict[id]);
-        console.log(selectedArray);
     };
 
     return (
