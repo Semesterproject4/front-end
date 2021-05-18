@@ -47,6 +47,14 @@ const Batches = () => {
         fetchBatches();
     }, []);
 
+    // TODO highlight the chosen view 
+    // TODO save current view in a state, so it doesn't change to humidity ever time
+    useEffect(() => {
+        fetchChosenBatch(selectedBatchID);
+        setSelectedValue("Humidity");
+        setSelectedArray(humArray);
+    }, [selectedBatchID]);
+
     const onSearchChanged = (e) => {
         setSearchVal(e.target.value);
     }
@@ -120,55 +128,52 @@ const Batches = () => {
     function round(num) {
         var m = Number((num * 100).toPrecision(15));
         return Math.round(m) / 100 * Math.sign(num);
-    }
+    };
 
-    const fetchChosenBatch = async (id) => {
+    const fetchChosenBatch = (id) => {
         const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
-        const data = await fetch(url);
-        const response = await data.json();
-        
-        console.log("Response")
-        console.log(response);
+        fetch(url).then(response => {
+            if (response.status === 200) {
+                response.json().then(result => {
+                    result.batch.data.forEach(element => {
+                        let timestamp = CanvasJS.formatDate(
+                            new Date(
+                                element.timestamp.date.year,
+                                element.timestamp.date.month-1,
+                                element.timestamp.date.day,
+                                element.timestamp.time.hour,
+                                element.timestamp.time.minute,
+                                element.timestamp.time.second),
+                                "HH:mm:ss");
+                        
+                        humArray.push({label: timestamp, y: element.humidity});
+                        vibArray.push({label: timestamp, y: element.vibration});
+                        tempArray.push({label: timestamp, y: element.temperature});
+                        stateArray.push({label: timestamp, y: element.state});
+                    });
+                
+                    let lastDataEntry = result.batch.data.length - 1;
+                
+                    setHumVal(result.avgHumidity);
+                    setVibVal(result.avgVibration);
+                    setTempVal(result.avgTemp);
+                    setStateVal(result.batch.data[lastDataEntry].state)
+                    setAtpVal(result.batch.amountToProduce);
+                    setSpeedVal(result.batch.desiredSpeed);
+                    setProdVal(result.batch.data[lastDataEntry].processed);
+                    setAccVal(result.batch.data[lastDataEntry].acceptableProducts);
+                    setRejVal(result.batch.data[lastDataEntry].defectProducts);
+                    setOeeVal(round(result.oee));
 
-        response.batch.data.forEach(element => {
-            let timestamp = CanvasJS.formatDate(
-                new Date(
-                    element.timestamp.date.year,
-                    element.timestamp.date.month-1,
-                    element.timestamp.date.day,
-                    element.timestamp.time.hour,
-                    element.timestamp.time.minute,
-                    element.timestamp.time.second),
-                    "HH:mm:ss");
-            
-            humArray.push({label: timestamp, y: element.humidity});
-            vibArray.push({label: timestamp, y: element.vibration});
-            tempArray.push({label: timestamp, y: element.temperature});
-            stateArray.push({label: timestamp, y: element.state});
+                });
+            }
         });
-
-        let lastDataEntry = response.batch.data.length - 1;
-
-        setHumVal(response.avgHumidity);
-        setVibVal(response.avgVibration);
-        setTempVal(response.avgTemp);
-        setStateVal(response.batch.data[lastDataEntry].state)
-        setAtpVal(response.batch.amountToProduce);
-        setSpeedVal(response.batch.desiredSpeed);
-        setProdVal(response.batch.data[lastDataEntry].processed);
-        setAccVal(response.batch.data[lastDataEntry].acceptableProducts);
-        setRejVal(response.batch.data[lastDataEntry].defectProducts);
-        setOeeVal(round(response.oee));
     };
 
     const selectRow = (e) => {
         let id = e.target.parentNode.getAttribute('id');
-        setSelectedBatchID(id); 
-        fetchChosenBatch(id);
-        setSelectedValue("Humidity");
-        setSelectedArray(humArray);
+        setSelectedBatchID(id);
 	};
-
 
     const options = {
         animationEnabled: true,
