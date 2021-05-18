@@ -3,10 +3,9 @@ import { BrowserRouter as Router, Route} from 'react-router-dom';
 import Header from "./components/layout/Header";
 import MachineList from './components/MachineList';
 import Batches from "./components/Batches"
-import Liveview from './components/Liveview'
 import { Scheduling } from './components/Scheduling'
 import { Control } from './components/Control'
-import { Liveview2 } from './components/Liveview2'
+import { Liveview } from './components/Liveview'
 import './App.css';
 
 export class App extends Component {
@@ -64,16 +63,6 @@ export class App extends Component {
 							</React.Fragment>
 						)} />
 
-						<Route exact path="/control2" render={props => (
-							<React.Fragment>
-								<Control
-									currentMachine={this.state.currentMachine}
-								/>
-								<Liveview2
-									currentMachine={this.state.currentMachine}
-								/>
-							</React.Fragment>
-						)} />
 						<Route exact path="/schedule" render={props => (
 							<React.Fragment>
 								<Scheduling/>

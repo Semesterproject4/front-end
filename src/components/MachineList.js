@@ -133,7 +133,7 @@ export class MachineList extends Component {
 
                 <br></br>
 
-                <Link to="/control2">
+                <Link to="/control">
                     <button onClick={this.selectMachineHandler} style={btnStyle}>Connect</button>
                 </Link> 
                 
