@@ -6,6 +6,7 @@ import Batches from "./components/Batches"
 import Liveview from './components/Liveview'
 import { Scheduling } from './components/Scheduling'
 import { Control } from './components/Control'
+import { Liveview2 } from './components/Liveview2'
 import './App.css';
 
 export class App extends Component {
@@ -58,6 +59,17 @@ export class App extends Component {
 									currentMachine={this.state.currentMachine}
 								/>
 								<Liveview
+									currentMachine={this.state.currentMachine}
+								/>
+							</React.Fragment>
+						)} />
+
+						<Route exact path="/control2" render={props => (
+							<React.Fragment>
+								<Control
+									currentMachine={this.state.currentMachine}
+								/>
+								<Liveview2
 									currentMachine={this.state.currentMachine}
 								/>
 							</React.Fragment>

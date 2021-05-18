@@ -3,8 +3,6 @@ import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
 import { Icon } from '@iconify/react-with-api';
 
-
-
 export class Liveview extends Component {
 
     state = { 
@@ -57,6 +55,7 @@ export class Liveview extends Component {
     //Connect method that subscribes to the live data
     connect(id, func) {
         let stompClient = this.state.stompClient
+		console.log(this.state.socket)
         //Start connection
         stompClient.connect({}, function (frame) {
             //Send initial info to backend to start the sending of data
@@ -85,27 +84,27 @@ export class Liveview extends Component {
             <div>
                 <div style={{display: "inline-flex", align: "center", padding: "10px"}}>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="barley">Barley</label> <br></br>
+                        <label>Barley</label> <br></br>
                         <progress id="barley" value={this.state.livedata.barley} max="35000"></progress> <br></br>
                         <p>{this.state.livedata.barley}</p>
                     </div>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="hops">Hops</label> <br></br>
+                        <label>Hops</label> <br></br>
                         <progress id="hops" value={this.state.livedata.hops} max="35000"></progress> <br></br>
                         {this.state.livedata.hops}
                     </div>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="malt">Malt</label> <br></br>
+                        <label>Malt</label> <br></br>
                         <progress id="malt" value={this.state.livedata.malt} max="35000"></progress> <br></br>
                         {this.state.livedata.malt}
                     </div>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="wheat">Wheat</label> <br></br>
+                        <label>Wheat</label> <br></br>
                         <progress id="wheat" value={this.state.livedata.wheat} max="35000"></progress> <br></br>
                         {this.state.livedata.wheat}
                     </div>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="yeast">Yeast</label> <br></br>
+                        <label>Yeast</label> <br></br>
                         <progress id="yeast" value={this.state.livedata.yeast} max="35000"></progress> <br></br>
                         {this.state.livedata.yeast}
                     </div>
