@@ -31,6 +31,8 @@ export const SchedulingForm = (props) => {
 				if(response.status === 200){
 					setAmount("");
 					setSpeed("");
+					setValidAmount(false);
+					setValidSpeed(false);
 					props.update();
 				}
 			})
@@ -50,7 +52,6 @@ export const SchedulingForm = (props) => {
 		} else {
 			setValidSpeed(false);
 		}
-
     }
 
     const onAmountChanged = (e) => {
@@ -63,6 +64,8 @@ export const SchedulingForm = (props) => {
 
     const changeBeerType = (e) => {
 		setType(e.target.value);
+		setSpeed("");
+		setValidSpeed(false);
     }
 
 	const getMaxSpeed = (selectedProduct) => {

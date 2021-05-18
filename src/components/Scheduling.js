@@ -29,7 +29,7 @@ export const Scheduling = () => {
 			<div>
 				{products.length && <SchedulingForm products={products} update={fetchScheduled} />}
 
-				{scheduled.length && <SchedulingList scheduled={scheduled} update={fetchScheduled} />}
+				{<SchedulingList scheduled={scheduled} update={fetchScheduled} />}
 			</div>
 	);
 };
