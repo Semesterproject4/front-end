@@ -61,6 +61,18 @@ export const Control = (props) => {
 		return result;
 	}
 
+	const getOptimalSpeed = (selectedProduct) => {
+        let result = "?";
+        products.forEach(product => {
+            if (selectedProduct === product.name) {
+                result = product.optimal;
+            }
+
+        });
+
+        return result;
+    }
+
 	const controlMachineButtonPress = (e) => {
         //Created a JSON object with "command: {the command stored on the respective button}"
         let data = {
@@ -120,7 +132,7 @@ export const Control = (props) => {
 					</select>
 
 					<input placeholder = "Amount" value={amount} onChange={changeAmount}></input>
-					<input placeholder ={"Speed <= " + getMaxSpeed(type)} value={speed} onChange={changeSpeed}></input>
+					<input placeholder ={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={changeSpeed}></input>
 
 				</Styledform>
 			</div>
