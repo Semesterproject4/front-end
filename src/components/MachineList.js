@@ -1,182 +1,267 @@
-import React, { Component } from 'react'
+import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
-
-export class MachineList extends Component {
-    //State contains all the variables of the class
-    state = { 
-        machines: [],
-        selectedMachine: {
-            ip: "default",
-            id: "default",
-            name: "default"
-        },
-        machineIP: "",
-        machineName: "",
-        success: true,
-        statusMessage: "",
-        validIP: false,
-        validName: false
-    };
+import styled from 'styled-components';
+import { Icon } from '@iconify/react-with-api';
 
 
-    //Is forced to complete before render()
-    componentDidMount() {
-        this.updateMachineList();
-    }
+export const MachineList = (props) => {
+	const [machines, setMachines] = useState([]);
+	const [selected, setSelected] = useState(null);
+	const [machineIP, setMachineIP] = useState("");
+	const [machineName, setMachineName] = useState("");
+	const [validIP, setValidIP] = useState(false);
+	const [validName, setValidName] = useState(false);
 
-    updateMachineList = () =>{
-        this.setState({machines: []})
+	useEffect(() => {
+		updateMachineList();
+	}, [])
 
+	const updateMachineList = () =>{
         fetch('http://localhost:8080/api/machines')
         .then(response => {
             if (response.status === 200) {
                 response.json().then(data => {
-                    //Loops through and add all machines to the list of machines
-                    data.forEach(element => {
-                        this.setState({ machines: [...this.state.machines, {label: element.name, value: element.id}] });
-                    });
+					setMachines(data);
 
                     //Sets first machine as default as the list will have it selected initially
-                    if (this.state.machines.length !== 0) {
-                        this.setState({selectedMachine: {
-                            ip: this.state.machines[0].label,
-                            id: this.state.machines[0].value
-                        }})
+                    if (machines.length !== 0) {
+						setSelected(machines[0].id)
                     }
                 })
             }
         });
     }
 
-    addMachineHandler = (e) =>{
+	const addMachineHandler = (e) =>{
         e.preventDefault(); 
-        let data = {ip: this.state.machineIP, name: this.state.machineName};
+        let data = {ip: machineIP, name: machineName};
 
         fetch("http://localhost:8080/api/machines/",{
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
         }).then(response => {
-            if(response.status !== 200){
-                this.setState({success: false});
-            }else{
-                this.setState({success: true});
-                this.updateMachineList();
+            if(response.status === 200){
+				setMachineIP("");
+				setMachineName("");
+                updateMachineList();
             }
-
-            return response.text();
         })
     }
 
-    ipChanged = (e) =>{
-        this.setState({machineIP: e.target.value});
-        this.setState({validIP: e.target.value !== ""});
+	const removeConnection = (e) => {
+		e.preventDefault(); 
+		let id = e.target.parentNode.parentNode.getAttribute('id');
+		
+        fetch("http://localhost:8080/api/machines/" + id, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            if(response.status === 200){
+				updateMachineList();
+
+				if (id === props.currentMachine.id) {
+					props.setCurrentMachine({			
+						ip: "none",
+						id: "",
+						name: "",
+						autobrewing: false
+					})
+				}
+			}
+        })	
+
+		
+	}
+
+	const ipChanged = (e) =>{
+		setMachineIP(e.target.value);
+		setValidIP(e.target.value !== "");
     }
 
-    machineNameChanged = (e) =>{
-        this.setState({machineName: e.target.value});
-        this.setState({validName: e.target.value !== ""});
+    const machineNameChanged = (e) =>{
+		setMachineName(e.target.value);
+		setValidName(e.target.value !== "");
     }
 
-    //When button is pressed we send the 
-    selectMachineHandler = () => {
-        //Sends the current machine to App.js
-        this.props.setCurrentMachine(this.state.selectedMachine)
-    }
+	//When button is pressed we send the selected machine to App.js
+	const selectMachineHandler = () => {
+		machines.forEach((element) => {
+			if (element.id === selected)
+				props.setCurrentMachine(element);
+		})
+	}
 
-    //Handler for the selection of a new machine in the list
-    change = (e) => {
-        let selectedJSON = JSON.parse(e.target.value)
+	const selectRow = (e) => {
+		setSelected(e.target.parentNode.getAttribute('id'));
+	}
 
-        this.setState({selectedMachine: {
-            ip: selectedJSON.label,
-            id: selectedJSON.value,
-            name: selectedJSON.name
-        }})
-    }
-    
-    //Contains the HTML that is to be rendered for the user
-    render() {
-        let errorMessage;
+	return (
+		<div>
+			<Styledform>
+				<input placeholder = "opc.tcp://<ip address>:<port>" value = {machineIP} onChange = {ipChanged} ></input>
+				<input placeholder = "Machine name" value = {machineName} onChange = {machineNameChanged} style={{borderLeft: "1px solid #efefef"}}/>
+				<button onClick = {addMachineHandler} disabled = {!(validIP && validName)}>Add machine</button>
+			</Styledform>
 
-        if(this.state.success){
-            errorMessage = <p></p>
-        }else{
-            errorMessage = <p>{this.state.statusMessage}</p>
-        }
+			<Styledtable id="table" onClick={selectRow}>
+				<Styledthead>
+					<tr>
+						<th>Name</th>
+						<th>IP</th>
+						<th>Autobrewing</th>
+						<th></th>
+					</tr>
+				</Styledthead>
+				<Styledbody>
+					{machines.map((element) => (
+						<tr id={element.id} autobrewing={element.autobrewing.toString()} machine={element} key={element.id} style={selected === element.id ? {background: "#7ac8ff"} : {fontSize: "1.0em"}}>
+							<td>{element.name}</td>
+							<td>{element.ip}</td>
+							<td style={{width: "23%"}}>{element.autobrewing ? 
+								<Icon icon="bi:circle-fill" color="#2cb833" width="20" pointerEvents="none" style={{transform: "translateX(0px) translateY(2px)"}}/>
+								: 
+								<Icon icon="bi:slash-circle-fill" color="#b8352c" width="20" pointerEvents="none" style={{transform: "translateX(0px) translateY(2px)"}}/>}
+							</td>
+																															
+							<td style={{textAlign: "right", width: "10px"}} onClick={removeConnection}><Deletebutton> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none" /></Deletebutton></td>
+						</tr>
+					))}
+				</Styledbody>
+			</Styledtable>
 
-        return (
-            <div>
-                <form>
-                    <input placeholder = "opc.tcp://<ip address>:<port>" value = {this.state.machineIP} onChange = {this.ipChanged} style = {inputStyle}></input>
-                    <input placeholder = "machine name" value = {this.state.machineName} onChange = {this.machineNameChanged} style = {inputStyle}/>
-                    <button onClick = {this.addMachineHandler} style={btnStyle} disabled = {!(this.state.validIP && this.state.validName)}>Add machine</button>
-                </form>
-                {errorMessage}
+			<Link to="/control">
+				<Styledbutton onClick={selectMachineHandler} disabled={selected === null ? true : false}>Connect</Styledbutton>
+			</Link>
 
-                <h1>All machines</h1>
-
-                <select style={selectStyle}
-                        size="10"
-                        onChange={this.change}
-                >
-                    {this.state.machines.map((option) => (
-                        <option 
-                            style={optionStyle}
-                            value={JSON.stringify(option)}
-                            key={option.value}
-                        >
-                            {option.label} 
-                        </option>
-                    ))}
-                </select>
-
-                <br></br>
-
-                <Link to="/control">
-                    <button onClick={this.selectMachineHandler} style={btnStyle}>Connect</button>
-                </Link> 
-                
-            </div>
-        )
-    }
+		</div>
+	);
 }
 
-//Styling of the button
-const btnStyle = {
-    backgroundColor: "#696969",
-    border: "1px solid #000",
-    display: "inline-block",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "bold",
-    padding: "8px 12px",
-    margin: "0px 5px",
-    textDecoration: "none",
-    width: "10%"
-}
 
-const selectStyle = {
-    height: "580px", 
-    width: "60%",
-    textAlign: "center", 
-    fontSize: "26px",
-    boxSizing: "content-box",
-    border: "hidden"
-  }
+const Styledbutton = styled.button`
+	font-size: 1.1em;
+	width: 60%;
+	height: 41px;
+	cursor: pointer;
+	background: #35b856;
+	outline: none;
+	border: 1px solid black;
+	margin: 5px;
+	color: black;
 
-  const optionStyle = {
-    padding: "8px", 
-    backgroundColor: "#D0D0D0"
-  }
+	&:hover {
+		background: #3dd463;
+	}
 
-  const inputStyle =   {
-    width: "25%",
-    padding: "12px 20px",
-    margin: "8px 8px",
-    boxSizing: "border-box",
-    border: "none",
-    borderBottom: "4px solid grey"
-  }
+	&:disabled {
+		background: grey;
+		color: white;
+	}
+`
 
-export default MachineList
+const Styledform = styled.form`
+	margin: auto;
+	width: 60%;
+	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);  
+
+	& input {
+		font-size: 1.1em;
+		width: 40%;
+		height: 40px;
+		border: 0px;
+		padding: 15px;
+		transform: translate(0px, -1px);	
+
+		&:focus {
+			outline: none;
+			border-bottom: 1px solid #7ac8ff;
+		}
+	}
+
+	& button {
+		font-size: 1.1em;
+		width: 20%;
+		height: 41px;
+		cursor: pointer;
+		background: #7ac8ff;
+		outline: none;
+		border: none;
+		color: black;
+
+		&:hover {
+			background: #99d5ff;
+		}
+
+		&:disabled {
+			background: grey;
+			color: white;
+		}
+	}
+`
+
+
+const Styledtable = styled.table`
+	margin: auto;
+	width: 60%;
+	border-collapse: collapse;
+	background: white;  
+	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1); 
+
+`
+
+const Styledthead = styled.thead`
+	& tr {
+		& th {
+			font-size: 1.2em;
+			height: 25px;
+			font-weight: bold;
+			padding: 20px;
+			user-select: none;
+		}
+	}
+`
+
+const Styledbody = styled.tbody`
+	& tr {
+		cursor: pointer;
+
+		& td {
+			font-size: 1.0em;
+			padding: 0px;  
+			height: 40px;
+			user-select: none;
+			border-top: 1px solid whitesmoke;
+		}
+
+		&:nth-child(even) {
+			background-color: #f7f7f7;
+		}
+
+		&:nth-child(odd) {
+			background-color: #ffffff;
+		}  
+
+		&:hover {
+			background: #dbf0ff;
+		}
+
+	}
+`
+
+const Deletebutton = styled.button`
+	background-color: #eb5f54;
+	width: 40px;
+	height: 100%;
+	border-top-left-radius: 8px;
+  	border-bottom-left-radius: 8px;
+	outline: none;
+	border: none;
+  	cursor: pointer;
+
+	&:hover {
+		background-color: #f44336;		
+	}
+`

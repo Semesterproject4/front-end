@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route} from 'react-router-dom';
 import Header from "./components/layout/Header";
-import MachineList from './components/MachineList';
 import Batches from "./components/Batches"
 import Liveview from './components/Liveview'
 import { Scheduling } from './components/Scheduling'
 import { Control } from './components/Control'
+import { MachineList } from './components/MachineList'
 import './App.css';
 
 export class App extends Component {
@@ -13,7 +13,9 @@ export class App extends Component {
 	state = { 
 		currentMachine: {
 			ip: "none",
-			id: ""
+			id: "",
+			name: "",
+			autobrewing: false
 		},
 		updated: false
 	};
@@ -39,13 +41,12 @@ export class App extends Component {
 					<div className="container">
 						
 						<Route exact path="/" render={props => (
-							<React.Fragment>
 								<MachineList 
+									currentMachine={this.state.currentMachine}
 									setCurrentMachine = {this.setCurrentMachine}
-									updated = {this.state.updated}
 								/>
-							</React.Fragment>
 						)} />
+
 						<Route exact path="/batch" render={props => (
 							<React.Fragment>
 								<Batches/>
