@@ -1,10 +1,22 @@
-import React, { useState }  from 'react'
+import React, { useState, useEffect }  from 'react'
 import styled from 'styled-components';
 
 export const Control = (props) => {
 	const [type, setType] = useState("Pilsner");
 	const [amount, setAmount] = useState("");
 	const [speed, setSpeed] = useState("");
+	const [products, setProducts] = useState([]);
+
+	useEffect(() => {
+		fetchProducts();
+	}, [])
+
+	const fetchProducts = async () => {
+		const url = 'http://localhost:8080/api/machines/products';
+		const data = await fetch(url);
+		const result = await data.json();
+		setProducts(result.products)
+	};
 
     const changeType = (e) => {
 		setType(e.target.value);
@@ -69,12 +81,11 @@ export const Control = (props) => {
 			<div>
 				<Styledform>
 					<select onChange={changeType}>
-						<option value="pilsner">Pilsner</option>
-						<option value="wheat">Wheat</option>
-						<option value="stout">Stout</option>
-						<option value="ipa">IPA</option>
-						<option value="ale">Ale</option>
-						<option value="alcohol_free">Alcohol Free</option>
+						{products.map((product) => (
+							<option value={product.name} key={product.name}>
+								{product.name} 
+							</option>
+						))}
 					</select>
 
 					<input placeholder = "Amount" value={amount} onChange={changeAmount}></input>
