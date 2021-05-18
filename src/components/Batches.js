@@ -14,14 +14,27 @@ const Batches = () => {
     const [errorMessage, seterrorMessage] = useState("");
     const [link, setLink] = useState("");
     const [pageBatches, setPagebatches] = useState([]);
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(0);
     const [maxPage, setMaxPage] = useState(0);
     const [selectedValue, setSelectedValue] = useState("Humidity");
-    const [selectedArray, setSelectedArray] = useState([{label: new Date(12, 12, 12, 12, 12, 12), y: 1}, {label: new Date(12, 12, 12, 12, 12, 12), y: 2}]);
-    const [humArray, setHumArray] = useState([{label: Date, y: ''}]);
-    const [vibArray, setVibArray] = useState([{label: Date, y: ''}]);
-    const [tempArray, setTempArray] = useState([{label: Date, y: ''}]);
-    const [stateArray, setStateArray] = useState([{label: Date, y: ''}]);
+    const [selectedArray, setSelectedArray] = useState([]);
+    const [humArray, setHumArray] = useState([]);
+    const [vibArray, setVibArray] = useState([]);
+    const [tempArray, setTempArray] = useState([]);
+    const [stateArray, setStateArray] = useState([]);
+    const [humVal, setHumVal] = useState('N/A');
+    const [vibVal, setVibVal] = useState('N/A');
+    const [tempVal, setTempVal] = useState('N/A');
+    const [stateVal, setStateVal] = useState('N/A');
+    const [atpVal, setAtpVal] = useState('N/A');
+    const [speedVal, setSpeedVal] = useState('N/A');
+    const [prodVal, setProdVal] = useState('N/A');
+    const [accVal, setAccVal] = useState('N/A');
+    const [rejVal, setRejVal] = useState('N/A');
+    const [oeeVal, setOeeVal] = useState('N/A');
+    const [searchVal, setSearchVal] = useState('');
+    const [prevBtnDisable, setPrevBtnDisable] = useState(true);
+    const [nextBtnDisable, setNextBtnDisable] = useState(true);
 
     const arrayDict = {
         Humidity: humArray,
@@ -30,51 +43,58 @@ const Batches = () => {
         State: stateArray
     };
 
-    const humVal = document.getElementById("humVal");
-    const vibVal = document.getElementById("vibVal");
-    const tempVal = document.getElementById("tempVal");
-    const atpVal = document.getElementById("atpVal");
-    const speedVal = document.getElementById("speedVal");
-    const prodVal = document.getElementById("prodVal");
-    const accVal = document.getElementById("accVal");
-    const rejVal = document.getElementById("rejVal");
-    const oeeVal = document.getElementById("oeeVal");
-
     useEffect(() => {
         fetchBatches();
     }, []);
 
+    const onSearchChanged = (e) => {
+        setSearchVal(e.target.value);
+    }
+
     const search = async () => {
         let checkForHexRegExp = /^[a-f\d]{24}$/i
-        let id = document.getElementById("searchField").value;
-        if (checkForHexRegExp.test(id)) {
-            setSelectedBatchID(id);
-            fetchChosenBatch(id);
+        if (checkForHexRegExp.test(searchVal)) {
+            setSelectedBatchID(searchVal);
+            fetchChosenBatch(searchVal);
+            setSearchVal('');
         } else {
             alert("Please provide a valid ID");
         }
     }
 
     const generatePDF = (e) => {
-        if(e.target.value === "search"){
-            window.location.href = link;
-        } else if(e.target.value === "pages"){
-            window.location.href = "http://localhost:8080/api/batches/" + selectedBatchID + "/pdf"
-        }
+        window.location.href = "http://localhost:8080/api/batches/" + selectedBatchID + "/pdf"
     };
 
-    const fetchBatches = async () => {
-        setPagebatches([]);
-        const url = 'http://localhost:8080/api/batches?page=0&size=10';
-        const data = await fetch(url);
-        const result = await data.json();
-        setPagebatches(result);
-        // this is broken, please fix :)
-        setMaxPage(data.length%10);
-        // this is probably needed
-        setPage(page);
-        setSelectedBatch(result[0]);
-        setSelectedBatchID(result[0].id);
+    const fetchBatches = () => {
+        const url = 'http://localhost:8080/api/batches?page=' + page + '&size=10';
+        fetch(url).then(response => {
+            if (response.status === 200) {
+                response.json().then(result => {
+                    setPagebatches(result);
+
+                    setMaxPage(Math.floor((result.length / 10)) + 1);
+
+                    if (page === maxPage) {
+                        setNextBtnDisable(true);
+                    } else {
+                        setNextBtnDisable(false);
+                    }
+
+                    if (page === 0) {
+                        setPrevBtnDisable(true);
+                    } else {
+                        setPrevBtnDisable(false);
+                    }
+
+                    setSelectedBatch(result[0]);
+                    setSelectedBatchID(result[0].id);
+                });
+            } else {
+                alert("Sorry, but we had trouble getting batches\n" +
+                "Please try again later.")
+            }
+        });
     };
 
     const updatePage = (e) => {
@@ -84,6 +104,7 @@ const Batches = () => {
                 console.log("Current page:", page);
                 console.log("New page:", newPage);
                 fetchBatches(newPage);
+                setPage(newPage);
             } 
         } else if(e.target.value === "next"){
             if(page < maxPage){
@@ -91,10 +112,15 @@ const Batches = () => {
                 console.log("Current page:", page);
                 console.log("New page:", newPage);
                 fetchBatches(newPage);
+                setPage(newPage);
             } 
         }
     };
-    
+
+    function round(num) {
+        var m = Number((num * 100).toPrecision(15));
+        return Math.round(m) / 100 * Math.sign(num);
+    }
 
     const fetchChosenBatch = async (id) => {
         const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
@@ -103,11 +129,17 @@ const Batches = () => {
         
         console.log("Response")
         console.log(response);
-        let start = new Date(response.batch.data[0].timestamp.date.year, response.batch.data[0].timestamp.date.month, response.batch.data[0].timestamp.date.day, response.batch.data[0].timestamp.time.hour, response.batch.data[0].timestamp.time.minute, response.batch.data[0].timestamp.time.second, response.batch.data[0].timestamp.time.nano).getTime / 1000;
 
         response.batch.data.forEach(element => {
-            let curTime = new Date(element.timestamp.date.year, element.timestamp.date.month, element.timestamp.date.day, element.timestamp.time.hour, element.timestamp.time.minute, element.timestamp.time.second, element.timestamp.time.nano).getTime() / 1000;
-            let timestamp = start - curTime;
+            let timestamp = CanvasJS.formatDate(
+                new Date(
+                    element.timestamp.date.year,
+                    element.timestamp.date.month-1,
+                    element.timestamp.date.day,
+                    element.timestamp.time.hour,
+                    element.timestamp.time.minute,
+                    element.timestamp.time.second),
+                    "HH:mm:ss");
             
             humArray.push({label: timestamp, y: element.humidity});
             vibArray.push({label: timestamp, y: element.vibration});
@@ -117,15 +149,16 @@ const Batches = () => {
 
         let lastDataEntry = response.batch.data.length - 1;
 
-        humVal.innerText = 'avg: ' + response.avgHumidity;
-        vibVal.innerText = 'avg: ' + response.avgVibration;
-        tempVal.innerText = 'avg: ' + response.avgTemp;
-        atpVal.innerText = response.batch.amountToProduce;
-        speedVal.innerText = response.batch.desiredSpeed;
-        prodVal.innerText = response.batch.data[lastDataEntry].processed;
-        accVal.innerText = response.batch.data[lastDataEntry].acceptableProducts;
-        rejVal.innerText = response.batch.data[lastDataEntry].defectProducts;
-        oeeVal.innerText = Math.round(response.oee * 100) / 100 + '%';
+        setHumVal(response.avgHumidity);
+        setVibVal(response.avgVibration);
+        setTempVal(response.avgTemp);
+        setStateVal(response.batch.data[lastDataEntry].state)
+        setAtpVal(response.batch.amountToProduce);
+        setSpeedVal(response.batch.desiredSpeed);
+        setProdVal(response.batch.data[lastDataEntry].processed);
+        setAccVal(response.batch.data[lastDataEntry].acceptableProducts);
+        setRejVal(response.batch.data[lastDataEntry].defectProducts);
+        setOeeVal(round(response.oee));
     };
 
     const selectRow = (e) => {
@@ -151,7 +184,7 @@ const Batches = () => {
         axisX: {
             title: "",
             prefix: "",
-            interval: 2
+            interval: 10
         },
         data: [{
             type: "line",
@@ -173,8 +206,8 @@ const Batches = () => {
         <Grid>
             <Row>
                 <Col size={1} padding={10}>
-                    <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
-                    <button style={btnStyle} onClick={search}>Search</button>
+                    <StyledInput onChange={onSearchChanged} placeholder="Batch ID"></StyledInput>
+                    <StyledButton onClick={search}>Search</StyledButton>
                 </Col>
             </Row>
             <Row colwrap="m"> 
@@ -206,9 +239,11 @@ const Batches = () => {
                         </Row>
 
                         <Row align={"baseline"}>
-                            <button style={btnStyle} onClick={updatePage} value="prev">&lt; prev</button>
-                            <p style={{fontWeight: "bold"}}>{page+1} of {maxPage+1}</p>
-                            <button style={btnStyle} onClick={updatePage} value="next">next &gt;</button>
+                            <StyledButton onClick={updatePage} disabled={prevBtnDisable} value="prev">&lt; prev</StyledButton>
+
+                            <p style={{fontWeight: "bold"}}>{page+1} of {maxPage}</p>
+
+                            <StyledButton onClick={updatePage} disabled={nextBtnDisable} value="next">next &gt;</StyledButton>
                         </Row>
                     </Grid>
                 </Col>
@@ -220,113 +255,116 @@ const Batches = () => {
 
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <button id="Humidity" style={valBtn} onClick={setGraphData}>
+                                <StyledValueBtn id="Humidity"  onClick={setGraphData}>
                                     <Row>
                                         <Icon icon="carbon:rain-drop" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         HUMIDITY
                                     </Row>
-                                    <Row id="humVal">
-                                        avg: N/A
+                                    <Row>
+                                        avg: {humVal}
                                     </Row>
-                                </button>
+                                </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <button id="Vibration" style={valBtn} onClick={setGraphData}>
+                                <StyledValueBtn id="Vibration"  onClick={setGraphData}>
                                     <Row>
                                         <Icon icon="ph-vibrate" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         VIBRATION
                                     </Row>
-                                    <Row id="vibVal">
-                                        avg: N/A
+                                    <Row>
+                                        avg: {vibVal}
                                     </Row>
-                                </button>
+                                </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <button id="Temperature" style={valBtn} onClick={setGraphData}>
+                                <StyledValueBtn id="Temperature"  onClick={setGraphData}>
                                     <Row>
                                         <Icon icon="fluent:temperature-24-regular" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         TEMPERATURE
                                     </Row>
-                                    <Row id="tempVal">
-                                        avg: N/A
+                                    <Row>
+                                        avg: {tempVal}
                                     </Row>
-                                </button>
+                                </StyledValueBtn>
                             </Col>
                         </Row>
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <button id="State" style={valBtn} onClick={setGraphData}>
+                                <StyledValueBtn id="State"  onClick={setGraphData}>
                                     <Row>
                                         <Icon icon="mdi-state-machine" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         STATES
                                     </Row>
-                                </button>
+                                    <Row>
+                                        {stateVal}
+                                    </Row>
+                                </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <button style={valBtn}>
+                                <StyledValueBtn >
                                     <Row>
                                         <Icon icon="fa-solid:faucet" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         ATP
                                     </Row>
-                                    <Row id="atpVal">
-                                        N/A
+                                    <Row >
+                                        {atpVal}
                                     </Row>
-                                </button>
+                                </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <button style={valBtn}>
+                                <StyledValueBtn >
                                     <Row>
                                         <Icon icon="cil-speedometer" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         SPEED
                                     </Row>
-                                    <Row id="speedVal">
-                                        N/A
+                                    <Row>
+                                        {speedVal}
                                     </Row>
-                                </button>
+                                </StyledValueBtn>
                             </Col>
                         </Row>
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <button style={valBtn}>
+                                <StyledValueBtn >
                                     <Row>
                                         <Icon icon="jam-bottle" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         PRODUCED
                                     </Row>
-                                    <Row id="prodVal">
-                                        N/A
+                                    <Row>
+                                        {prodVal}
                                     </Row>
-                                </button>
+                                </StyledValueBtn>
                             </Col>
                             
                             <Col size={1}>
-                                <button style={valBtn}>
+                                <StyledValueBtn >
                                     <Row>
                                         <Icon icon="fluent:checkmark-16-regular" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         ACCEPTABLE
                                     </Row>
-                                    <Row id="accVal">
-                                        N/A
+                                    <Row>
+                                        {accVal}
                                     </Row>
-                                </button>
+                                </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <button style={valBtn}>
+                                <StyledValueBtn >
                                     <Row>
                                         <Icon icon="akar-icons:cross" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -334,24 +372,24 @@ const Batches = () => {
                                         REJECTED
                                     </Row>
                                     <Row id="rejVal">
-                                        N/A
+                                        {rejVal}
                                     </Row>
-                                </button>
+                                </StyledValueBtn>
                             </Col>
                         </Row>
                         
                         <Row>
-                            <button style={valBtn}>
+                            <StyledValueBtn >
                                 <Row align={"center"}>
                                     <Icon icon="wi:wind-direction-e" style={{width: "40px", height: "40px"}}/>
                                     <p>OEE:</p>
-                                    <p id="oeeVal">N/A%</p>
+                                    <p>{oeeVal} %</p>
                                 </Row>
-                            </button>
+                            </StyledValueBtn>
                         </Row>
 
                         <Row>
-                            <button value="pages" style={btnStyle} onClick={generatePDF}>Generate Report</button>
+                            <StyledButton onClick={generatePDF}>Generate Report</StyledButton>
                         </Row>
                     </Grid>
                 </Col>
@@ -412,16 +450,6 @@ const Col = styled.div`
     padding: ${(props) => props.padding}px;
 `;
 
-/* const itemStyle = {
-    backgroundColor: "#eee",
-    margin: "10px"
-}
-
-const searchStyle = {
-    marginBottom: "10px"
-} */
-
-
 const Styledtable = styled.table`
 	width: 100%;
 	border-collapse: collapse;
@@ -460,46 +488,33 @@ const Styledbody = styled.tbody`
 	}
 `;
 
+const StyledValueBtn = styled.button`
+    height: 100%;
+    width: 100%;
+`;
 
-const valBtn = {
-    height: "100%",
-    width: "100%"
-}
+const StyledButton = styled.button`
+    background-color: #696969;
+    border: 1px solid #000;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    margin: 0px 5px;
+    text-decoration: none;
 
-const btnStyle = {
-    backgroundColor: "#696969",
-    border: "1px solid #000",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "bold",
-    padding: "8px 12px",
-    margin: "0px 5px",
-    textDecoration: "none"
-}
+    &:disabled {
+        cursor: default;
+    }
+`;
 
-const inputStyle =   {
-    width: "50%",
-    padding: "12px 20px",
-    margin: "8px 0",
-    boxSizing: "border-box",
-    border: "none",
-    borderBottom: "4px solid grey"
-}
-
-const selectStyle = {
-  overflow: "hidden",
-  height: "470px",
-  textAlign: "center", 
-  fontSize: "26px",
-  boxSizing: "border-box",
-  border: "hidden",
-  minWidth: "80%"
-}
-
-const optionStyle = {
-  padding: "8px", 
-  outlineStyle:"solid 1px", 
-  backgroundColor: "#D0D0D0"
-}
+const StyledInput = styled.input`
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 4px solid grey;
+`;
 
 export default Batches;
