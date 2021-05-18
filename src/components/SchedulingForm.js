@@ -77,6 +77,18 @@ export const SchedulingForm = (props) => {
 		return result;
 	}
 
+	const getOptimalSpeed = (selectedProduct) => {
+        let result = "?";
+        props.products.forEach(product => {
+            if (selectedProduct === product.name) {
+                result = product.optimal;
+            }
+
+        });
+
+        return result;
+    }
+
 	return (
 		<Styleddiv>
 			<Styledform>
@@ -89,7 +101,7 @@ export const SchedulingForm = (props) => {
 				</select>
 
 				<input placeholder="Amount" value={amount} onChange={onAmountChanged}/>
-				<input placeholder={"Speed < " + getMaxSpeed(type) } value={speed} onChange={onSpeedChanged}/>
+				<input placeholder={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={onSpeedChanged}/>
 
 				<button onClick={addScheduledBatch} disabled={!(validAmount && validSpeed)}>
 					ADD
@@ -125,7 +137,7 @@ const Styledform = styled.form`
 		width: 25%;
 		height: 40px;
 		border: 0px;
-		padding: 15px;
+		padding-left: 15px;
 		transform: translate(0px, -1px);
 		border-left: 1px solid #efefef;
 		
