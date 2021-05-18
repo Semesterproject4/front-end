@@ -35,7 +35,9 @@ const Batches = () => {
     const [searchVal, setSearchVal] = useState('');
     const [prevBtnDisable, setPrevBtnDisable] = useState(true);
     const [nextBtnDisable, setNextBtnDisable] = useState(true);
-    const [intervalVal, setIntervalVal] = useState(0)
+    const [graphInterval, setGraphInterval] = useState(0);
+    const [isStateGraph, setIsStateGraph] = useState(false);
+    const [machineStates, setMachineStates] = useState([]);
 
     const arrayDict = {
         Humidity: humArray,
@@ -46,7 +48,23 @@ const Batches = () => {
 
     useEffect(() => {
         fetchBatches();
+        getMachineStates();
     }, []);
+
+    const getMachineStates = () => {
+        let url = 'http://localhost:8080/api/machines/states'
+        fetch(url).then(response => {
+            if (response.status === 200) {
+                response.json().then(result => {
+                    setMachineStates(result);
+                });
+            } else {
+                alert("Sorry, but we had trouble getting machine states\n" +
+                "Please try again later.")
+            }
+        });
+
+    }
 
     // TODO highlight the chosen view 
     // TODO save current view in a state, so it doesn't change to humidity ever time
@@ -60,7 +78,7 @@ const Batches = () => {
         setSearchVal(e.target.value);
     }
 
-    const search = async () => {
+    const search = () => {
         let checkForHexRegExp = /^[a-f\d]{24}$/i
         if (checkForHexRegExp.test(searchVal)) {
             setSelectedBatchID(searchVal);
@@ -134,6 +152,7 @@ const Batches = () => {
         tempArray.length = 0;
         stateArray.length = 0;
 
+        // check endpoint in backend
         const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
         fetch(url).then(response => {
             if (response.status === 200) {
@@ -155,7 +174,16 @@ const Batches = () => {
                         humArray.push({label: timestamp, y: element.humidity});
                         vibArray.push({label: timestamp, y: element.vibration});
                         tempArray.push({label: timestamp, y: element.temperature});
-                        stateArray.push({label: timestamp, y: element.state});
+
+                        if (machineStates.states !== 0) {
+                            let stateInt;
+                            machineStates.states.map( state => {
+                                if (state.name.toUpperCase() === element.state) {
+                                    stateInt = state.value;
+                                }
+                            });
+                            stateArray.push({label: timestamp, y: stateInt});
+                        }
                     });
                     
                     let lastDataEntry = result.batch.data.length - 1;
@@ -170,7 +198,7 @@ const Batches = () => {
                     setRejVal(result.batch.data[lastDataEntry].defectProducts);
                     setOeeVal(round(result.oee));
 
-                    setIntervalVal(lastDataEntry / 10);
+                    setGraphInterval(lastDataEntry / 10);
                 });
             }
         });
@@ -181,7 +209,7 @@ const Batches = () => {
         setSelectedBatchID(id);
 	};
 
-    // When state is chosen, make a step graph instead of a line graph
+    // TODO when state is chosen, make a step graph instead of a line graph
     const options = {
         animationEnabled: true,
         exportEnabled: true,
@@ -196,21 +224,46 @@ const Batches = () => {
         axisX: {
             title: "",
             prefix: "",
-            interval: intervalVal
+            interval: graphInterval
         },
         data: [{
-            type: "line",
+            type: isStateGraph ? "stepLine" : "line",
             toolTipContent: "At {label}, value: {y}",
             dataPoints: selectedArray
         }]
-    }
+    };
+
+    /* const stateOptions = {
+        animationEnabled: true,
+        exportEnabled: true,
+        theme: "light2", // "light1", "dark1", "dark2"
+        title:{
+            text: selectedValue
+        },
+        axisY: {
+            title: "Value",
+            suffix: ""
+        },
+        axisX: {
+            title: "",
+            prefix: "",
+            interval: graphInterval
+        },
+        data: [{
+            type: "stepLine",
+            toolTipContent: "At {label}, value: {y}",
+            dataPoints: selectedArray
+        }]
+    }; */
 
     const setGraphData = (e) => {
         let id = e.target.parentNode.id;
+        if (id === 'Humidity') {
+            console.log("Humidity chosen");
+            setIsStateGraph(true);
+        }
         setSelectedValue(id);
         setSelectedArray(arrayDict[id]);
-        console.log(id);
-        console.log(arrayDict[id]);
     };
 
     return (
@@ -413,7 +466,7 @@ const Batches = () => {
                         </Row>
                         {/* Fix this */}
                         <Row minheight={340}>
-                        <CanvasJSChart options = {options}/>
+                        <CanvasJSChart options = {options} />
                         </Row>
                     </Grid>
                 </Col>
