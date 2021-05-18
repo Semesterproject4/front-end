@@ -6,6 +6,8 @@ export const Control = (props) => {
 	const [amount, setAmount] = useState("");
 	const [speed, setSpeed] = useState("");
 	const [products, setProducts] = useState([]);
+	const [validAmount, setValidAmount] = useState(false);
+	const [validSpeed, setValidSpeed] = useState(false);
 
 	useEffect(() => {
 		fetchProducts();
@@ -20,15 +22,44 @@ export const Control = (props) => {
 
     const changeType = (e) => {
 		setType(e.target.value);
+		setSpeed("");
+		setValidSpeed(false);
     }
 
     const changeAmount = (e) => {
-        setAmount(e.target.value);
+		//Check that amount only contains numbers
+		const regex = /^\d+$/;
+		setValidAmount(regex.test(e.target.value));
+
+		setAmount(e.target.value);
     }
 
     const changeSpeed = (e) => {
-        setSpeed(e.target.value);
+		setSpeed(e.target.value);
+
+		//Check that speed only contains numbers
+		const regex = /^\d+$/;
+		setValidSpeed(regex.test(e.target.value));
+
+		//Check that value is within acceptable range
+		if (e.target.value > 0 && e.target.value <= getMaxSpeed(type)) {
+			setValidSpeed(true);
+		} else {
+			setValidSpeed(false);
+		}
     }
+
+	const getMaxSpeed = (selectedProduct) => {
+		let result = "?";
+		products.forEach(product => {
+			if (selectedProduct === product.name) {
+				result = product.speed;
+			}
+
+		});
+
+		return result;
+	}
 
 	const controlMachineButtonPress = (e) => {
         //Created a JSON object with "command: {the command stored on the respective button}"
@@ -89,12 +120,12 @@ export const Control = (props) => {
 					</select>
 
 					<input placeholder = "Amount" value={amount} onChange={changeAmount}></input>
-					<input placeholder = "Speed (%)" value={speed} onChange={changeSpeed}></input>
+					<input placeholder ={"Speed <= " + getMaxSpeed(type)} value={speed} onChange={changeSpeed}></input>
 
 				</Styledform>
 			</div>
 			<div>
-				<Styledbutton value="start"	onClick={controlMachineButtonPress}>
+				<Styledbutton value="start"	onClick={controlMachineButtonPress} disabled={!(validAmount && validSpeed)}>
 					Start
 				</Styledbutton>
 				<Styledbutton value="stop" onClick={controlMachineButtonPress}>
@@ -109,10 +140,10 @@ export const Control = (props) => {
 				<Styledbutton value="abort" onClick={controlMachineButtonPress}>
 					Abort
 				</Styledbutton>
-				<Styledbutton value="start"	onClick={autoBrewPress}>
+				<Styledbutton value="start"	onClick={autoBrewPress} disabled={props.currentMachine.autobrewing}>
 					Start Auto Brew
 				</Styledbutton>
-				<Styledbutton value="stop"	onClick={autoBrewPress}>
+				<Styledbutton value="stop"	onClick={autoBrewPress} disabled={!props.currentMachine.autobrewing}>
 					Stop Auto Brew
 				</Styledbutton>
 			</div>
@@ -121,15 +152,24 @@ export const Control = (props) => {
 }
 
 const Styledbutton = styled.button`
-    background-color: #696969;
-    border: 1px solid #000;
-    display: inline-block;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 8px 12px;
-    margin: 0px 5px;
-    text-decoration: none;
+	font-size: 1.1em;
+	width: 10%;
+	height: 41px;
+	cursor: pointer;
+	background: #7ac8ff;
+	outline: none;
+	border: 1px solid black;
+	color: black;
+	margin: 10px;
+
+	&:hover {
+		background: #99d5ff;
+	}
+
+	&:disabled {
+		background: grey;
+		color: white;
+	}
 `
 
 const Styledform = styled.form`
