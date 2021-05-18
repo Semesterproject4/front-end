@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components';
 import { Icon } from '@iconify/react-with-api';
+import CanvasJSReact from './assets/canvasjs.react';
 
 const Batches = () => {
+
+    var CanvasJS = CanvasJSReact.CanvasJS;
+    var CanvasJSChart = CanvasJSReact.CanvasJSChart;
     
     const [selectedBatchID, setSelectedBatchID] = useState("");
     const [selectedBatch, setSelectedBatch] = useState([]);
@@ -12,11 +16,19 @@ const Batches = () => {
     const [pageBatches, setPagebatches] = useState([]);
     const [page, setPage] = useState(1);
     const [maxPage, setMaxPage] = useState(0);
+    const [selectedValue, setSelectedValue] = useState("Humidity");
+    const [selectedArray, setSelectedArray] = useState([{label: new Date(12, 12, 12, 12, 12, 12), y: 1}, {label: new Date(12, 12, 12, 12, 12, 12), y: 2}]);
+    const [humArray, setHumArray] = useState([{label: Date, y: ''}]);
+    const [vibArray, setVibArray] = useState([{label: Date, y: ''}]);
+    const [tempArray, setTempArray] = useState([{label: Date, y: ''}]);
+    const [stateArray, setStateArray] = useState([{label: Date, y: ''}]);
 
-    const humArray = {x: [], y: []};
-    const vibArray = {x: [], y: []};
-    const tempArray = {x: [], y: []};
-    const stateArray = {x: [], y: []};
+    const arrayDict = {
+        Humidity: humArray,
+        Vibration: vibArray,
+        Temperature: tempArray,
+        State: stateArray
+    };
 
     const humVal = document.getElementById("humVal");
     const vibVal = document.getElementById("vibVal");
@@ -61,6 +73,8 @@ const Batches = () => {
         setMaxPage(data.length%10);
         // this is probably needed
         setPage(page);
+        setSelectedBatch(result[0]);
+        setSelectedBatchID(result[0].id);
     };
 
     const updatePage = (e) => {
@@ -86,21 +100,20 @@ const Batches = () => {
         const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
         const data = await fetch(url);
         const response = await data.json();
-        console.log(response);
         
+        console.log("Response")
+        console.log(response);
+        let start = new Date(response.batch.data[0].timestamp.date.year, response.batch.data[0].timestamp.date.month, response.batch.data[0].timestamp.date.day, response.batch.data[0].timestamp.time.hour, response.batch.data[0].timestamp.time.minute, response.batch.data[0].timestamp.time.second, response.batch.data[0].timestamp.time.nano).getTime / 1000;
+
         response.batch.data.forEach(element => {
-            let timestamp = element.timestamp.time.hour + ":" + element.timestamp.time.minute + ":" + element.timestamp.time.second;
-            console.log(timestamp);
-            humArray.x.push(element.humidity);
-            humArray.y.push(timestamp);
-            vibArray.x.push(element.vibration);
-            vibArray.y.push(timestamp);
-            tempArray.x.push(element.temperature);
-            tempArray.y.push(timestamp);
-            stateArray.x.push(element.state);
-            stateArray.y.push(timestamp);
+            let curTime = new Date(element.timestamp.date.year, element.timestamp.date.month, element.timestamp.date.day, element.timestamp.time.hour, element.timestamp.time.minute, element.timestamp.time.second, element.timestamp.time.nano).getTime() / 1000;
+            let timestamp = start - curTime;
+            
+            humArray.push({label: timestamp, y: element.humidity});
+            vibArray.push({label: timestamp, y: element.vibration});
+            tempArray.push({label: timestamp, y: element.temperature});
+            stateArray.push({label: timestamp, y: element.state});
         });
-        console.log(humArray);
 
         let lastDataEntry = response.batch.data.length - 1;
 
@@ -119,7 +132,42 @@ const Batches = () => {
         let id = e.target.parentNode.getAttribute('id');
         setSelectedBatchID(id); 
         fetchChosenBatch(id);
+        setSelectedValue("Humidity");
+        setSelectedArray(humArray);
 	};
+
+
+    const options = {
+        animationEnabled: true,
+        exportEnabled: true,
+        theme: "light2", // "light1", "dark1", "dark2"
+        title:{
+            text: selectedValue
+        },
+        axisY: {
+            title: "Value",
+            suffix: ""
+        },
+        axisX: {
+            title: "",
+            prefix: "",
+            interval: 2
+        },
+        data: [{
+            type: "line",
+            toolTipContent: "After {x} seconds: {y}",
+            dataPoints: selectedArray
+        }]
+    }
+
+    const setGraphData = (e) => {
+        let id = e.target.parentNode.id;
+        console.log(id);
+        setSelectedValue(id);
+        setSelectedArray(arrayDict[id]);
+        console.log(arrayDict[id]);
+        console.log(selectedArray);
+    };
 
     return (
         <Grid>
@@ -172,7 +220,7 @@ const Batches = () => {
 
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <button style={valBtn} >
+                                <button id="Humidity" style={valBtn} onClick={setGraphData}>
                                     <Row>
                                         <Icon icon="carbon:rain-drop" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -185,7 +233,7 @@ const Batches = () => {
                                 </button>
                             </Col>
                             <Col size={1}>
-                                <button style={valBtn}>
+                                <button id="Vibration" style={valBtn} onClick={setGraphData}>
                                     <Row>
                                         <Icon icon="ph-vibrate" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -198,7 +246,7 @@ const Batches = () => {
                                 </button>
                             </Col>
                             <Col size={1}>
-                                <button style={valBtn}>
+                                <button id="Temperature" style={valBtn} onClick={setGraphData}>
                                     <Row>
                                         <Icon icon="fluent:temperature-24-regular" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -213,7 +261,7 @@ const Batches = () => {
                         </Row>
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <button style={valBtn}>
+                                <button id="State" style={valBtn} onClick={setGraphData}>
                                     <Row>
                                         <Icon icon="mdi-state-machine" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -316,7 +364,7 @@ const Batches = () => {
                         </Row>
                         {/* Fix this */}
                         <Row minheight={340}>
-                            chartSvg
+                        <CanvasJSChart options = {options}/>
                         </Row>
                     </Grid>
                 </Col>
