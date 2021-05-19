@@ -9,16 +9,12 @@ export const Batches = () => {
     var CanvasJSChart = CanvasJSReact.CanvasJSChart;
     
     const [machineStates, setMachineStates] = useState([]);
-    
     const [selectedBatchID, setSelectedBatchID] = useState("");
-
     const [pageBatches, setPagebatches] = useState([]);
     const [page, setPage] = useState(0);
     const [maxPage, setMaxPage] = useState(0);
-
     const [selectedValue, setSelectedValue] = useState("Humidity");
     const [selectedArray, setSelectedArray] = useState([]);
-    
     const [chosenBatch, setChosenBatch] = useState({
         buttonData: {
             avgHumidity: 0,
@@ -37,11 +33,9 @@ export const Batches = () => {
         Temperature: [],
         State: []
     });
-    
     const [searchVal, setSearchVal] = useState('');
     const [prevBtnDisable, setPrevBtnDisable] = useState(true);
     const [nextBtnDisable, setNextBtnDisable] = useState(true);
-    
     const [graphInterval, setGraphInterval] = useState(0);
     const [isStateGraph, setIsStateGraph] = useState(false);
 
@@ -73,7 +67,6 @@ export const Batches = () => {
 
     }
 
-    // TODO highlight the chosen view 
     useEffect(() => {
         fetchChosenBatch(selectedBatchID);
     }, [selectedBatchID]);
@@ -315,7 +308,7 @@ export const Batches = () => {
 
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <StyledValueBtn id="Humidity"  onClick={setGraphDataOnClick}>
+                                <StyledValueBtn id="Humidity"  onClick={setGraphDataOnClick} style={selectedValue === "Humidity" ? {background: "#7ac8ff"} : {} }>
                                     <Row>
                                         <Icon icon="carbon:rain-drop" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -328,7 +321,7 @@ export const Batches = () => {
                                 </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <StyledValueBtn id="Vibration"  onClick={setGraphDataOnClick}>
+                                <StyledValueBtn id="Vibration"  onClick={setGraphDataOnClick} style={selectedValue === "Vibration" ? {background: "#7ac8ff"} : {} }>
                                     <Row>
                                         <Icon icon="ph-vibrate" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -341,7 +334,7 @@ export const Batches = () => {
                                 </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <StyledValueBtn id="Temperature"  onClick={setGraphDataOnClick}>
+                                <StyledValueBtn id="Temperature"  onClick={setGraphDataOnClick} style={selectedValue === "Temperature" ? {background: "#7ac8ff"} : {} }>
                                     <Row>
                                         <Icon icon="fluent:temperature-24-regular" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -356,7 +349,7 @@ export const Batches = () => {
                         </Row>
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <StyledValueBtn id="State"  onClick={setGraphDataOnClick}>
+                                <StyledValueBtn id="State"  onClick={setGraphDataOnClick} style={selectedValue === "State" ? {background: "#7ac8ff"} : {} }>
                                     <Row>
                                         <Icon icon="mdi-state-machine" style={{width: "40px", height: "40px"}}/>
                                     </Row>
