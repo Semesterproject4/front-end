@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components';
-import { Icon } from '@iconify/react-with-api';
 import CanvasJSReact from './assets/canvasjs.react';
+import { BatchList } from './BatchList';
+import { BatchDataGrid } from './BatchDataGrid';
 
 export const Batches = () => {
 
@@ -10,9 +11,6 @@ export const Batches = () => {
     
     const [machineStates, setMachineStates] = useState([]);
     const [selectedBatchID, setSelectedBatchID] = useState("");
-    const [pageBatches, setPagebatches] = useState([]);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [maxPage, setMaxPage] = useState(0);
     const [selectedValue, setSelectedValue] = useState("Humidity");
     const [selectedArray, setSelectedArray] = useState([]);
     const [chosenBatch, setChosenBatch] = useState({
@@ -34,8 +32,6 @@ export const Batches = () => {
         State: []
     });
     const [searchVal, setSearchVal] = useState('');
-    const [prevBtnDisable, setPrevBtnDisable] = useState(true);
-    const [nextBtnDisable, setNextBtnDisable] = useState(true);
     const [graphInterval, setGraphInterval] = useState(0);
     const [isStateGraph, setIsStateGraph] = useState(false);
     
@@ -63,7 +59,6 @@ export const Batches = () => {
     };
 
     useEffect(() => {
-        fetchBatches(0);
         getMachineStates();
     }, []);
 
@@ -84,36 +79,6 @@ export const Batches = () => {
                 });
             } else {
                 alert("Sorry, but we had trouble getting machine states\n" +
-                "Please try again later.")
-            }
-        });
-    };
-    
-    const fetchBatches = (page) => {
-        const url = 'http://localhost:8080/api/batches?page=' + page + '&size=10';
-        fetch(url).then(response => {
-            if (response.status === 200) {
-                response.json().then(result => {
-                    setPagebatches(result.content);
-                    setMaxPage(result.totalPages);
-                    setCurrentPage(result.pageable.pageNumber);
-                    
-                    if (result.pageable.pageNumber + 1 === result.totalPages) {
-                        setNextBtnDisable(true);
-                    } else {
-                        setNextBtnDisable(false);
-                    }
-
-                    if (result.pageable.pageNumber === 0) {
-                        setPrevBtnDisable(true);
-                    } else {
-                        setPrevBtnDisable(false);
-                    }
-
-                    setSelectedBatchID(result.content[0].id);
-                });
-            } else {
-                alert("Sorry, but we had trouble getting batches\n" +
                 "Please try again later.")
             }
         });
@@ -194,10 +159,6 @@ export const Batches = () => {
         });
     };
 
-    const generatePDF = () => {
-        window.location.href = "http://localhost:8080/api/batches/" + selectedBatchID + "/pdf"
-    };
-
     const onSearchChanged = (e) => {
         setSearchVal(e.target.value);
     }
@@ -210,30 +171,6 @@ export const Batches = () => {
         } else {
             alert("Please provide a valid ID");
         }
-    };
-
-    const updatePage = (e) => {
-        if(e.target.value === "prev"){
-            if(currentPage > 0){
-                let newPage = currentPage - 1;
-                fetchBatches(newPage);
-            } 
-        } else if(e.target.value === "next"){
-            if(currentPage < maxPage){
-                let newPage = currentPage + 1;
-                fetchBatches(newPage);
-            }
-        }
-    };
-
-    const selectRow = (e) => {
-        let id = e.target.parentNode.getAttribute('id');
-        setSelectedBatchID(id);
-	};
-    
-    const setGraphDataOnClick = (e) => {
-        let id = e.target.parentNode.id;
-        setGraphData(id);
     };
     
     const setGraphData = (id) => {
@@ -257,196 +194,15 @@ export const Batches = () => {
             </Row>
             <Row colwrap="m"> 
                 <Col size={2} padding={10} backgroundColor={"lightGray"}>
-                    <Grid>
-                        <Row>
-                            <h3>Produced batches</h3>
-                        </Row>
-
-                        <Row>
-                            <Styledtable id="table" onClick={selectRow}>
-				                <Styledthead>
-				                	<tr>
-				                		<th>Product</th>
-				                		<th>Amount</th>
-				                		<th>Production Started</th>
-				                	</tr>
-				                </Styledthead>
-				                <Styledbody>
-				                	{pageBatches.map((element) => (
-				                		<tr id={element.id} key={element.id} style={selectedBatchID === element.id ? {background: "#7ac8ff"} : {fontSize: "1.0em"}}>
-                                            <td>{element.productType}</td>
-				                			<td>{element.amountToProduce}</td>
-				                			<td>{element.data[0].timestamp[0]}-{element.data[0].timestamp[1]}-{element.data[0].timestamp[2]} {element.data[0].timestamp[3]}:{element.data[0].timestamp[4]}</td>
-				                		</tr>
-				                	))}
-				                </Styledbody>
-			                </Styledtable>
-                        </Row>
-
-                        <Row align={"baseline"}>
-                            <StyledButton onClick={updatePage} disabled={prevBtnDisable} value="prev">&lt; prev</StyledButton>
-
-                            <p style={{fontWeight: "bold"}}>{currentPage+1} of {maxPage}</p>
-
-                            <StyledButton onClick={updatePage} disabled={nextBtnDisable} value="next">next &gt;</StyledButton>
-                        </Row>
-                    </Grid>
+                    <BatchList selectedBatchID={selectedBatchID} setSelectedBatchID={setSelectedBatchID}/>
                 </Col>
                 <Col size={3} padding={10} backgroundColor={"lightGray"}>
-                    <Grid>
-                        <Row>
-                            <h3>Batch ID: {selectedBatchID}</h3>
-                        </Row>
-
-                        <Row colwrap="xs">
-                            <Col size={1}>
-                                <StyledValueBtn id="Humidity"  onClick={setGraphDataOnClick} style={selectedValue === "Humidity" ? {background: "#7ac8ff"} : {} }>
-                                    <Row>
-                                        <Icon pointerEvents="none" icon="carbon:rain-drop" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row>
-                                        HUMIDITY
-                                    </Row>
-                                    <Row>
-                                        avg: {chosenBatch.buttonData.avgHumidity}
-                                    </Row>
-                                </StyledValueBtn>
-                            </Col>
-                            <Col size={1}>
-                                <StyledValueBtn id="Vibration"  onClick={setGraphDataOnClick} style={selectedValue === "Vibration" ? {background: "#7ac8ff"} : {} }>
-                                    <Row>
-                                        <Icon pointerEvents="none" icon="ph-vibrate" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row>
-                                        VIBRATION
-                                    </Row>
-                                    <Row>
-                                        avg: {chosenBatch.buttonData.avgVibration}
-                                    </Row>
-                                </StyledValueBtn>
-                            </Col>
-                            <Col size={1}>
-                                <StyledValueBtn id="Temperature"  onClick={setGraphDataOnClick} style={selectedValue === "Temperature" ? {background: "#7ac8ff"} : {} }>
-                                    <Row>
-                                        <Icon pointerEvents="none" icon="fluent:temperature-24-regular" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row >
-                                        TEMPERATURE
-                                    </Row>
-                                    <Row>
-                                        avg: {chosenBatch.buttonData.avgTemperature}
-                                    </Row>
-                                </StyledValueBtn>
-                            </Col>
-                        </Row>
-                        <Row colwrap="xs">
-                            <Col size={1}>
-                                <StyledValueBtn id="State"  onClick={setGraphDataOnClick} style={selectedValue === "State" ? {background: "#7ac8ff"} : {} }>
-                                    <Row>
-                                        <Icon pointerEvents="none" icon="mdi-state-machine" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row>
-                                        STATES
-                                    </Row>
-                                    <Row>
-                                        {chosenBatch.buttonData.state}
-                                    </Row>
-                                </StyledValueBtn>
-                            </Col>
-                            <Col size={1}>
-                                <StyledValueDiv disabled={true}>
-                                    <Row>
-                                        <Icon icon="fa-solid:faucet" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row>
-                                        ATP
-                                    </Row>
-                                    <Row >
-                                        {chosenBatch.buttonData.atp}
-                                    </Row>
-                                </StyledValueDiv>
-                            </Col>
-                            <Col size={1}>
-                                <StyledValueDiv disabled={true}>
-                                    <Row>
-                                        <Icon icon="cil-speedometer" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row>
-                                        SPEED
-                                    </Row>
-                                    <Row>
-                                        {chosenBatch.buttonData.speed}
-                                    </Row>
-                                </StyledValueDiv>
-                            </Col>
-                        </Row>
-                        <Row colwrap="xs">
-                            <Col size={1}>
-                                <StyledValueDiv disabled={true}>
-                                    <Row>
-                                        <Icon icon="jam-bottle" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row>
-                                        PRODUCED
-                                    </Row>
-                                    <Row>
-                                        {chosenBatch.buttonData.produced}
-                                    </Row>
-                                </StyledValueDiv>
-                            </Col>
-                            
-                            <Col size={1}>
-                                <StyledValueDiv disabled={true}>
-                                    <Row>
-                                        <Icon icon="fluent:checkmark-16-regular" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row>
-                                        ACCEPTABLE
-                                    </Row>
-                                    <Row>
-                                        {chosenBatch.buttonData.accepted}
-                                    </Row>
-                                </StyledValueDiv>
-                            </Col>
-                            <Col size={1}>
-                                <StyledValueDiv disabled={true}>
-                                    <Row>
-                                        <Icon icon="akar-icons:cross" style={{width: "40px", height: "40px"}}/>
-                                    </Row>
-                                    <Row>
-                                        REJECTED
-                                    </Row>
-                                    <Row id="rejVal">
-                                        {chosenBatch.buttonData.rejected}
-                                    </Row>
-                                </StyledValueDiv>
-                            </Col>
-                        </Row>
-                        
-                        <Row>
-                            <StyledValueDiv disabled={true}>
-                                <Row align={"center"}>
-                                    <Icon icon="wi:wind-direction-e" style={{width: "40px", height: "40px"}}/>
-                                    <p>OEE:</p>
-                                    <p>{chosenBatch.buttonData.oee} %</p>
-                                </Row>
-                            </StyledValueDiv>
-                        </Row>
-
-                        <Row>
-                            <StyledButton onClick={generatePDF}>Generate Report</StyledButton>
-                        </Row>
-                    </Grid>
+                    <BatchDataGrid  selectedBatchID={selectedBatchID} selectedValue={selectedValue} chosenBatch={chosenBatch} setGraphData={setGraphData}/>
                 </Col>
             </Row>
             <Row minheight={400}>
                 <Col size={1} padding={10} backgroundColor={"lightGray"}>
-                    <Grid>
-                        {/* Fix this */}
-                        <Row minheight={340}>
-                        <CanvasJSChart options = {options} />
-                        </Row>
-                    </Grid>
+                    <CanvasJSChart options = {options} />
                 </Col>
             </Row>
         </Grid>
@@ -492,70 +248,6 @@ const Col = styled.div`
     padding: ${(props) => props.padding}px;
 `;
 
-const Styledtable = styled.table`
-	width: 100%;
-	border-collapse: collapse;
-	background: white;  
-/*   	-webkit-box-shadow: 0px 0px 10px 8px rgba(0, 0, 0, 0.1);
-			box-shadow: 0px 0px 10px 8px rgba(0, 0, 0, 0.1);  */ 
-`;
-
-const Styledthead = styled.thead`
-	& tr {
-		& th {
-			font-size: 1.0em;
-			font-weight: bold;
-			padding: 10px;
-            user-select: none;
-		}
-	}
-`;
-
-const Styledbody = styled.tbody`
-	& tr {
-		cursor: pointer;
-        user-select: none;
-
-		& td {
-			font-size: 1.0em;
-			height: 40px;
-			border-top: 1px solid whitesmoke;
-		}
-		&:nth-child(even) {
-			background-color: #f7f7f7;
-		}
-		&:nth-child(odd) {
-			background-color: #ffffff;
-		}  
-		&:hover {
-			background: #e3e3e3;
-		}
-	}
-`;
-
-const StyledValueBtn = styled.div`
-    height: 100%;
-    width: 100%;
-    padding: 8px 12px;
-    background-color: #f7f7f7;
-    user-select: none;
-    
-    &:hover {
-        cursor: pointer;
-        background-color: #e3e3e3;
-    }
-`;
-
-const StyledValueDiv = styled.div`
-    height: 100%;
-    width: 100%;
-    padding: 8px 12px;
-    background-color: #b7b7b7;
-    user-select: none;
-`;
-
-
-
 const StyledButton = styled.button`
     background-color: #696969;
     border: 1px solid #000;
@@ -579,4 +271,3 @@ const StyledInput = styled.input`
     border: none;
     border-bottom: 4px solid grey;
 `;
-
