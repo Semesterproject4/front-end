@@ -59,7 +59,7 @@ export const BatchDataGrid = (props) => {
                 </Col>
                 <Col size={1}>
                     <DataDiv    icon={"fa-solid:faucet"}
-                                id={'Ammount to produce'}
+                                id={'Amount to produce'}
                                 valueText={''}
                                 value={props.chosenBatch.buttonData.atp}
                     />
