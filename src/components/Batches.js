@@ -38,6 +38,29 @@ export const Batches = () => {
     const [nextBtnDisable, setNextBtnDisable] = useState(true);
     const [graphInterval, setGraphInterval] = useState(0);
     const [isStateGraph, setIsStateGraph] = useState(false);
+    
+    const options = {
+        animationEnabled: true,
+        exportEnabled: true,
+        theme: "light2", // "light1", "dark1", "dark2"
+        title:{
+            text: selectedValue
+        },
+        axisY: {
+            title: "Value",
+            suffix: ""
+        },
+        axisX: {
+            title: "",
+            prefix: "",
+            interval: graphInterval
+        },
+        data: [{
+            type: isStateGraph ? "stepLine" : "line",
+            toolTipContent: "At {label}, value: {y}",
+            dataPoints: selectedArray
+        }]
+    };
 
     useEffect(() => {
         fetchBatches(0);
@@ -64,32 +87,8 @@ export const Batches = () => {
                 "Please try again later.")
             }
         });
-
-    }
-
-    useEffect(() => {
-        fetchChosenBatch(selectedBatchID);
-    }, [selectedBatchID]);
-
-    const onSearchChanged = (e) => {
-        setSearchVal(e.target.value);
-    }
-
-    const search = () => {
-        let checkForHexRegExp = /^[a-f\d]{24}$/i
-        if (checkForHexRegExp.test(searchVal)) {
-            setSelectedBatchID(searchVal);
-            fetchChosenBatch(searchVal);
-            setSearchVal('');
-        } else {
-            alert("Please provide a valid ID");
-        }
-    }
-
-    const generatePDF = () => {
-        window.location.href = "http://localhost:8080/api/batches/" + selectedBatchID + "/pdf"
     };
-
+    
     const fetchBatches = (page) => {
         const url = 'http://localhost:8080/api/batches?page=' + page + '&size=10';
         fetch(url).then(response => {
@@ -103,13 +102,13 @@ export const Batches = () => {
                         setNextBtnDisable(true);
                     } else {
                         setNextBtnDisable(false);
-                    };
-                    
+                    }
+
                     if (result.pageable.pageNumber === 0) {
                         setPrevBtnDisable(true);
                     } else {
                         setPrevBtnDisable(false);
-                    };
+                    }
 
                     setSelectedBatchID(result.content[0].id);
                 });
@@ -118,20 +117,6 @@ export const Batches = () => {
                 "Please try again later.")
             }
         });
-    };
-
-    const updatePage = (e) => {
-        if(e.target.value === "prev"){
-            if(currentPage > 0){
-                let newPage = currentPage - 1;
-                fetchBatches(newPage);
-            } 
-        } else if(e.target.value === "next"){
-            if(currentPage < maxPage){
-                let newPage = currentPage + 1;
-                fetchBatches(newPage);
-            } 
-        }
     };
 
     function round(num) {
@@ -203,41 +188,49 @@ export const Batches = () => {
                     };
 
                     setChosenBatch(data);
-
                     setGraphInterval(lastDataEntry / 10);
                 });
             }
         });
     };
 
+    const generatePDF = () => {
+        window.location.href = "http://localhost:8080/api/batches/" + selectedBatchID + "/pdf"
+    };
+
+    const onSearchChanged = (e) => {
+        setSearchVal(e.target.value);
+    }
+
+    const search = () => {
+        let checkForHexRegExp = /^[a-f\d]{24}$/i
+        if (checkForHexRegExp.test(searchVal)) {
+            setSelectedBatchID(searchVal);
+            fetchChosenBatch(searchVal);
+        } else {
+            alert("Please provide a valid ID");
+        }
+    };
+
+    const updatePage = (e) => {
+        if(e.target.value === "prev"){
+            if(currentPage > 0){
+                let newPage = currentPage - 1;
+                fetchBatches(newPage);
+            } 
+        } else if(e.target.value === "next"){
+            if(currentPage < maxPage){
+                let newPage = currentPage + 1;
+                fetchBatches(newPage);
+            }
+        }
+    };
+
     const selectRow = (e) => {
         let id = e.target.parentNode.getAttribute('id');
         setSelectedBatchID(id);
 	};
-
-    const options = {
-        animationEnabled: true,
-        exportEnabled: true,
-        theme: "light2", // "light1", "dark1", "dark2"
-        title:{
-            text: selectedValue
-        },
-        axisY: {
-            title: "Value",
-            suffix: ""
-        },
-        axisX: {
-            title: "",
-            prefix: "",
-            interval: graphInterval
-        },
-        data: [{
-            type: isStateGraph ? "stepLine" : "line",
-            toolTipContent: "At {label}, value: {y}",
-            dataPoints: selectedArray
-        }]
-    };
-
+    
     const setGraphDataOnClick = (e) => {
         let id = e.target.parentNode.id;
         setGraphData(id);
@@ -253,7 +246,7 @@ export const Batches = () => {
         setSelectedValue(id);
         setSelectedArray(chosenBatch[id]);
     }
-
+    
     return (
         <Grid>
             <Row>
