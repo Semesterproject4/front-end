@@ -3,53 +3,60 @@ import styled from 'styled-components';
 import { Icon } from '@iconify/react-with-api';
 import CanvasJSReact from './assets/canvasjs.react';
 
-const Batches = () => {
+export const Batches = () => {
 
     var CanvasJS = CanvasJSReact.CanvasJS;
     var CanvasJSChart = CanvasJSReact.CanvasJSChart;
     
+    const [machineStates, setMachineStates] = useState([]);
+    
     const [selectedBatchID, setSelectedBatchID] = useState("");
-    const [selectedBatch, setSelectedBatch] = useState([]);
-    const [selectSucess, setSelectSuccess] = useState(false);
-    const [errorMessage, seterrorMessage] = useState("");
-    const [link, setLink] = useState("");
+
     const [pageBatches, setPagebatches] = useState([]);
     const [page, setPage] = useState(0);
     const [maxPage, setMaxPage] = useState(0);
+
     const [selectedValue, setSelectedValue] = useState("Humidity");
     const [selectedArray, setSelectedArray] = useState([]);
-    const [humArray, setHumArray] = useState([]);
-    const [vibArray, setVibArray] = useState([]);
-    const [tempArray, setTempArray] = useState([]);
-    const [stateArray, setStateArray] = useState([]);
-    const [humVal, setHumVal] = useState('N/A');
-    const [vibVal, setVibVal] = useState('N/A');
-    const [tempVal, setTempVal] = useState('N/A');
-    const [stateVal, setStateVal] = useState('N/A');
-    const [atpVal, setAtpVal] = useState('N/A');
-    const [speedVal, setSpeedVal] = useState('N/A');
-    const [prodVal, setProdVal] = useState('N/A');
-    const [accVal, setAccVal] = useState('N/A');
-    const [rejVal, setRejVal] = useState('N/A');
-    const [oeeVal, setOeeVal] = useState('N/A');
+    
+    const [chosenBatch, setChosenBatch] = useState({
+        buttonData: {
+            avgHumidity: 0,
+            avgVibration: 0,
+            avgTemperature: 0,
+            state: 0,
+            atp: 0,
+            speed: 0,
+            produced: 0,
+            accepted: 0,
+            rejected: 0,
+            oee: 0
+        },
+        Humidity: [],
+        Vibration: [],
+        Temperature: [],
+        State: []
+    });
+    
     const [searchVal, setSearchVal] = useState('');
     const [prevBtnDisable, setPrevBtnDisable] = useState(true);
     const [nextBtnDisable, setNextBtnDisable] = useState(true);
+    
     const [graphInterval, setGraphInterval] = useState(0);
     const [isStateGraph, setIsStateGraph] = useState(false);
-    const [machineStates, setMachineStates] = useState([]);
-
-    const arrayDict = {
-        Humidity: humArray,
-        Vibration: vibArray,
-        Temperature: tempArray,
-        State: stateArray
-    };
 
     useEffect(() => {
         fetchBatches();
         getMachineStates();
     }, []);
+
+    useEffect(() => {
+        fetchChosenBatch(selectedBatchID);
+    }, [selectedBatchID]);
+
+    useEffect(() => {
+        setGraphData(selectedValue);
+    }, [chosenBatch]);
 
     const getMachineStates = () => {
         let url = 'http://localhost:8080/api/machines/states'
@@ -67,11 +74,8 @@ const Batches = () => {
     }
 
     // TODO highlight the chosen view 
-    // TODO save current view in a state, so it doesn't change to humidity ever time
     useEffect(() => {
         fetchChosenBatch(selectedBatchID);
-        setSelectedValue("Humidity");
-        setSelectedArray(humArray);
     }, [selectedBatchID]);
 
     const onSearchChanged = (e) => {
@@ -99,7 +103,6 @@ const Batches = () => {
             if (response.status === 200) {
                 response.json().then(result => {
                     setPagebatches(result);
-
                     setMaxPage(Math.floor((result.length / 10)) + 1);
 
                     if (page === maxPage) {
@@ -114,7 +117,6 @@ const Batches = () => {
                         setPrevBtnDisable(false);
                     }
 
-                    setSelectedBatch(result[0]);
                     setSelectedBatchID(result[0].id);
                 });
             } else {
@@ -146,18 +148,20 @@ const Batches = () => {
     };
 
     const fetchChosenBatch = (id) => {
+        chosenBatch.Humidity.length = 0;
+        chosenBatch.Vibration.length = 0;
+        chosenBatch.Temperature.length = 0;
+        chosenBatch.State.length = 0;
 
-        humArray.length = 0;
-        vibArray.length = 0;
-        tempArray.length = 0;
-        stateArray.length = 0;
-
-        // check endpoint in backend
         const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
         fetch(url).then(response => {
             if (response.status === 200) {
                 response.json().then(result => {
 
+                    let tempHumArray = [];
+                    let tempVibArray = [];
+                    let tempTempArray = [];
+                    let tempStateArray = [];
 
                     result.batch.data.forEach(element => {
                         let timestamp = CanvasJS.formatDate(
@@ -171,9 +175,9 @@ const Batches = () => {
                                 "HH:mm:ss"
                             );
                         
-                        humArray.push({label: timestamp, y: element.humidity});
-                        vibArray.push({label: timestamp, y: element.vibration});
-                        tempArray.push({label: timestamp, y: element.temperature});
+                        tempHumArray.push({label: timestamp, y: element.humidity});
+                        tempVibArray.push({label: timestamp, y: element.vibration});
+                        tempTempArray.push({label: timestamp, y: element.temperature});
 
                         if (machineStates.states !== 0) {
                             let stateInt;
@@ -182,21 +186,31 @@ const Batches = () => {
                                     stateInt = state.value;
                                 }
                             });
-                            stateArray.push({label: timestamp, y: stateInt});
+                            tempStateArray.push({label: timestamp, y: stateInt});
                         }
                     });
                     
                     let lastDataEntry = result.batch.data.length - 1;
-                    setHumVal(result.avgHumidity);
-                    setVibVal(result.avgVibration);
-                    setTempVal(result.avgTemp);
-                    setStateVal(result.batch.data[lastDataEntry].state)
-                    setAtpVal(result.batch.amountToProduce);
-                    setSpeedVal(result.batch.desiredSpeed);
-                    setProdVal(result.batch.data[lastDataEntry].processed);
-                    setAccVal(result.batch.data[lastDataEntry].acceptableProducts);
-                    setRejVal(result.batch.data[lastDataEntry].defectProducts);
-                    setOeeVal(round(result.oee));
+                    let data = {
+                        buttonData: {
+                            avgHumidity: result.avgHumidity,
+                            avgVibration: result.avgVibration,
+                            avgTemperature: result.avgTemp,
+                            state: result.batch.data[lastDataEntry].state,
+                            atp: result.batch.amountToProduce,
+                            speed: result.batch.desiredSpeed,
+                            produced: result.batch.data[lastDataEntry].processed,
+                            accepted: result.batch.data[lastDataEntry].acceptableProducts,
+                            rejected: result.batch.data[lastDataEntry].defectProducts,
+                            oee: round(result.oee)
+                        },
+                        Humidity: tempHumArray,
+                        Vibration: tempVibArray,
+                        Temperature: tempTempArray,
+                        State: tempStateArray
+                    };
+
+                    setChosenBatch(data);
 
                     setGraphInterval(lastDataEntry / 10);
                 });
@@ -209,7 +223,6 @@ const Batches = () => {
         setSelectedBatchID(id);
 	};
 
-    // TODO when state is chosen, make a step graph instead of a line graph
     const options = {
         animationEnabled: true,
         exportEnabled: true,
@@ -233,38 +246,21 @@ const Batches = () => {
         }]
     };
 
-    /* const stateOptions = {
-        animationEnabled: true,
-        exportEnabled: true,
-        theme: "light2", // "light1", "dark1", "dark2"
-        title:{
-            text: selectedValue
-        },
-        axisY: {
-            title: "Value",
-            suffix: ""
-        },
-        axisX: {
-            title: "",
-            prefix: "",
-            interval: graphInterval
-        },
-        data: [{
-            type: "stepLine",
-            toolTipContent: "At {label}, value: {y}",
-            dataPoints: selectedArray
-        }]
-    }; */
-
-    const setGraphData = (e) => {
+    const setGraphDataOnClick = (e) => {
         let id = e.target.parentNode.id;
-        if (id === 'Humidity') {
-            console.log("Humidity chosen");
-            setIsStateGraph(true);
-        }
-        setSelectedValue(id);
-        setSelectedArray(arrayDict[id]);
+        setGraphData(id);
     };
+    
+    const setGraphData = (id) => {
+        if (id === 'State') {
+            console.log("State chosen");
+            setIsStateGraph(true);
+        } else {
+            setIsStateGraph(false);
+        };
+        setSelectedValue(id);
+        setSelectedArray(chosenBatch[id]);
+    }
 
     return (
         <Grid>
@@ -319,7 +315,7 @@ const Batches = () => {
 
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <StyledValueBtn id="Humidity"  onClick={setGraphData}>
+                                <StyledValueBtn id="Humidity"  onClick={setGraphDataOnClick}>
                                     <Row>
                                         <Icon icon="carbon:rain-drop" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -327,12 +323,12 @@ const Batches = () => {
                                         HUMIDITY
                                     </Row>
                                     <Row>
-                                        avg: {humVal}
+                                        avg: {chosenBatch.buttonData.avgHumidity}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <StyledValueBtn id="Vibration"  onClick={setGraphData}>
+                                <StyledValueBtn id="Vibration"  onClick={setGraphDataOnClick}>
                                     <Row>
                                         <Icon icon="ph-vibrate" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -340,12 +336,12 @@ const Batches = () => {
                                         VIBRATION
                                     </Row>
                                     <Row>
-                                        avg: {vibVal}
+                                        avg: {chosenBatch.buttonData.avgVibration}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <StyledValueBtn id="Temperature"  onClick={setGraphData}>
+                                <StyledValueBtn id="Temperature"  onClick={setGraphDataOnClick}>
                                     <Row>
                                         <Icon icon="fluent:temperature-24-regular" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -353,14 +349,14 @@ const Batches = () => {
                                         TEMPERATURE
                                     </Row>
                                     <Row>
-                                        avg: {tempVal}
+                                        avg: {chosenBatch.buttonData.avgTemperature}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
                         </Row>
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <StyledValueBtn id="State"  onClick={setGraphData}>
+                                <StyledValueBtn id="State"  onClick={setGraphDataOnClick}>
                                     <Row>
                                         <Icon icon="mdi-state-machine" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -368,7 +364,7 @@ const Batches = () => {
                                         STATES
                                     </Row>
                                     <Row>
-                                        {stateVal}
+                                        {chosenBatch.buttonData.state}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
@@ -381,7 +377,7 @@ const Batches = () => {
                                         ATP
                                     </Row>
                                     <Row >
-                                        {atpVal}
+                                        {chosenBatch.buttonData.atp}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
@@ -394,7 +390,7 @@ const Batches = () => {
                                         SPEED
                                     </Row>
                                     <Row>
-                                        {speedVal}
+                                        {chosenBatch.buttonData.speed}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
@@ -409,7 +405,7 @@ const Batches = () => {
                                         PRODUCED
                                     </Row>
                                     <Row>
-                                        {prodVal}
+                                        {chosenBatch.buttonData.produced}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
@@ -423,7 +419,7 @@ const Batches = () => {
                                         ACCEPTABLE
                                     </Row>
                                     <Row>
-                                        {accVal}
+                                        {chosenBatch.buttonData.accepted}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
@@ -436,7 +432,7 @@ const Batches = () => {
                                         REJECTED
                                     </Row>
                                     <Row id="rejVal">
-                                        {rejVal}
+                                        {chosenBatch.buttonData.rejected}
                                     </Row>
                                 </StyledValueBtn>
                             </Col>
@@ -447,7 +443,7 @@ const Batches = () => {
                                 <Row align={"center"}>
                                     <Icon icon="wi:wind-direction-e" style={{width: "40px", height: "40px"}}/>
                                     <p>OEE:</p>
-                                    <p>{oeeVal} %</p>
+                                    <p>{chosenBatch.buttonData.oee} %</p>
                                 </Row>
                             </StyledValueBtn>
                         </Row>
@@ -555,6 +551,8 @@ const Styledbody = styled.tbody`
 const StyledValueBtn = styled.button`
     height: 100%;
     width: 100%;
+
+    /* &:selected */
 `;
 
 const StyledButton = styled.button`
@@ -580,5 +578,3 @@ const StyledInput = styled.input`
     border: none;
     border-bottom: 4px solid grey;
 `;
-
-export default Batches;
