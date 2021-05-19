@@ -85,9 +85,10 @@ export const MachineList = (props) => {
     }
 
 	//When button is pressed we send the selected machine to App.js
-	const selectMachineHandler = () => {
+	const selectMachineHandler = (e) => {
+		let id = e.target.parentNode.parentNode.parentNode.id;
 		machines.forEach((element) => {
-			if (element.id === selected)
+			if (element.id === id)
 				props.setCurrentMachine(element);
 		})
 	}
@@ -101,7 +102,7 @@ export const MachineList = (props) => {
 			<Styledform>
 				<input placeholder = "opc.tcp://<ip address>:<port>" value = {machineIP} onChange = {ipChanged} ></input>
 				<input placeholder = "Machine name" value = {machineName} onChange = {machineNameChanged} style={{borderLeft: "1px solid #efefef"}}/>
-				<button onClick = {addMachineHandler} disabled = {!(validIP && validName)}>Add machine</button>
+				<button onClick = {addMachineHandler} disabled = {!(validIP && validName)} style={{borderRight: "1px solid #efefef"}}>Add machine</button>
 			</Styledform>
 
 			<Styledtable id="table" onClick={selectRow}>
@@ -110,6 +111,7 @@ export const MachineList = (props) => {
 						<th>Name</th>
 						<th>IP</th>
 						<th>Autobrewing</th>
+						<th></th>
 						<th></th>
 					</tr>
 				</Styledthead>
@@ -125,40 +127,19 @@ export const MachineList = (props) => {
 							</td>
 																															
 							<td style={{textAlign: "right", width: "10px"}} onClick={removeConnection}><Deletebutton> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none" /></Deletebutton></td>
+							<td style={{textAlign: "right", width: "30px"}} onClick={selectMachineHandler}>
+								<Link to="/control">
+									<Connectbutton> CONNECT </Connectbutton>
+								</Link>
+							</td>
 						</tr>
 					))}
 				</Styledbody>
 			</Styledtable>
-
-			<Link to="/control">
-				<Styledbutton onClick={selectMachineHandler} disabled={selected === null ? true : false}>Connect</Styledbutton>
-			</Link>
-
 		</div>
 	);
 }
 
-
-const Styledbutton = styled.button`
-	font-size: 1.1em;
-	width: 60%;
-	height: 41px;
-	cursor: pointer;
-	background: #35b856;
-	outline: none;
-	border: 1px solid black;
-	margin: 5px;
-	color: black;
-
-	&:hover {
-		background: #3dd463;
-	}
-
-	&:disabled {
-		background: grey;
-		color: white;
-	}
-`
 
 const Styledform = styled.form`
 	margin: auto;
@@ -263,5 +244,18 @@ const Deletebutton = styled.button`
 
 	&:hover {
 		background-color: #f44336;		
+	}
+`
+
+const Connectbutton = styled.button`
+	background-color: #38d39f;
+	width: 120px;
+	height: 100%;
+	outline: none;
+	border: none;
+  	cursor: pointer;
+
+	&:hover {
+		background-color: #1af0a8;		
 	}
 `
