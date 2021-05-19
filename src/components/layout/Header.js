@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom'
 import { Icon } from '@iconify/react-with-api';
 import styled from 'styled-components';
 
-
-
 export const Header = (props) => {
 
 	return (
@@ -16,10 +14,10 @@ export const Header = (props) => {
 					<Icon icon="bi:circle-fill" color={props.currentMachine.ip === "none" ? "#b8352c" : "#2cb833"} width="16" style={{transform: "translateX(2px) translateY(4px)"}}/>
 				</span>
 				<div>
-					<Link to="/"><h2>Home</h2></Link>
-					<Link to="/control"><h2>Control</h2></Link>
-					<Link to="/batch"><h2>Batches</h2></Link>
-					<Link to="/schedule"><h2>Schedule</h2></Link>
+					<Link style={{textDecoration: "none"}} to="/"><h2>Home</h2></Link>
+					<Link style={{textDecoration: "none"}} to="/control"><h2>Control</h2></Link>
+					<Link style={{textDecoration: "none"}} to="/batch"><h2>Batches</h2></Link>
+					<Link style={{textDecoration: "none"}} to="/schedule"><h2>Schedule</h2></Link>
 				</div> 
 			</div>
 		</Styledheader>
@@ -48,20 +46,20 @@ const Styledheader = styled.header`
 			margin-left: 0;
 			margin-right: auto;
 			width: 20%;
-			margin-top: 2%;
+			margin-top: 0.2%;
 		}
 
 		& span {
 			display: inline-flex;
 			float: right;
-			margin-top: -3.5%;
+			margin-top: -3.8%;
 		}
 
 		& div {
 			display: flex;
   			justify-content: center;
 			height: 35px;
-			margin-top: -4%;
+			margin-top: -4.2%;
 			float: center;
 
 			& h2 {
