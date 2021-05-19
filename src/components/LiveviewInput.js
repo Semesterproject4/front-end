@@ -83,6 +83,18 @@ export const LiveviewInput = (props) => {
     }
 
 	const controlMachineButtonPress = (e) => {
+		if (e.target.value === "abort") {
+		//Sends a Patch request
+		fetch("http://localhost:8080/api/machines/" + currentMachine.id + "/autobrew/stop", {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            if(response.status === 200){
+				fetchMachine();
+			}
+        })
+		}
+
         //Created a JSON object with "command: {the command stored on the respective button}"
         let data = {
             command: e.target.value
@@ -166,9 +178,6 @@ export const LiveviewInput = (props) => {
 	}
 
 	const disabledAbort = () => {
-		if (currentMachine.autobrewing)
-			return true;
-
 		if (props.state === "ABORTING" || props.state === "ABORTED")
 			return true;
 		return false;
