@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route} from 'react-router-dom';
-import Header from "./components/layout/Header";
+import { Header } from "./components/layout/Header";
 import Batches from "./components/Batches"
 import { Scheduling } from './components/Scheduling'
 import { Control } from './components/Control'
@@ -36,7 +36,7 @@ export class App extends Component {
 			<Router>
 				<div className="App">
 					<Header 
-						machine={this.state.currentMachine}
+						currentMachine={this.state.currentMachine}
 					/>
 					<div className="container">
 						
