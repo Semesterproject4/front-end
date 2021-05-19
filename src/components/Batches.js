@@ -11,7 +11,7 @@ export const Batches = () => {
     const [machineStates, setMachineStates] = useState([]);
     const [selectedBatchID, setSelectedBatchID] = useState("");
     const [pageBatches, setPagebatches] = useState([]);
-    const [page, setPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
     const [maxPage, setMaxPage] = useState(0);
     const [selectedValue, setSelectedValue] = useState("Humidity");
     const [selectedArray, setSelectedArray] = useState([]);
@@ -40,7 +40,7 @@ export const Batches = () => {
     const [isStateGraph, setIsStateGraph] = useState(false);
 
     useEffect(() => {
-        fetchBatches();
+        fetchBatches(0);
         getMachineStates();
     }, []);
 
@@ -86,31 +86,32 @@ export const Batches = () => {
         }
     }
 
-    const generatePDF = (e) => {
+    const generatePDF = () => {
         window.location.href = "http://localhost:8080/api/batches/" + selectedBatchID + "/pdf"
     };
 
-    const fetchBatches = () => {
+    const fetchBatches = (page) => {
         const url = 'http://localhost:8080/api/batches?page=' + page + '&size=10';
         fetch(url).then(response => {
             if (response.status === 200) {
                 response.json().then(result => {
-                    setPagebatches(result);
-                    setMaxPage(Math.floor((result.length / 10)) + 1);
-
-                    if (page === maxPage) {
+                    setPagebatches(result.content);
+                    setMaxPage(result.totalPages);
+                    setCurrentPage(result.pageable.pageNumber);
+                    
+                    if (result.pageable.pageNumber + 1 === result.totalPages) {
                         setNextBtnDisable(true);
                     } else {
                         setNextBtnDisable(false);
-                    }
-
-                    if (page === 0) {
+                    };
+                    
+                    if (result.pageable.pageNumber === 0) {
                         setPrevBtnDisable(true);
                     } else {
                         setPrevBtnDisable(false);
-                    }
+                    };
 
-                    setSelectedBatchID(result[0].id);
+                    setSelectedBatchID(result.content[0].id);
                 });
             } else {
                 alert("Sorry, but we had trouble getting batches\n" +
@@ -121,16 +122,14 @@ export const Batches = () => {
 
     const updatePage = (e) => {
         if(e.target.value === "prev"){
-            if(page > 0){
-                let newPage = page - 1;
+            if(currentPage > 0){
+                let newPage = currentPage - 1;
                 fetchBatches(newPage);
-                setPage(newPage);
             } 
         } else if(e.target.value === "next"){
-            if(page < maxPage){
-                let newPage = page + 1;
+            if(currentPage < maxPage){
+                let newPage = currentPage + 1;
                 fetchBatches(newPage);
-                setPage(newPage);
             } 
         }
     };
@@ -294,7 +293,7 @@ export const Batches = () => {
                         <Row align={"baseline"}>
                             <StyledButton onClick={updatePage} disabled={prevBtnDisable} value="prev">&lt; prev</StyledButton>
 
-                            <p style={{fontWeight: "bold"}}>{page+1} of {maxPage}</p>
+                            <p style={{fontWeight: "bold"}}>{currentPage+1} of {maxPage}</p>
 
                             <StyledButton onClick={updatePage} disabled={nextBtnDisable} value="next">next &gt;</StyledButton>
                         </Row>
