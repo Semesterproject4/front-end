@@ -88,10 +88,6 @@ export const LiveviewInput = (props) => {
 		fetch("http://localhost:8080/api/machines/" + currentMachine.id + "/autobrew/stop", {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'}
-        }).then(response => {
-            if(response.status === 200){
-				fetchMachine();
-			}
         })
 		}
 
@@ -127,6 +123,7 @@ export const LiveviewInput = (props) => {
         //Reset input fields
 		setSpeed("");
 		setAmount("");
+		fetchMachine();
     }
 
 	const autoBrewPress = (e) => {
@@ -216,7 +213,7 @@ export const LiveviewInput = (props) => {
 				<Styledbutton value="abort" onClick={controlMachineButtonPress} disabled={disabledAbort()}>
 					Abort
 				</Styledbutton>
-				<Styledbutton value="start"	onClick={autoBrewPress} disabled={currentMachine.autobrewing}>
+				<Styledbutton value="start"	onClick={autoBrewPress} disabled={currentMachine.autobrewing || props.state === "ABORTED"}>
 					Start Auto Brew
 				</Styledbutton>
 				<Styledbutton value="stop"	onClick={autoBrewPress} disabled={!currentMachine.autobrewing}>
