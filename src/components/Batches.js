@@ -44,10 +44,10 @@ export const Batches = () => {
         exportEnabled: true,
         theme: "light2", // "light1", "dark1", "dark2"
         title:{
-            text: selectedValue
+            text: selectedValue + " over time"
         },
         axisY: {
-            title: "Value",
+            title: "",
             suffix: ""
         },
         axisX: {
@@ -302,7 +302,7 @@ export const Batches = () => {
                             <Col size={1}>
                                 <StyledValueBtn id="Humidity"  onClick={setGraphDataOnClick} style={selectedValue === "Humidity" ? {background: "#7ac8ff"} : {} }>
                                     <Row>
-                                        <Icon icon="carbon:rain-drop" style={{width: "40px", height: "40px"}}/>
+                                        <Icon pointerEvents="none" icon="carbon:rain-drop" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         HUMIDITY
@@ -315,7 +315,7 @@ export const Batches = () => {
                             <Col size={1}>
                                 <StyledValueBtn id="Vibration"  onClick={setGraphDataOnClick} style={selectedValue === "Vibration" ? {background: "#7ac8ff"} : {} }>
                                     <Row>
-                                        <Icon icon="ph-vibrate" style={{width: "40px", height: "40px"}}/>
+                                        <Icon pointerEvents="none" icon="ph-vibrate" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         VIBRATION
@@ -328,9 +328,9 @@ export const Batches = () => {
                             <Col size={1}>
                                 <StyledValueBtn id="Temperature"  onClick={setGraphDataOnClick} style={selectedValue === "Temperature" ? {background: "#7ac8ff"} : {} }>
                                     <Row>
-                                        <Icon icon="fluent:temperature-24-regular" style={{width: "40px", height: "40px"}}/>
+                                        <Icon pointerEvents="none" icon="fluent:temperature-24-regular" style={{width: "40px", height: "40px"}}/>
                                     </Row>
-                                    <Row>
+                                    <Row >
                                         TEMPERATURE
                                     </Row>
                                     <Row>
@@ -343,7 +343,7 @@ export const Batches = () => {
                             <Col size={1}>
                                 <StyledValueBtn id="State"  onClick={setGraphDataOnClick} style={selectedValue === "State" ? {background: "#7ac8ff"} : {} }>
                                     <Row>
-                                        <Icon icon="mdi-state-machine" style={{width: "40px", height: "40px"}}/>
+                                        <Icon pointerEvents="none" icon="mdi-state-machine" style={{width: "40px", height: "40px"}}/>
                                     </Row>
                                     <Row>
                                         STATES
@@ -354,7 +354,7 @@ export const Batches = () => {
                                 </StyledValueBtn>
                             </Col>
                             <Col size={1}>
-                                <StyledValueBtn >
+                                <StyledValueDiv disabled={true}>
                                     <Row>
                                         <Icon icon="fa-solid:faucet" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -364,10 +364,10 @@ export const Batches = () => {
                                     <Row >
                                         {chosenBatch.buttonData.atp}
                                     </Row>
-                                </StyledValueBtn>
+                                </StyledValueDiv>
                             </Col>
                             <Col size={1}>
-                                <StyledValueBtn >
+                                <StyledValueDiv disabled={true}>
                                     <Row>
                                         <Icon icon="cil-speedometer" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -377,12 +377,12 @@ export const Batches = () => {
                                     <Row>
                                         {chosenBatch.buttonData.speed}
                                     </Row>
-                                </StyledValueBtn>
+                                </StyledValueDiv>
                             </Col>
                         </Row>
                         <Row colwrap="xs">
                             <Col size={1}>
-                                <StyledValueBtn >
+                                <StyledValueDiv disabled={true}>
                                     <Row>
                                         <Icon icon="jam-bottle" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -392,11 +392,11 @@ export const Batches = () => {
                                     <Row>
                                         {chosenBatch.buttonData.produced}
                                     </Row>
-                                </StyledValueBtn>
+                                </StyledValueDiv>
                             </Col>
                             
                             <Col size={1}>
-                                <StyledValueBtn >
+                                <StyledValueDiv disabled={true}>
                                     <Row>
                                         <Icon icon="fluent:checkmark-16-regular" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -406,10 +406,10 @@ export const Batches = () => {
                                     <Row>
                                         {chosenBatch.buttonData.accepted}
                                     </Row>
-                                </StyledValueBtn>
+                                </StyledValueDiv>
                             </Col>
                             <Col size={1}>
-                                <StyledValueBtn >
+                                <StyledValueDiv disabled={true}>
                                     <Row>
                                         <Icon icon="akar-icons:cross" style={{width: "40px", height: "40px"}}/>
                                     </Row>
@@ -419,18 +419,18 @@ export const Batches = () => {
                                     <Row id="rejVal">
                                         {chosenBatch.buttonData.rejected}
                                     </Row>
-                                </StyledValueBtn>
+                                </StyledValueDiv>
                             </Col>
                         </Row>
                         
                         <Row>
-                            <StyledValueBtn >
+                            <StyledValueDiv disabled={true}>
                                 <Row align={"center"}>
                                     <Icon icon="wi:wind-direction-e" style={{width: "40px", height: "40px"}}/>
                                     <p>OEE:</p>
                                     <p>{chosenBatch.buttonData.oee} %</p>
                                 </Row>
-                            </StyledValueBtn>
+                            </StyledValueDiv>
                         </Row>
 
                         <Row>
@@ -442,9 +442,6 @@ export const Batches = () => {
             <Row minheight={400}>
                 <Col size={1} padding={10} backgroundColor={"lightGray"}>
                     <Grid>
-                        <Row>
-                            <h3>Graph over data</h3>
-                        </Row>
                         {/* Fix this */}
                         <Row minheight={340}>
                         <CanvasJSChart options = {options} />
@@ -509,6 +506,7 @@ const Styledthead = styled.thead`
 			font-size: 1.0em;
 			font-weight: bold;
 			padding: 10px;
+            user-select: none;
 		}
 	}
 `;
@@ -516,6 +514,8 @@ const Styledthead = styled.thead`
 const Styledbody = styled.tbody`
 	& tr {
 		cursor: pointer;
+        user-select: none;
+
 		& td {
 			font-size: 1.0em;
 			height: 40px;
@@ -528,17 +528,33 @@ const Styledbody = styled.tbody`
 			background-color: #ffffff;
 		}  
 		&:hover {
-			background: #dbf0ff;
+			background: #e3e3e3;
 		}
 	}
 `;
 
-const StyledValueBtn = styled.button`
+const StyledValueBtn = styled.div`
     height: 100%;
     width: 100%;
-
-    /* &:selected */
+    padding: 8px 12px;
+    background-color: #f7f7f7;
+    user-select: none;
+    
+    &:hover {
+        cursor: pointer;
+        background-color: #e3e3e3;
+    }
 `;
+
+const StyledValueDiv = styled.div`
+    height: 100%;
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #b7b7b7;
+    user-select: none;
+`;
+
+
 
 const StyledButton = styled.button`
     background-color: #696969;
@@ -563,3 +579,4 @@ const StyledInput = styled.input`
     border: none;
     border-bottom: 4px solid grey;
 `;
+
