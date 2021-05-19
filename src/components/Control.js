@@ -1,21 +1,76 @@
-import React, { useState }  from 'react'
+import React, { useState, useEffect }  from 'react'
 import styled from 'styled-components';
 
 export const Control = (props) => {
 	const [type, setType] = useState("Pilsner");
 	const [amount, setAmount] = useState("");
 	const [speed, setSpeed] = useState("");
+	const [products, setProducts] = useState([]);
+	const [validAmount, setValidAmount] = useState(false);
+	const [validSpeed, setValidSpeed] = useState(false);
+
+	useEffect(() => {
+		fetchProducts();
+	}, [])
+
+	const fetchProducts = async () => {
+		const url = 'http://localhost:8080/api/machines/products';
+		const data = await fetch(url);
+		const result = await data.json();
+		setProducts(result.products)
+	};
 
     const changeType = (e) => {
 		setType(e.target.value);
+		setSpeed("");
+		setValidSpeed(false);
     }
 
     const changeAmount = (e) => {
-        setAmount(e.target.value);
+		//Check that amount only contains numbers
+		const regex = /^\d+$/;
+		setValidAmount(regex.test(e.target.value));
+
+		setAmount(e.target.value);
     }
 
     const changeSpeed = (e) => {
-        setSpeed(e.target.value);
+		setSpeed(e.target.value);
+
+		//Check that speed only contains numbers
+		const regex = /^\d+$/;
+		setValidSpeed(regex.test(e.target.value));
+
+		//Check that value is within acceptable range
+		if (e.target.value > 0 && e.target.value <= getMaxSpeed(type)) {
+			setValidSpeed(true);
+		} else {
+			setValidSpeed(false);
+		}
+    }
+
+	const getMaxSpeed = (selectedProduct) => {
+		let result = "?";
+		products.forEach(product => {
+			if (selectedProduct === product.name) {
+				result = product.speed;
+			}
+
+		});
+
+		return result;
+	}
+
+	const getOptimalSpeed = (selectedProduct) => {
+        let result = "?";
+        products.forEach(product => {
+            if (selectedProduct === product.name) {
+                result = product.optimal;
+            }
+
+        });
+
+        return result;
     }
 
 	const controlMachineButtonPress = (e) => {
@@ -69,21 +124,20 @@ export const Control = (props) => {
 			<div>
 				<Styledform>
 					<select onChange={changeType}>
-						<option value="pilsner">Pilsner</option>
-						<option value="wheat">Wheat</option>
-						<option value="stout">Stout</option>
-						<option value="ipa">IPA</option>
-						<option value="ale">Ale</option>
-						<option value="alcohol_free">Alcohol Free</option>
+						{products.map((product) => (
+							<option value={product.name} key={product.name}>
+								{product.name} 
+							</option>
+						))}
 					</select>
 
 					<input placeholder = "Amount" value={amount} onChange={changeAmount}></input>
-					<input placeholder = "Speed (%)" value={speed} onChange={changeSpeed}></input>
+					<input placeholder ={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={changeSpeed}></input>
 
 				</Styledform>
 			</div>
 			<div>
-				<Styledbutton value="start"	onClick={controlMachineButtonPress}>
+				<Styledbutton value="start"	onClick={controlMachineButtonPress} disabled={!(validAmount && validSpeed)}>
 					Start
 				</Styledbutton>
 				<Styledbutton value="stop" onClick={controlMachineButtonPress}>
@@ -98,10 +152,10 @@ export const Control = (props) => {
 				<Styledbutton value="abort" onClick={controlMachineButtonPress}>
 					Abort
 				</Styledbutton>
-				<Styledbutton value="start"	onClick={autoBrewPress}>
+				<Styledbutton value="start"	onClick={autoBrewPress} disabled={props.currentMachine.autobrewing}>
 					Start Auto Brew
 				</Styledbutton>
-				<Styledbutton value="stop"	onClick={autoBrewPress}>
+				<Styledbutton value="stop"	onClick={autoBrewPress} disabled={!props.currentMachine.autobrewing}>
 					Stop Auto Brew
 				</Styledbutton>
 			</div>
@@ -110,15 +164,24 @@ export const Control = (props) => {
 }
 
 const Styledbutton = styled.button`
-    background-color: #696969;
-    border: 1px solid #000;
-    display: inline-block;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 8px 12px;
-    margin: 0px 5px;
-    text-decoration: none;
+	font-size: 1.1em;
+	width: 10%;
+	height: 41px;
+	cursor: pointer;
+	background: #7ac8ff;
+	outline: none;
+	border: 1px solid black;
+	color: black;
+	margin: 10px;
+
+	&:hover {
+		background: #99d5ff;
+	}
+
+	&:disabled {
+		background: grey;
+		color: white;
+	}
 `
 
 const Styledform = styled.form`
