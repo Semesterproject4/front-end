@@ -85,9 +85,10 @@ export const MachineList = (props) => {
     }
 
 	//When button is pressed we send the selected machine to App.js
-	const selectMachineHandler = () => {
+	const selectMachineHandler = (e) => {
+		let id = e.target.parentNode.parentNode.parentNode.id;
 		machines.forEach((element) => {
-			if (element.id === selected)
+			if (element.id === id)
 				props.setCurrentMachine(element);
 		})
 	}
@@ -102,9 +103,6 @@ export const MachineList = (props) => {
 				<input placeholder = "opc.tcp://<ip address>:<port>" value = {machineIP} onChange = {ipChanged} ></input>
 				<input placeholder = "Machine name" value = {machineName} onChange = {machineNameChanged} style={{borderLeft: "1px solid #efefef"}}/>
 				<button onClick = {addMachineHandler} disabled = {!(validIP && validName)} style={{borderRight: "1px solid #efefef"}}>Add machine</button>
-				<Link to="/control">
-					<button onClick={selectMachineHandler} disabled={selected === null ? true : false}>Connect</button>
-				</Link>
 			</Styledform>
 
 			<Styledtable id="table" onClick={selectRow}>
@@ -113,6 +111,7 @@ export const MachineList = (props) => {
 						<th>Name</th>
 						<th>IP</th>
 						<th>Autobrewing</th>
+						<th></th>
 						<th></th>
 					</tr>
 				</Styledthead>
@@ -128,6 +127,11 @@ export const MachineList = (props) => {
 							</td>
 																															
 							<td style={{textAlign: "right", width: "10px"}} onClick={removeConnection}><Deletebutton> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none" /></Deletebutton></td>
+							<td style={{textAlign: "right", width: "30px"}} onClick={selectMachineHandler}>
+								<Link to="/control">
+									<Connectbutton> CONNECT </Connectbutton>
+								</Link>
+							</td>
 						</tr>
 					))}
 				</Styledbody>
@@ -145,7 +149,7 @@ const Styledform = styled.form`
 
 	& input {
 		font-size: 1.1em;
-		width: 30%;
+		width: 40%;
 		height: 40px;
 		border: 0px;
 		padding: 15px;
@@ -240,5 +244,18 @@ const Deletebutton = styled.button`
 
 	&:hover {
 		background-color: #f44336;		
+	}
+`
+
+const Connectbutton = styled.button`
+	background-color: #38d39f;
+	width: 120px;
+	height: 100%;
+	outline: none;
+	border: none;
+  	cursor: pointer;
+
+	&:hover {
+		background-color: #1af0a8;		
 	}
 `
