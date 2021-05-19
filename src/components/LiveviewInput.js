@@ -122,7 +122,9 @@ export const LiveviewInput = (props) => {
 
         //Reset input fields
 		setSpeed("");
+		setValidSpeed(false);
 		setAmount("");
+		setValidAmount(false);
 		fetchMachine();
     }
 
