@@ -1,113 +1,117 @@
-import React, { Component } from 'react'
+import React, {useState, useEffect} from 'react'
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
 import { Icon } from '@iconify/react-with-api';
 
+export const Liveview = (props) => {
+	const [stompClient, setStompClient] = useState(null);
+	const [socket, setSocket] = useState(null);
+	const [livedata, setLivedata] = 
+		useState({
+			acceptableProducts: 0,
+			defectProducts: 0,
+			processed: 0,
+			temperature: 0,
+			vibration: 0,
+			humidity: 0,
+			normSpeed: 0,
+			maintenance: 0,
+			state: "STOPPED",
+			ingredients: {
+				barley: 35000,
+				hops: 35000,
+				malt: 35000,
+				wheat: 35000,
+				yeast: 35000
+			},
+			timestamp: null,
+		});
+
+	useEffect(() => {
+		let newSocket = new SockJS('http://localhost:8080/websocket');
+		setSocket(newSocket);
+	}, [props.currentMachine.ip])
+
+	useEffect(() => {
+		if (socket !== null) {
+			let newStompClient = Stomp.over(socket);
+			newStompClient.debug = null;
+			setStompClient(newStompClient);
+		}
+	}, [socket])
+
+	useEffect(() => {
+		if (stompClient !== null) {
+			
+			connect();
+		}
+		return () => {
+            disconnect();
+        };
+	}, [stompClient])
 
 
-export class Liveview extends Component {
+	const connect = () => {
 
-    state = { 
-        machineID: "",
-        socket: null,
-        stompClient: null, 
-        livedata: {
-            barley: 0,
-            hops: 0,
-            malt: 0,
-            wheat: 0,
-            yeast: 0,
-            maintenance: 0,
-            humidity: 0.0,
-            vibration: 0.0,
-            temperature: 0.0,
-            amountToProduce: 0,
-            totalProducts: 0,
-            acceptableProducts: 0,
-            defectProducts: 0,
-            batchID: 0,
-            speed: 0,
-            beerType: 0,
-            currentState: 0
-        }
-    };
-
-    componentDidMount() {
-        //Initialize socket and stomp client.
-        let socket = new SockJS('http://localhost:8080/websocket')
-        let stompClient = Stomp.over(socket);
-        stompClient.debug = null
-
-        //Save machineID -> then socket -> then stomp client -> then connect
-        this.setState({machineID: this.props.currentMachine.id}, () => 
-            this.setState({socket: socket}, () => 
-                this.setState({stompClient: stompClient}, () => 
-                    this.connect(this.state.machineID, this.storeData)
-                )
-            )
-        );
-    }
-    componentWillUnmount(){
-        console.log("Leaving liveview")
-        let socket = this.state.socket;
-        socket.close();
-    }
-
-    
-    //Connect method that subscribes to the live data
-    connect(id, func) {
-        let stompClient = this.state.stompClient
-        //Start connection
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({}, (frame) => {
             //Send initial info to backend to start the sending of data
-            stompClient.send("/app/connect/" + id, {}, JSON.stringify({'name': "filler value"})); 
-            //Start subscription (when we get data we send random data which triggers the backend to send data)
+            stompClient.send("/app/connect/" + props.currentMachine.id, {}, JSON.stringify({'name': "filler value"})); 
+			//Start subscription (when we get data we send random data which triggers the backend to send data)
             //Essentially we just loop through this forever.
-            stompClient.subscribe('/topic/' + id + '/livedata', function (data) {
+            stompClient.subscribe('/topic/' + props.currentMachine.id + '/livedata', (data) => {
                 //Send new data to function storeData
-                func(data.body)
+				storeData(data.body);
+				
                 //Send random info to backend to "trigger" it to send a few set of data.
-                stompClient.send("/app/connect/" + id, {}, JSON.stringify({'name': "filler value"})); 
+                stompClient.send("/app/connect/" + props.currentMachine.id, {}, JSON.stringify({'name': "filler value"})); 
             });
         });
-    }
+	}
 
-    //Convert data to json and store it in the state variable
-    storeData = (data) => {
+	const disconnect = () => {
+		if (socket !== null) {
+			socket.close();
+		} 
+		if (stompClient !== null) {
+			stompClient.disconnect();
+		}
+	}
+
+	const storeData = (data) => {
         let json = JSON.parse(data);
-        console.log(json)
-        if (this.state.livedata !== json)
-            this.setState({livedata: json});
+        if (livedata !== json) {
+			setLivedata(json);
+		}
     }
 
-    render() {
-        return (
-            <div>
+	return (
+		<div>
+			<div>
                 <div style={{display: "inline-flex", align: "center", padding: "10px"}}>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="barley">Barley</label> <br></br>
-                        <progress id="barley" value={this.state.livedata.barley} max="35000"></progress> <br></br>
-                        <p>{this.state.livedata.barley}</p>
+                        <label>Barley</label> <br></br>
+                        <progress id="barley" value={livedata.ingredients.barley} max="35000"></progress> <br></br>
+                        <p>{livedata.ingredients.barley}</p>
                     </div>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="hops">Hops</label> <br></br>
-                        <progress id="hops" value={this.state.livedata.hops} max="35000"></progress> <br></br>
-                        {this.state.livedata.hops}
+                        <label>Hops</label> <br></br>
+                        <progress id="hops" value={livedata.ingredients.hops} max="35000"></progress> <br></br>
+                        {livedata.ingredients.hops}
                     </div>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="malt">Malt</label> <br></br>
-                        <progress id="malt" value={this.state.livedata.malt} max="35000"></progress> <br></br>
-                        {this.state.livedata.malt}
+                        <label>Malt</label> <br></br>
+                        <progress id="malt" value={livedata.ingredients.malt} max="35000"></progress> <br></br>
+                        {livedata.ingredients.malt}
                     </div>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="wheat">Wheat</label> <br></br>
-                        <progress id="wheat" value={this.state.livedata.wheat} max="35000"></progress> <br></br>
-                        {this.state.livedata.wheat}
+                        <label>Wheat</label> <br></br>
+                        <progress id="wheat" value={livedata.ingredients.wheat} max="35000"></progress> <br></br>
+                        {livedata.ingredients.wheat}
                     </div>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="yeast">Yeast</label> <br></br>
-                        <progress id="yeast" value={this.state.livedata.yeast} max="35000"></progress> <br></br>
-                        {this.state.livedata.yeast}
+                        <label>Yeast</label> <br></br>
+                        <progress id="yeast" value={livedata.ingredients.yeast} max="35000"></progress> <br></br>
+                        {livedata.ingredients.yeast}
                     </div>
                 </div>
                 <br></br>
@@ -115,29 +119,29 @@ export class Liveview extends Component {
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="carbon:rain-drop" style={{width: "80px", height: "80px"}}/>
                         <p>Humidity</p>
-                        <h1>{Math.round(this.state.livedata.humidity)}</h1>
+                        <h1>{Math.round(livedata.humidity)}</h1>
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="ph-vibrate" style={{width: "80px", height: "80px"}}/>
                         <p>Vibration</p>
-                        <h1>{Math.round(this.state.livedata.vibration)}</h1>
+                        <h1>{Math.round(livedata.vibration)}</h1>
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="fluent:temperature-24-regular" style={{width: "80px", height: "80px"}}/>
                         <p>Temperature</p>
-                        <h1>{Math.round(this.state.livedata.temperature)}</h1>
+                        <h1>{Math.round(livedata.temperature)}</h1>
                     </div>
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="cil-speedometer" style={{width: "80px", height: "80px"}}/>
                         <p>Speed</p>
-                        <h1>{Math.round(this.state.livedata.speed)}%</h1>
+                        <h1>{Math.round(livedata.normSpeed)}%</h1>
                     </div>
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="mdi-state-machine" style={{width: "80px", height: "80px"}}/>
                         <p>State</p>
-                        <h1>{this.state.livedata.currentState}</h1>
+                        <h1>{livedata.state}</h1>
                     </div>
                 </div>
                 <br></br>
@@ -145,38 +149,38 @@ export class Liveview extends Component {
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="jam-bottle-f" style={{width: "80px", height: "80px"}}/>
                         <p>Beer type</p>
-                        <h1>{this.state.livedata.beerType}</h1>
+                        <h1>missing data</h1>
                     </div>
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="bx-bxs-flag-checkered" style={{width: "80px", height: "80px"}}/> <br></br>
                         <p>Amount to produce</p>
-                        <h1>{this.state.livedata.amountToProduce}</h1>
+                        <h1>data missing</h1>
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="jam-bottle" style={{width: "80px", height: "80px"}}/>
                         <p>Produced</p>
-                        <h1>{this.state.livedata.totalProducts}</h1>
+                        <h1>{livedata.processed}</h1>
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="fluent:checkmark-16-regular" style={{width: "80px", height: "80px"}}/>
                         <p>Acceptable</p>
-                        <h1>{this.state.livedata.acceptableProducts}</h1>
+                        <h1>{livedata.acceptableProducts}</h1>
                     </div>
 
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="akar-icons:cross" style={{width: "80px", height: "80px"}}/>
                         <p>Defect</p>
-                        <h1>{this.state.livedata.defectProducts}</h1>
+                        <h1>{livedata.defectProducts}</h1>
                     </div>
                 </div>
                 <br></br>
                 <div style={{display: "inline-flex", align: "center", padding: "10px"}}>
                     <div style={{padding: "0px 10px"}}>
-                        <label for="maintenance">Maintenance</label> <br></br>
-                        <progress id="maintenance" style={{width: "680px", height: "40px"}} value={this.state.livedata.maintenance} max="30000"></progress> <br></br>
-                        <p>{(this.state.livedata.maintenance / 30000 * 100).toFixed(1)}%</p>
+                        <label>Maintenance</label> <br></br>
+                        <progress id="maintenance" style={{width: "680px", height: "40px"}} value={livedata.maintenance} max="30000"></progress> <br></br>
+                        <p>{(livedata.maintenance / 30000 * 100).toFixed(1)}%</p>
                     </div>
                 </div>
                 <br></br>
@@ -184,14 +188,11 @@ export class Liveview extends Component {
                     <div style={{padding: "0px 25px"}}>
                         <Icon icon="mdi-archive" style={{width: "80px", height: "80px"}}/>
                         <p>Batch id</p>
-                        <h1>{this.state.livedata.batchID}</h1>
+                        <h1>unknown data</h1>
                     </div>
                 </div>
             </div>
-        )
-    }
+		</div>
+	);
+
 }
-
-
-
-export default Liveview
