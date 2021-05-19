@@ -129,25 +129,46 @@ export const LiveviewInput = (props) => {
         })
 	}
 
+	const disabledStart = () => {
+		if (currentMachine.autobrewing)
+			return true;
+
+		if (validAmount && validSpeed && props.state === "IDLE")
+			return false;
+		return true;
+	}
+
 	const disabledStop = () => {
+		if (currentMachine.autobrewing)
+			return true;
+
 		if (props.state === "STOPPED" || props.state === "STOPPING" || props.state === "CLEARING" || props.state === "ABORTING" || props.state === "ABORTED")
 			return true;
 		return false;
 	}
 
 	const disabledReset = () => {
+		if (currentMachine.autobrewing)
+			return true;
+
 		if (props.state === "COMPLETE" || props.state === "STOPPED")
 			return false;
 		return true;
 	}
 
 	const disabledClear = () => {
+		if (currentMachine.autobrewing)
+			return true;
+
 		if (props.state === "ABORTED")
 			return false;
 		return true;
 	}
 
 	const disabledAbort = () => {
+		if (currentMachine.autobrewing)
+			return true;
+
 		if (props.state === "ABORTING" || props.state === "ABORTED")
 			return true;
 		return false;
@@ -171,7 +192,7 @@ export const LiveviewInput = (props) => {
 				</Styledform>
 			</div>
 			<div>
-				<Styledbutton value="start"	onClick={controlMachineButtonPress} disabled={!(validAmount && validSpeed && props.state === "IDLE")}>
+				<Styledbutton value="start"	onClick={controlMachineButtonPress} disabled={disabledStart()}>
 					Start
 				</Styledbutton>
 				<Styledbutton value="stop" onClick={controlMachineButtonPress} disabled={disabledStop()}>
