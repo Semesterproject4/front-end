@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Icon } from '@iconify/react-with-api';
 import styled from 'styled-components';
+import { LiveDataItem } from './LiveDataItem';
+import { LiveDataProgress } from './LiveDataProgress';
 
 export const LiveviewData = (props) => {
 	const [batchData, setBatchData] = useState(
@@ -38,150 +39,71 @@ export const LiveviewData = (props) => {
 		<div>
 			<Grid>
 				<Row style={{gap: "2%"}}>
-					<Col style={{width: "15%"}}>
-						<div>
-							<Icon icon="jam-bottle-f" style={{width: "60px", height: "60px"}}/>	
-							<p>Type</p>
-							<h1>{batchData.productType.charAt(0) + batchData.productType.slice(1).toLowerCase().replace('_', '\u00A0')}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="jam-bottle-f" text="Type" data={batchData.productType.charAt(0) + batchData.productType.slice(1).toLowerCase().replace('_', '\u00A0')} />
 					</Col>
-					<Col style={{width: "15%"}}>
-						<div>
-						<Icon icon="cil-speedometer" style={{width: "60px", height: "60px"}}/>	
-							<p>Speed</p>
-							<h1>{batchData.desiredSpeed}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="cil-speedometer" text="Speed" data={batchData.desiredSpeed} />
 					</Col>
-					<Col style={{width: "32%"}}>
-						<div>
-						<Icon icon="mdi-archive" style={{width: "60px", height: "60px"}}/>
-							<p>Batch ID</p>
-							<h1>{batchData.id}</h1>
-						</div>
+					{/* <Col size={2} padding={5}>
+						<LiveDataItem icon="mdi-archive" text="Batch ID" data={batchData.id} />
+					</Col> */}
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="bx-bxs-flag-checkered" text="Amount" data={batchData.amountToProduce} />
 					</Col>
-					<Col style={{width: "15%"}}>
-						<div>
-						<Icon icon="bx-bxs-flag-checkered" style={{width: "60px", height: "60px"}}/>
-							<p>Amount to produce</p>
-							<h1>{batchData.amountToProduce}</h1>
-						</div>
-					</Col>
-					<Col style={{width: "15%"}}>
-						<div>
-							<Icon icon="mdi-state-machine" style={{width: "60px", height: "60px"}}/>
-							<p>State</p>
-							<h1>{props.livedata.state}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="mdi-state-machine" text="State" data={props.livedata.state} />
 					</Col>
 				</Row>
-
+	
 				<Row style={{gap: "2%"}}>
-					<Col style={{width: "15%"}}>
-						<div style={{padding: "0px 25px"}}>
-							<Icon icon="carbon:rain-drop" style={{width: "60px", height: "60px"}}/>
-							<p>Humidity</p>
-							<h1>{Math.round(props.livedata.humidity)}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="carbon:rain-drop" text="Humidity" data={Math.round(props.livedata.humidity)} />
 					</Col>
-					<Col style={{width: "15%"}}>
-						<div style={{padding: "0px 25px"}}>
-                        	<Icon icon="ph-vibrate" style={{width: "60px", height: "60px"}}/>
-							<p>Vibration</p>
-							<h1>{Math.round(props.livedata.vibration)}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="ph-vibrate" text="Vibration" data={Math.round(props.livedata.vibration)} />
 					</Col>
-					<Col style={{width: "15%"}}>
-						<div style={{padding: "0px 25px"}}>
-							<Icon icon="fluent:temperature-24-regular" style={{width: "60px", height: "60px"}}/>
-							<p>Temperature</p>
-							<h1>{Math.round(props.livedata.temperature)}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="fluent:temperature-24-regular" text="Temperature" data={Math.round(props.livedata.temperature)} />
 					</Col>
-					<Col style={{width: "15%"}}>
-						<div style={{padding: "0px 25px"}}>
-							<Icon icon="jam-bottle" style={{width: "60px", height: "60px"}}/>
-							<p>Produced</p>
-							<h1>{props.livedata.processed}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="jam-bottle" text="Produced" data={props.livedata.processed} />
 					</Col>
-					<Col style={{width: "15%"}}>
-						<div style={{padding: "0px 25px"}}>
-							<Icon icon="fluent:checkmark-16-regular" style={{width: "60px", height: "60px"}}/>
-							<p>Acceptable</p>
-							<h1>{props.livedata.acceptableProducts}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="fluent:checkmark-16-regular" text="Acceptable" data={props.livedata.acceptableProducts} />
 					</Col>
-					<Col style={{width: "15%"}}>
-						<div style={{padding: "0px 25px"}}>
-							<Icon icon="akar-icons:cross" style={{width: "60px", height: "60px"}}/>
-							<p>Defect</p>
-							<h1>{props.livedata.defectProducts}</h1>
-						</div>
+					<Col size={1} padding={5}>
+						<LiveDataItem icon="akar-icons:cross" text="Defect" data={props.livedata.defectProducts} />
 					</Col>
 				</Row>
 
 				<Row>
-					<Col style={{width: "100%"}}>
-						<div style={{width: "100%", display: "inline-flex", align: "center"}}>
-							<div style={{width: "100%"}}>
-								<label>Maintenance</label><br></br>
-								<Bar id="maintenance" style={{marginTop: "-10px"}} value={props.livedata.maintenance} max="30000"></Bar><br></br>
-								<p style={{marginTop: "-25px"}}>{(props.livedata.maintenance / 30000 * 100).toFixed(1)}%</p>
-							</div>
-						</div>
+					<h1>
+						Batch ID: {batchData.id}
+					</h1>
+				</Row>
+
+				<Row>
+					<Col size={1}>
+						<LiveDataProgress label="Maintenance" data={props.livedata.maintenance} max="30000" text={(props.livedata.maintenance / 30000 * 100).toFixed(1) + "%"} />
 					</Col>
 				</Row>
 
 				<Row style={{gap: "2.5%"}}>
-
-					<Col style={{width: "18%", height: "50px"}}>
-						<div style={{width: "100%", display: "inline-flex", align: "center"}}>
-							<div style={{width: "100%"}}>
-								<label>Barley</label><br></br>
-								<Bar style={{marginTop: "-10px"}} value={props.livedata.ingredients.barley} max="35000"></Bar><br></br>
-								<p style={{marginTop: "-25px"}}>{props.livedata.ingredients.barley}</p>
-							</div>
-						</div>
+					<Col size={1}l>
+						<LiveDataProgress label="Barley" data={props.livedata.ingredients.barley} max="35000" text={props.livedata.ingredients.barley} />
 					</Col>
-
-					<Col style={{width: "18%", height: "50px"}}>
-						<div style={{width: "100%", display: "inline-flex", align: "center"}}>
-							<div style={{width: "100%"}}>
-								<label>Hops</label><br></br>
-								<Bar style={{marginTop: "-10px"}} value={props.livedata.ingredients.hops} max="35000"></Bar><br></br>
-								<p style={{marginTop: "-25px"}}>{props.livedata.ingredients.hops}</p>
-							</div>
-						</div>
+					<Col size={1}>
+						<LiveDataProgress label="Hops" data={props.livedata.ingredients.hops} max="35000" text={props.livedata.ingredients.hops} />
 					</Col>
-
-					<Col style={{width: "18%", height: "50px"}}>
-						<div style={{width: "100%", display: "inline-flex", align: "center"}}>
-							<div style={{width: "100%"}}>
-								<label>Malt</label><br></br>
-								<Bar style={{marginTop: "-10px"}} value={props.livedata.ingredients.malt} max="35000"></Bar><br></br>
-								<p style={{marginTop: "-25px"}}>{props.livedata.ingredients.malt}</p>
-							</div>
-						</div>
+					<Col size={1}>
+						<LiveDataProgress label="Malt" data={props.livedata.ingredients.malt} max="35000" text={props.livedata.ingredients.malt} />
 					</Col>
-					
-					<Col style={{width: "18%", height: "50px"}}>
-						<div style={{width: "100%", display: "inline-flex", align: "center"}}>
-							<div style={{width: "100%"}}>
-								<label>Wheat</label><br></br>
-								<Bar style={{marginTop: "-10px"}} value={props.livedata.ingredients.wheat} max="35000"></Bar><br></br>
-								<p style={{marginTop: "-25px"}}>{props.livedata.ingredients.wheat}</p>
-							</div>
-						</div>
+					<Col size={1}>
+						<LiveDataProgress label="Wheat" data={props.livedata.ingredients.wheat} max="35000" text={props.livedata.ingredients.wheat} />
 					</Col>
-
-					<Col style={{width: "18%", height: "50px"}}>
-						<div style={{width: "100%", display: "inline-flex", align: "center"}}>
-							<div style={{width: "100%"}}>
-								<label>Yeast</label><br></br>
-								<Bar style={{marginTop: "-10px"}} value={props.livedata.ingredients.yeast} max="35000"></Bar><br></br>
-								<p style={{marginTop: "-25px"}}>{props.livedata.ingredients.yeast}</p>
-							</div>
-						</div>
+					<Col size={1}>
+						<LiveDataProgress label="Yeast" data={props.livedata.ingredients.yeast} max="35000" text={props.livedata.ingredients.yeast} />
 					</Col>
 				</Row>
 			</Grid>
@@ -192,25 +114,6 @@ export const LiveviewData = (props) => {
 
 }
 
-
-const Bar = styled.progress`
-	-webkit-appearance: none;
-	appearance: none;
-	width: 100%;
-	height: 20px;
-	border: 1px solid black;
-	border-radius: 20px;
-
-	&::-webkit-progress-value {
-		background: #7AC8FF;
-		border-radius: 20px;
-	}
-
-   	&::-webkit-progress-bar {
-		background: #EFEFEF;
-		border-radius: 20px;
-	}
-`
 
 const Grid = styled.div`
     display: flex;
