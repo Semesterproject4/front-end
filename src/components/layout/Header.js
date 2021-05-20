@@ -1,48 +1,72 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
+import { Icon } from '@iconify/react-with-api';
+import styled from 'styled-components';
 
-export class Header extends Component {
+export const Header = (props) => {
 
-    //Styling for the text displaying currentMachine
-    textStyle = () => {
-        return {
-            color: this.props.machine.ip === "none" ? 
-            "#fc0303" : "#00bf06"
-        }
-    }
-    
-    //Contains the HTML that is to be rendered for the user
-    render() {
-        return (
-            <header style={headerStyle}>
-                <h1>BrewMES</h1>
-                <p>Current machine: <i style={this.textStyle()}>{this.props.machine.ip}</i></p>
-                <div>
-                    <Link style={linkStyle} to="/">Home</Link>
-                    <Link style={linkStyle} to="/control">Control</Link>
-                    <Link style={linkStyle} to="/batch">Batches</Link>
-                    <Link style={linkStyle} to="/schedule">Schedule</Link>
-                </div>
-
-            </header>
-        )
-    }
+	return (
+		<Styledheader>
+			<div>
+				<h1>BrewMES</h1>
+				<span>
+					{props.currentMachine.ip === "none" ? "Disconnected": props.currentMachine.name}
+					<Icon icon="bi:circle-fill" color={props.currentMachine.ip === "none" ? "#b8352c" : "#2cb833"} width="16" style={{transform: "translateX(2px) translateY(4px)"}}/>
+				</span>
+				<div>
+					<Link style={{textDecoration: "none"}} to="/"><h2>Home</h2></Link>
+					<Link style={{textDecoration: "none"}} to="/control"><h2>Control</h2></Link>
+					<Link style={{textDecoration: "none"}} to="/batch"><h2>Batches</h2></Link>
+					<Link style={{textDecoration: "none"}} to="/schedule"><h2>Schedule</h2></Link>
+				</div> 
+			</div>
+		</Styledheader>
+	);
 }
 
-//Styling for the header
-const headerStyle = {
-    background: "#444444",
-    color: "#ffffff",
-    textAlign: "center",
-}
-
-//Styling of the links
-const linkStyle = {
-    color: "#ffffff",
-    textDecoration: "underline",
-    padding: "15px"
-}
-
-export default Header
 
 
+const Styledheader = styled.header`
+	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);  
+    background: #fff;
+    color: #000;
+	position: relative;
+	height: 10%;
+	border-bottom: 1px solid black;
+
+	& div {
+		width: 55%;
+		margin: auto;
+		height: 60px;
+		padding: 5px;
+
+		& h1 {
+			text-align: left;
+			margin-left: 0;
+			margin-right: auto;
+			width: 20%;
+			margin-top: 0.2%;
+		}
+
+		& span {
+			display: inline-flex;
+			float: right;
+			margin-top: -3.8%;
+		}
+
+		& div {
+			display: flex;
+  			justify-content: center;
+			height: 35px;
+			margin-top: -4.2%;
+			float: center;
+
+			& h2 {
+				font-size: 1.0em;
+				padding: 0px 8px;
+				color: #000;
+			}
+		}
+	}
+`
