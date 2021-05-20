@@ -96,7 +96,7 @@ export const BatchDataGrid = (props) => {
                 </Col>
             </Row>
             <Row>
-                <StyledValueDiv disabled={true}>
+                <StyledValueDiv>
                     <Row align={"center"}>
                         <Icon icon="wi:wind-direction-e" style={{ width: "40px", height: "40px" }} />
                         <p>OEE:</p>
@@ -152,9 +152,9 @@ const Col = styled.div`
 `;
 
 const StyledValueDiv = styled.div`
-    height: 100%;
+    height: 72px;
     width: 100%;
-    padding: 8px 12px;
+    padding: 16px 10px;
     background-color: #b7b7b7;
     user-select: none;
 `;
