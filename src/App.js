@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route} from 'react-router-dom';
 import Header from "./components/layout/Header";
-import Batches from "./components/Batches"
+import { Batches } from "./components/Batches"
 import { Scheduling } from './components/Scheduling'
 import { Liveview } from './components/Liveview'
 import { MachineList } from './components/MachineList'
