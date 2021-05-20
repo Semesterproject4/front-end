@@ -13,7 +13,7 @@ export const Header = (props) => {
 						<h1>BrewMES</h1>
 					</HeaderCol>
 					<HeaderCol size={2}>
-						<Row justify="center">
+						<Row justify="center" gap={12}>
 							<StyledLink to="/">Home</StyledLink>
 							<StyledLink to="/control">Control</StyledLink>
 							<StyledLink to="/batch">Batches</StyledLink>

@@ -36,13 +36,13 @@ export class App extends Component {
 		return (
 			<Router>
 				<Grid width={100}>
-					<Col size={1}>
+					<Col size={1} justify="center">
 						<Row justify="center">
 							<Header 
 								currentMachine={this.state.currentMachine}
 							/>
 						</Row>
-						<Row width={70} align="center" justify="center">
+						<Row justify="center">
 							<Container>
 								
 								<Route exact path="/" render={props => (
@@ -86,6 +86,8 @@ export const Container = Styled.div`
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	width: 70%;
+	padding-top: 20px;
 
 	@media only screen and (max-width: 1500px) {
 		width: 80%;

@@ -14,6 +14,7 @@ export const Col = Styled.div`
     background-color: ${(props) => props.backgroundColor};
     padding: ${(props) => props.padding}px;
     align-items: ${(props) => props.align};
+    align-content: ${(props) => props.alignContent};
     justify-content: ${(props) => props.justify};
     order: ${(props) => props.order};
 	text-align: ${(props) => props.textAlign};
@@ -22,7 +23,7 @@ export const Col = Styled.div`
 export const Row = Styled.div`
 	display: flex;
 	flex-flow: nowrap;
-	gap: 12px;
+	gap: ${(props) => props.gap}px;
 	justify-content: ${(props) => props.justify};
 	${(props) => props.colwrap && media[props.colwrap](`
 	    flex-flow: column wrap;

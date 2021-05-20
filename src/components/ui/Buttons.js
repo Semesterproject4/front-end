@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 export const FormButton = styled.button`
 	font-size: 1.1em;
-	width: 20%;
-	height: 41px;
+	width: 100%;
+	height: 40px;
 	background: #7ac8ff;
 	outline: none;
 	border: none;
@@ -16,5 +16,6 @@ export const FormButton = styled.button`
 	&:disabled {
 		background: grey;
 		color: white;
+		cursor: default;
 	}
 `
