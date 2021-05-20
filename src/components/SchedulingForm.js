@@ -1,5 +1,7 @@
 import React, { useState, useEffect }  from 'react'
 import styled from 'styled-components';
+import { Form } from './ui/Forms';
+import { FormButton } from './ui/Buttons';
  
 export const SchedulingForm = (props) => {
 	const [amount, setAmount] = useState('');
@@ -94,7 +96,7 @@ export const SchedulingForm = (props) => {
 
 	return (
 		<Styleddiv>
-			<Styledform>
+			<Form>
 				<select onChange={changeBeerType}>
 					{props.products.map((product) => (
 						<option value={product.name} key={product.name}>
@@ -106,10 +108,10 @@ export const SchedulingForm = (props) => {
 				<input placeholder="Amount" value={amount} onChange={onAmountChanged}/>
 				<input placeholder={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={onSpeedChanged}/>
 
-				<button onClick={addScheduledBatch} disabled={!(validAmount && validSpeed)}>
+				<FormButton onClick={addScheduledBatch} disabled={!(validAmount && validSpeed)}>
 					ADD
-				</button>           
-			</Styledform>
+				</FormButton>           
+			</Form>
 		</Styleddiv>
 	);
 }
@@ -117,57 +119,4 @@ export const SchedulingForm = (props) => {
 const Styleddiv = styled.div`
   	margin: auto;
 	width: 60%;
-`
-
-const Styledform = styled.form`
-	
-	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
-		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);  
-
-	& select {
-		font-size: 1.1em;
-		width: 30%;
-		height: 40px;
-		padding: 0px 15px 0px 15px;
-		border: 0px;
-
-		&:focus {
-			outline: none;
-		}
-	}
-	& input {
-		font-size: 1.1em;
-		width: 25%;
-		height: 40px;
-		border: 0px;
-		padding-left: 15px;
-		transform: translate(0px, -1px);
-		border-left: 1px solid #efefef;
-		
-
-		&:focus {
-			outline: none;
-			border-bottom: 1px solid #7ac8ff;
-		}
-	}
-
-	& button {
-		font-size: 1.1em;
-		width: 20%;
-		height: 41px;
-		cursor: pointer;
-		background: #7ac8ff;
-		outline: none;
-		border: none;
-		color: black;
-
-		&:hover {
-			background: #99d5ff;
-		}
-
-		&:disabled {
-			background: grey;
-			color: white;
-		}
-	}
 `
