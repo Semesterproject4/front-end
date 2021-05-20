@@ -45,9 +45,6 @@ export const LiveviewData = (props) => {
 					<Col size={1} padding={5}>
 						<LiveDataItem icon="cil-speedometer" text="Speed" data={batchData.desiredSpeed} />
 					</Col>
-					{/* <Col size={2} padding={5}>
-						<LiveDataItem icon="mdi-archive" text="Batch ID" data={batchData.id} />
-					</Col> */}
 					<Col size={1} padding={5}>
 						<LiveDataItem icon="bx-bxs-flag-checkered" text="Amount" data={batchData.amountToProduce} />
 					</Col>
