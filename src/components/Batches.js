@@ -1,198 +1,273 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
+import styled from 'styled-components';
+import CanvasJSReact from './assets/canvasjs.react';
+import { BatchList } from './BatchList';
+import { BatchDataGrid } from './BatchDataGrid';
 
-export class Batches extends Component {
-    //State contains all the variables of the class
+export const Batches = () => {
+
+    var CanvasJS = CanvasJSReact.CanvasJS;
+    var CanvasJSChart = CanvasJSReact.CanvasJSChart;
     
-
-    state = {
-        searchVar: "",
-        selectedBatchID: "",
-        selectSuccess: false,
-        errorMessage: "",
-        link: "",
-        Pagebatches: [],
-        selectedBatch: "", 
-        page: 0,
-        maxpage: 0,
+    const [machineStates, setMachineStates] = useState([]);
+    const [selectedBatchID, setSelectedBatchID] = useState("");
+    const [selectedValue, setSelectedValue] = useState("Humidity");
+    const [selectedArray, setSelectedArray] = useState([]);
+    const [chosenBatch, setChosenBatch] = useState({
+        buttonData: {
+            avgHumidity: 0,
+            avgVibration: 0,
+            avgTemperature: 0,
+            state: 0,
+            atp: 0,
+            speed: 0,
+            produced: 0,
+            accepted: 0,
+            rejected: 0,
+            oee: 0
+        },
+        Humidity: [],
+        Vibration: [],
+        Temperature: [],
+        State: []
+    });
+    const [searchVal, setSearchVal] = useState('');
+    const [graphInterval, setGraphInterval] = useState(0);
+    const [isStateGraph, setIsStateGraph] = useState(false);
+    
+    const options = {
+        animationEnabled: true,
+        exportEnabled: true,
+        theme: "light2", // "light1", "dark1", "dark2"
+        title:{
+            text: selectedValue + " over time"
+        },
+        axisY: {
+            title: "",
+            suffix: ""
+        },
+        axisX: {
+            title: "",
+            prefix: "",
+            interval: graphInterval
+        },
+        data: [{
+            type: isStateGraph ? "stepLine" : "line",
+            toolTipContent: "At {label}, value: {y}",
+            dataPoints: selectedArray
+        }]
     };
 
-    componentDidMount(){
-        this.getBatches(0);
-    }
+    useEffect(() => {
+        getMachineStates();
+    }, []);
 
-    search = (e) => {
-		//This request is likely not correct but would be removed by the dashboard view anyways so that method remains unchanged for now
-        fetch('http://localhost:8080/api/batches/' + document.getElementById("searchField").value) 
-            .then(response => {
-                let json = response.json();
-                json.then(data => {
-                    if (response.status === 200) {
-                        this.setState({ selectedBatchID: data.id, selectSuccess: true, errorMessage: "", link: "http://localhost:8080/api/batches/" + data.id + "/pdf"});
-                    } else if (response.status === 400) {
-                        this.setState({ selectedBatchID: "", selectSuccess: false, errorMessage: "Something went wrong, have you entered a valid UUID?", link: "" })
-                    } else {
-                        this.setState({ selectedBatchID: "", selectSuccess: false, errorMessage: data.response, link: "" });
-                    }
-                })
+    useEffect(() => {
+        fetchChosenBatch(selectedBatchID);
+    }, [selectedBatchID]);
+
+    useEffect(() => {
+        setGraphData(selectedValue);
+    }, [chosenBatch]);
+
+    const getMachineStates = () => {
+        let url = 'http://localhost:8080/api/machines/states'
+        fetch(url).then(response => {
+            if (response.status === 200) {
+                response.json().then(result => {
+                    setMachineStates(result);
+                });
+            } else {
+                alert("Sorry, but we had trouble getting machine states\n" +
+                "Please try again later.")
             }
-            )
-
-    }
-
-    change = (e) => {
-        this.setState({selectedBatch: e.target.value
-    });
-}
-
-
-
-    generatePDF = (e) => {
-        if(e.target.value === "search"){
-            window.location.href = this.state.link;
-        } else if(e.target.value === "pages"){
-            window.location.href = "http://localhost:8080/api/batches/" + this.state.selectedBatch + "/pdf"
-        }
-    }
-
-    getBatches(page){
-        this.setState({
-            Pagebatches: []
         });
-        console.log("fetching.. ", this.state.page)
-        this.setState({page: page})
-        fetch('http://localhost:8080/api/batches?page=' + page +'&size=10')
-        .then(response => {
-            if(response.status === 200){
-                response.json().then(data => {
-                    data.batches.forEach(element => {
-                        this.setState({
-                            Pagebatches: [...this.state.Pagebatches, {id:element.id}]
-                        });
+    };
+
+    function round(num) {
+        var m = Number((num * 100).toPrecision(15));
+        return Math.round(m) / 100 * Math.sign(num);
+    };
+
+    const fetchChosenBatch = (id) => {
+        chosenBatch.Humidity.length = 0;
+        chosenBatch.Vibration.length = 0;
+        chosenBatch.Temperature.length = 0;
+        chosenBatch.State.length = 0;
+
+        const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
+        fetch(url).then(response => {
+            if (response.status === 200) {
+                response.json().then(result => {
+
+                    let tempHumArray = [];
+                    let tempVibArray = [];
+                    let tempTempArray = [];
+                    let tempStateArray = [];
+
+                    result.batch.data.forEach(element => {
+                        let timestamp = CanvasJS.formatDate(
+                            new Date(
+                                element.timestamp.date.year,
+                                element.timestamp.date.month-1,
+                                element.timestamp.date.day,
+                                element.timestamp.time.hour,
+                                element.timestamp.time.minute,
+                                element.timestamp.time.second),
+                                "HH:mm:ss"
+                            );
+                        
+                        tempHumArray.push({label: timestamp, y: element.humidity});
+                        tempVibArray.push({label: timestamp, y: element.vibration});
+                        tempTempArray.push({label: timestamp, y: element.temperature});
+
+                        if (machineStates.states !== 0) {
+                            let stateInt;
+                            machineStates.states.map( state => {
+                                if (state.name.toUpperCase() === element.state) {
+                                    stateInt = state.value;
+                                }
+                            });
+                            tempStateArray.push({label: timestamp, y: stateInt});
+                        }
                     });
-                    this.setState({maxpage: data.totalPages-1});
-                })
-            }
-        })
-    }
-
-
-    updatePage = (e) => {
-        if(e.target.value === "prev"){
-            if(this.state.page > 0){
-                let page = this.state.page - 1;
-                console.log("Current page:", this.state.page);
-                console.log("New page:", page);
-                this.getBatches(page);
-            } 
-        } else if(e.target.value === "next"){
-            if(this.state.page < this.state.maxpage){
-                let page = this.state.page + 1;
-                console.log("Current page:", this.state.page);
-                console.log("New page:", page);
-                this.getBatches(page);
-            } 
-        }
-    }
-
-    render() {
-        let selectedBatchMessage;
-        let errorMessage;
-
-        if (this.state.selectSuccess) {
-            selectedBatchMessage = <p>Selected batch: {this.state.selectedBatchID}</p>
-            errorMessage = <p></p>
-        } else {
-            selectedBatchMessage = <p>Selected batch: none</p>
-            errorMessage = <p style={{ color: "red" }}>{this.state.errorMessage}</p>
-        }
-
-        return (
-            <div>
-                <div>
-                    {selectedBatchMessage}
-                </div>
-                <div>
-                    {errorMessage}
-                </div>
-                <div>
-                    <input style={inputStyle} id="searchField" placeholder="Batch ID"></input>
-                    <button style={btnStyle} onClick={this.search}>Search</button>
-                </div>
-                <div style={{padding:"10px"}}>
-                    {this.state.selectSuccess === true ? (<button value="search" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>) : (<p></p>)}
-                </div>
-                <div style={{margin:"25px"}}>
-                <div>
-                    <h1>All batches</h1>
-                </div>
-                    <select 
-                            size="10"
-                            onChange={this.change}
-                            style={selectStyle}
-                    >
-                        {this.state.Pagebatches.map((option) => (
-                            <option style={optionStyle}
-                                value={option.id}
-                                key={option.id}
-                            >
-                                {option.id} 
-                            </option>
-                            
-                        ))}
-                    </select>
-                    <div>
-                        <p style={{fontSize: "20px"}}>{this.state.page+1} of {this.state.maxpage+1}</p>
-                    </div>
-                    <div>
-                        <button style={btnStyle} onClick={this.updatePage} value="prev">&lt;prev</button>
-                        <button style={btnStyle} onClick={this.updatePage} value="next">&gt;next</button>
                     
-                    </div>
-                    <div style={{padding:"10px"}}>
-                        <button value="pages" style={btnStyle} onClick={this.generatePDF}>Generate Report</button>
-                    </div>
-                </div>
-            </div>
-        )
+                    let lastDataEntry = result.batch.data.length - 1;
+                    let data = {
+                        buttonData: {
+                            avgHumidity: result.avgHumidity,
+                            avgVibration: result.avgVibration,
+                            avgTemperature: result.avgTemp,
+                            state: result.batch.data[lastDataEntry].state,
+                            atp: result.batch.amountToProduce,
+                            speed: result.batch.desiredSpeed,
+                            produced: result.batch.data[lastDataEntry].processed,
+                            accepted: result.batch.data[lastDataEntry].acceptableProducts,
+                            rejected: result.batch.data[lastDataEntry].defectProducts,
+                            oee: round(result.oee)
+                        },
+                        Humidity: tempHumArray,
+                        Vibration: tempVibArray,
+                        Temperature: tempTempArray,
+                        State: tempStateArray
+                    };
+
+                    setChosenBatch(data);
+                    setGraphInterval(lastDataEntry / 10);
+                });
+            }
+        });
+    };
+
+    const onSearchChanged = (e) => {
+        setSearchVal(e.target.value);
     }
+
+    const search = () => {
+        let checkForHexRegExp = /^[a-f\d]{24}$/i
+        if (checkForHexRegExp.test(searchVal)) {
+            setSelectedBatchID(searchVal);
+            fetchChosenBatch(searchVal);
+        } else {
+            alert("Please provide a valid ID");
+        }
+    };
+    
+    const setGraphData = (id) => {
+        if (id === 'State') {
+            console.log("State chosen");
+            setIsStateGraph(true);
+        } else {
+            setIsStateGraph(false);
+        };
+        setSelectedValue(id);
+        setSelectedArray(chosenBatch[id]);
+    }
+    
+    return (
+        <Grid>
+            <Row>
+                <Col size={1} padding={10}>
+                    <StyledInput onChange={onSearchChanged} placeholder="Batch ID"></StyledInput>
+                    <StyledButton onClick={search}>Search</StyledButton>
+                </Col>
+            </Row>
+            <Row colwrap="m"> 
+                <Col size={2} padding={10} backgroundColor={"lightGray"}>
+                    <BatchList selectedBatchID={selectedBatchID} setSelectedBatchID={setSelectedBatchID}/>
+                </Col>
+                <Col size={3} padding={10} backgroundColor={"lightGray"}>
+                    <BatchDataGrid  selectedBatchID={selectedBatchID} selectedValue={selectedValue} chosenBatch={chosenBatch} setGraphData={setGraphData}/>
+                </Col>
+            </Row>
+            <Row minheight={400}>
+                <Col size={1} padding={10} backgroundColor={"lightGray"}>
+                    <CanvasJSChart options = {options} />
+                </Col>
+            </Row>
+        </Grid>
+    );
+};
+
+const Grid = styled.div`
+    display: flex;
+    flex-flow: column wrap;
+    gap: 12px;
+    justify-content: center ${(props) => props.justify};
+    width: ${(props) => props.width}%;
+`;
+
+const media = {
+    xs: (styles) => `
+        @media only screen and (max-width: 480px) {
+            ${styles}
+        }
+    `,
+    m: (styles) => `
+        @media only screen and (max-width: 1024px) {
+            ${styles}
+        }
+    `,
 }
-const btnStyle = {
-    backgroundColor: "#696969",
-    border: "1px solid #000",
-    display: "inline-block",
-    color: "#fff",
-    fontSize: "14px",
-    fontWeight: "bold",
-    padding: "8px 12px",
-    margin: "0px 5px",
-    textDecoration: "none",
-    width: "10%"
-}
 
+const Row = styled.div`
+    display: flex;
+    flex-flow: wrap;
+    gap: 12px;
+    justify-content: center ${(props) => props.justify};
+    ${(props) => props.colwrap && media[props.colwrap](`
+        flex-flow: column wrap;
+    `)};
+    min-height: ${(props) => props.minheight}px;
+    align-items: ${(props) => props.align};
+`;
 
-const inputStyle =   {
-    width: "50%",
-    padding: "12px 20px",
-    margin: "8px 0",
-    boxSizing: "border-box",
-    border: "none",
-    borderBottom: "4px solid grey"
-  }
+const Col = styled.div`
+    flex: ${(props) => props.size};
+    background-color: ${(props) => props.backgroundColor};
+    padding: ${(props) => props.padding}px;
+`;
 
-  const selectStyle = {
-    overflow: "hidden",
-    height: "470px", 
-    width: "60%",
-    textAlign: "center", 
-    fontSize: "26px",
-    boxSizing: "border-box",
-    border: "hidden"
-  }
+const StyledButton = styled.button`
+    background-color: #696969;
+    border: 1px solid #000;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    margin: 0px 5px;
+    text-decoration: none;
 
-  const optionStyle = {
-    padding: "8px", 
-    outlineStyle:"solid 1px", 
-    backgroundColor: "#D0D0D0"
-  }
+    &:disabled {
+        cursor: default;
+    }
+`;
 
-export default Batches
+const StyledInput = styled.input`
+    width: 50%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 4px solid grey;
+`;
