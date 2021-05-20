@@ -18,6 +18,13 @@ export const LiveviewData = (props) => {
 		fetchBatch();
 	}, [props.currentMachine.id])
 
+	useEffect(() => {
+		if (props.livedata.state === "EXECUTE") {
+			fetchBatch();
+		}
+	}, [props.livedata.state])
+
+
 
 	const fetchBatch = async () => {
 		const url = 'http://localhost:8080/api/batches/newest-batch-of-machine/' + props.currentMachine.id;
