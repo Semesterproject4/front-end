@@ -68,7 +68,8 @@ export const BatchList = (props) => {
                 <h3>Produced batches</h3>
             </Row>
 
-            <Row>
+            {/* harcoded max height - bad practice */}
+            <Row height={443}>
                 <Styledtable id="table" onClick={selectRow}>
                     <Styledthead>
                         <tr>
@@ -130,6 +131,7 @@ const Row = styled.div`
         flex-flow: column wrap;
     `)};
     min-height: ${(props) => props.minheight}px;
+    height: ${(props) => props.height}px;
     align-items: ${(props) => props.align};
 `;
 
@@ -141,6 +143,7 @@ const Col = styled.div`
 
 const Styledtable = styled.table`
 	width: 100%;
+    height: 444px;
 	border-collapse: collapse;
 	background: white;  
 /*   	-webkit-box-shadow: 0px 0px 10px 8px rgba(0, 0, 0, 0.1);
@@ -166,7 +169,6 @@ const Styledbody = styled.tbody`
 		& td {
 			font-size: 1.0em;
 			height: 40px;
-			border-top: 1px solid whitesmoke;
 		}
 		&:nth-child(even) {
 			background-color: #f7f7f7;
