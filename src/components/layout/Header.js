@@ -1,23 +1,24 @@
 import React from 'react';
 import Styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '@iconify/react-with-api';
 import { Grid, Row, HeaderCol, HeaderRow } from '../ui/Grid';
 
 export const Header = (props) => {
 	return (
 		<StyledHeader>
+			{console.log(useLocation().pathname)}
 			<Grid align="center">
-				<HeaderRow width={70} align="baseline" justify="center">
+				<HeaderRow align="baseline" justify="center">
 					<HeaderCol size={1} textAlign="left">
 						<h1>BrewMES</h1>
 					</HeaderCol>
 					<HeaderCol size={2}>
-						<Row justify="center" gap={12}>
-							<StyledLink to="/">Home</StyledLink>
-							<StyledLink to="/control">Control</StyledLink>
-							<StyledLink to="/batch">Batches</StyledLink>
-							<StyledLink to="/schedule">Schedule</StyledLink>
+						<Row justify="center" gap={20}>
+							<StyledLink to="/" style={{textDecoration: useLocation().pathname === "/" ? "underline" : "none"}}>Home</StyledLink>
+							<StyledLink disabled to={props.currentMachine.ip === "none" ? "#" : "/control"} style={{textDecoration: useLocation().pathname === "/control" ? "underline" : "none"}}>Control</StyledLink>
+							<StyledLink to="/batch" style={{textDecoration: useLocation().pathname === "/batch" ? "underline" : "none"}}>Batches</StyledLink>
+							<StyledLink to="/schedule" style={{textDecoration: useLocation().pathname === "/schedule" ? "underline" : "none"}}>Schedule</StyledLink>
 						</Row>
 					</HeaderCol>
 					<HeaderCol size={1} align="flex-end" textAlign="right">
@@ -25,7 +26,7 @@ export const Header = (props) => {
 							{props.currentMachine.ip === "none" ? "Disconnected": props.currentMachine.name}
 							{' '}
 							<Icon 	icon="bi:circle-fill" 
-									color={props.currentMachine.ip === "none" ? "#b8352c" : "#2cb833"}
+									color={props.currentMachine.ip === "none" ? "#E84855" : "#7CDF87"}
 									width="16"
 									style={{transform: "translateX(0px) translateY(2px)"}}
 							/>

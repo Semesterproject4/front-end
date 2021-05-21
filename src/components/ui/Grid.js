@@ -6,7 +6,9 @@ export const Grid = Styled.div`
     gap: 12px;
     justify-content: ${(props) => props.justify};
     align-items:  ${(props) => props.align};
+    align-content:  ${(props) => props.alignContent};
     width: ${(props) => props.width}%;
+    heigth: ${(props) => props.heigth}%;
 `;
 
 export const Col = Styled.div`
@@ -30,7 +32,8 @@ export const Row = Styled.div`
 	`)};
 	min-height: ${(props) => props.minheight}px;
 	align-items: ${(props) => props.align};
-	width: ${(props) => props.width}%;
+	width: 100%;
+	height: ${(props) => props.height}px;
 `;
 
 
@@ -54,7 +57,8 @@ export const HeaderCol = Styled(Col)`
 `;
 
 export const HeaderRow = Styled(Row)`
-	@media only screen and (max-width: 850px) {
+	width: 70%;
+	@media only screen and (max-width: 900px) {
 		flex-flow: column wrap;
 		align-items: center;
 	}

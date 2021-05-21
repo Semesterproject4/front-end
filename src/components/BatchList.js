@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components';
+import { FormButton } from './ui/Buttons';
+import { Grid, Row, Col } from './ui/Grid';
+import { Table, Head, Body } from './ui/Tables';
 
 export const BatchList = (props) => {
 
@@ -63,136 +65,46 @@ export const BatchList = (props) => {
 	};
 
     return (
-        <Grid>
-            <Row>
-                <h3>Produced batches</h3>
-            </Row>
+        <Grid widht={100}>
+			<Row>
+				<Col size={1} textAlign="center">
+					<h3>Produced batches</h3>
+				</Col>
+			</Row>
+			<Row>
+				<Col size={1}>
+					<Table id="table" onClick={selectRow} style={{boxShadow: "0px 0px 0px 0px rgba(0, 0, 0, 0.0)"}}>
+						<Head>
+							<tr>
+								<th>Product</th>
+								<th>Amount</th>
+								<th>Production Started</th>
+							</tr>
+						</Head>
+						<Body cursor="pointer">
+							{pageBatches.map((element) => (
+								<tr id={element.id} key={element.id} style={props.selectedBatchID === element.id ? { background: "#6D8EB1" } : { fontSize: "1.0em" }}>
+									<td>{element.productType.charAt(0) + element.productType.slice(1).toLowerCase().replace('_', '\u00A0')}</td>
+									<td>{element.amountToProduce}</td>
+									<td>{element.data[0].timestamp[0]}-{element.data[0].timestamp[1]}-{element.data[0].timestamp[2]} {element.data[0].timestamp[3]}:{element.data[0].timestamp[4]}</td>
+								</tr>
+							))}
+						</Body>
+					</Table>
+				</Col>
+			</Row>
 
-            {/* harcoded max height - bad practice */}
-            <Row height={443}>
-                <Styledtable id="table" onClick={selectRow}>
-                    <Styledthead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Amount</th>
-                            <th>Production Started</th>
-                        </tr>
-                    </Styledthead>
-                    <Styledbody>
-                        {pageBatches.map((element) => (
-                            <tr id={element.id} key={element.id} style={props.selectedBatchID === element.id ? { background: "#7ac8ff" } : { fontSize: "1.0em" }}>
-                                <td>{element.productType}</td>
-                                <td>{element.amountToProduce}</td>
-                                <td>{element.data[0].timestamp[0]}-{element.data[0].timestamp[1]}-{element.data[0].timestamp[2]} {element.data[0].timestamp[3]}:{element.data[0].timestamp[4]}</td>
-                            </tr>
-                        ))}
-                    </Styledbody>
-                </Styledtable>
-            </Row>
-
-            <Row align={"baseline"}>
-                <StyledButton onClick={updatePage} disabled={prevBtnDisable} value="prev">&lt; prev</StyledButton>
-
-                <p style={{ fontWeight: "bold" }}>{currentPage + 1} of {maxPage}</p>
-
-                <StyledButton onClick={updatePage} disabled={nextBtnDisable} value="next">next &gt;</StyledButton>
-            </Row>
+			<Row align={"baseline"}>
+				<Col size={3}>
+					<FormButton onClick={updatePage} disabled={prevBtnDisable} value="prev">&lt; prev</FormButton>
+				</Col>
+				<Col size={1} textAlign="center">
+					<p style={{ fontWeight: "bold"}}>{currentPage + 1} of {maxPage}</p>
+				</Col>
+				<Col size={3}>
+					<FormButton onClick={updatePage} disabled={nextBtnDisable} value="next">next &gt;</FormButton>
+				</Col>
+			</Row>
         </Grid>
     );
 };
-
-const Grid = styled.div`
-    display: flex;
-    flex-flow: column wrap;
-    gap: 12px;
-    justify-content: center ${(props) => props.justify};
-    width: ${(props) => props.width}%;
-`;
-
-const media = {
-    xs: (styles) => `
-        @media only screen and (max-width: 480px) {
-            ${styles}
-        }
-    `,
-    m: (styles) => `
-        @media only screen and (max-width: 1024px) {
-            ${styles}
-        }
-    `,
-}
-
-const Row = styled.div`
-    display: flex;
-    flex-flow: wrap;
-    gap: 12px;
-    justify-content: center ${(props) => props.justify};
-    ${(props) => props.colwrap && media[props.colwrap](`
-        flex-flow: column wrap;
-    `)};
-    min-height: ${(props) => props.minheight}px;
-    height: ${(props) => props.height}px;
-    align-items: ${(props) => props.align};
-`;
-
-const Col = styled.div`
-    flex: ${(props) => props.size};
-    background-color: ${(props) => props.backgroundColor};
-    padding: ${(props) => props.padding}px;
-`;
-
-const Styledtable = styled.table`
-	width: 100%;
-    height: 444px;
-	border-collapse: collapse;
-	background: white;  
-/*   	-webkit-box-shadow: 0px 0px 10px 8px rgba(0, 0, 0, 0.1);
-			box-shadow: 0px 0px 10px 8px rgba(0, 0, 0, 0.1);  */ 
-`;
-
-const Styledthead = styled.thead`
-	& tr {
-		& th {
-			font-size: 1.0em;
-			font-weight: bold;
-			padding: 10px;
-            user-select: none;
-		}
-	}
-`;
-
-const Styledbody = styled.tbody`
-	& tr {
-		cursor: pointer;
-        user-select: none;
-
-		& td {
-			font-size: 1.0em;
-			height: 40px;
-		}
-		&:nth-child(even) {
-			background-color: #f7f7f7;
-		}
-		&:nth-child(odd) {
-			background-color: #ffffff;
-		}  
-		&:hover {
-			background: #e3e3e3;
-		}
-	}
-`;
-
-const StyledButton = styled.button`
-    background-color: #696969;
-    border: 1px solid #000;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 8px 12px;
-    margin: 0px 5px;
-    text-decoration: none;
-
-    &:disabled {
-        cursor: default;
-    }
-`;

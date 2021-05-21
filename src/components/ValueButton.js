@@ -4,17 +4,17 @@ import { Icon } from '@iconify/react-with-api';
 
 export const ValueButton = (props) => {
     return (
-        <StyledValueBtn id={props.id} onClick={props.setGraphDataOnClick} style={props.selectedValue === props.id ? { background: "#7ac8ff" } : {}}>
-        <Row>
-            <Icon pointerEvents="none" icon={props.icon} style={{ width: "40px", height: "40px" }} />
-        </Row>
-        <Row>
-            {props.id}
-        </Row>
-        <Row>
-            {props.valueText}{props.value}
-        </Row>
-    </StyledValueBtn>
+        <StyledValueBtn id={props.id} onClick={props.setGraphDataOnClick} style={props.selectedValue === props.id ? { background: "#6D8EB1" } : {}}>
+			<Row>
+				<Icon pointerEvents="none" icon={props.icon} style={{ width: "40px", height: "40px" }} />
+			</Row>
+			<Row>
+				{props.id}
+			</Row>
+			<Row>
+				{props.valueText}{props.value}
+			</Row>
+		</StyledValueBtn>
     );
 }
 
@@ -46,12 +46,12 @@ const Row = styled.div`
 const StyledValueBtn = styled.div`
     height: 100%;
     width: 100%;
-    background-color: #f7f7f7;
+    background-color: #EFEFEF;
     user-select: none;
-    padding: 8px 12px;
+	padding: 8px 12px;
     
     &:hover {
         cursor: pointer;
-        background-color: #e3e3e3;
+        background-color: #D6D6D6;
     }
 `;

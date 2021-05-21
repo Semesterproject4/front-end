@@ -46,7 +46,7 @@ const Row = styled.div`
 const StyledValueDiv = styled.div`
     height: 100%;
     width: 100%;
-    padding: 8px 12px;
-    background-color: #b7b7b7;
+    padding: 13.2px 12px;
+    background-color: #EFEFEF;
     user-select: none;
 `;

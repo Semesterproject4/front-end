@@ -1,33 +1,54 @@
 import React from 'react'
-import styled from 'styled-components';
+import Styled from 'styled-components';
+import { Grid, Col, Row } from './ui/Grid';
 
 export const LiveDataProgress = (props) => {
 	return (
-		<div style={{width: "100%", display: "inline-flex", align: "center"}}>
-			<div style={{width: "100%"}}>
+		<Col size={1}>
+			<Row>
 				<label>{props.label}</label><br></br>
-				<Bar style={{marginTop: "-10px", width: "100%"}} value={props.data} max={props.max}></Bar><br></br>
-				<p style={{marginTop: "-25px"}}>{props.text}</p>
-			</div>
-		</div>
+			</Row>
+			<Row>
+				<Bar value={props.data} max={props.max}></Bar>
+			</Row>				
+
+		</Col>
 	);
 }
 
-const Bar = styled.progress`
+export const LiveDataProgressVertical = (props) => {
+	return (
+		<Col size={1}>
+
+			<Row>
+				<label>{props.label}</label><br></br>
+			</Row>
+			<Row>
+				<BarVertical value={props.data} max={props.max}></BarVertical>
+			</Row>				
+
+		</Col>
+	);
+}
+
+const Bar = Styled.progress`
 	-webkit-appearance: none;
 	appearance: none;
 	width: 100%;
 	height: 20px;
 	border: 1px solid black;
-	border-radius: 20px;
 
 	&::-webkit-progress-value {
-		background: #7AC8FF;
-		border-radius: 20px;
+		background: #FFBF81;
 	}
 
    	&::-webkit-progress-bar {
 		background: #EFEFEF;
-		border-radius: 20px;
 	}
+`
+
+const BarVertical = Styled(Bar)`
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg); /*Webkit*/
+    -moz-transform: rotate(-90deg); /*FireFox*/
 `

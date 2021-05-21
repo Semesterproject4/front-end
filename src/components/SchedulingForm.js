@@ -1,7 +1,7 @@
 import React, { useState, useEffect }  from 'react'
-import styled from 'styled-components';
 import { Form } from './ui/Forms';
 import { FormButton } from './ui/Buttons';
+import { Row, Col } from './ui/Grid';
  
 export const SchedulingForm = (props) => {
 	const [amount, setAmount] = useState('');
@@ -95,28 +95,31 @@ export const SchedulingForm = (props) => {
     }
 
 	return (
-		<Styleddiv>
-			<Form>
-				<select onChange={changeBeerType}>
-					{props.products.map((product) => (
-						<option value={product.name} key={product.name}>
-							{product.name} 
-						</option>
-					))}
-				</select>
-
-				<input placeholder="Amount" value={amount} onChange={onAmountChanged}/>
-				<input placeholder={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={onSpeedChanged}/>
-
-				<FormButton onClick={addScheduledBatch} disabled={!(validAmount && validSpeed)}>
-					ADD
-				</FormButton>           
+		<Col size={1} justify="center">
+			<Form width={100}>
+				<Row justify="center" align="stretch">
+					<Col size={2} alignContent="stretch">
+						<select onChange={changeBeerType}>
+							{props.products.map((product) => (
+								<option value={product.name} key={product.name}>
+									{product.name} 
+								</option>
+							))}
+						</select>
+					</Col>
+					<Col size={2} alignContent="stretch">
+						<input style={{borderLeft: "1px solid #EFEFEF"}} placeholder="Amount" value={amount} onChange={onAmountChanged}/>
+					</Col>
+					<Col size={2} alignContent="stretch">
+						<input style={{borderLeft: "1px solid #EFEFEF"}} placeholder={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={onSpeedChanged}/>
+					</Col>
+					<Col size={1} alignContent="stretch">
+						<FormButton onClick={addScheduledBatch} disabled={!(validAmount && validSpeed)}>
+							ADD
+						</FormButton> 
+					</Col>    
+				</Row>      
 			</Form>
-		</Styleddiv>
+		</Col>
 	);
 }
-
-const Styleddiv = styled.div`
-  	margin: auto;
-	width: 60%;
-`

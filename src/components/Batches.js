@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components';
 import CanvasJSReact from './assets/canvasjs.react';
 import { BatchList } from './BatchList';
 import { BatchDataGrid } from './BatchDataGrid';
+import { Form } from './ui/Forms';
+import { FormButton } from './ui/Buttons';
+import { Grid, Col, Row } from './ui/Grid'
 
 export const Batches = () => {
 
@@ -185,89 +187,34 @@ export const Batches = () => {
     }
     
     return (
-        <Grid>
+        <Grid width={100}>
             <Row>
-                <Col size={1} padding={10}>
-                    <StyledInput onChange={onSearchChanged} placeholder="Batch ID"></StyledInput>
-                    <StyledButton onClick={search}>Search</StyledButton>
+                <Col size={1}>
+					<Form width={100}>
+                        <Row justify="center" align="stretch">
+                            <Col size={7} alignContent="stretch">
+						        <input onChange={onSearchChanged} placeholder="Batch ID"></input>
+                            </Col>
+							<Col size={1} alignContent="stretch">
+						        <FormButton onClick={search}>Search</FormButton>
+							</Col>
+                        </Row>
+					</Form>
                 </Col>
             </Row>
-            <Row colwrap="m"> 
-                <Col size={2} padding={10} backgroundColor={"lightGray"}>
-                    <BatchList selectedBatchID={selectedBatchID} setSelectedBatchID={setSelectedBatchID}/>
-                </Col>
-                <Col size={3} padding={10} backgroundColor={"lightGray"}>
-                    <BatchDataGrid  selectedBatchID={selectedBatchID} selectedValue={selectedValue} chosenBatch={chosenBatch} setGraphData={setGraphData}/>
+            <Row colwrap="m" gap={12}> 
+                <Col size={2} padding={10} backgroundColor={"#E0E0E0"}>
+                    <BatchList selectedBatchID={selectedBatchID} setSelectedBatchID={setSelectedBatchID} />
+                </Col>			
+                <Col size={3} padding={10} backgroundColor={"#E0E0E0"}>
+					<BatchDataGrid  selectedBatchID={selectedBatchID} selectedValue={selectedValue} chosenBatch={chosenBatch} setGraphData={setGraphData}/>
                 </Col>
             </Row>
-            <Row minheight={400}>
-                <Col size={1} padding={10} backgroundColor={"lightGray"}>
+            <Row gap={12}>
+                <Col size={1} padding={10} backgroundColor={"#E0E0E0"}>
                     <CanvasJSChart options = {options} />
                 </Col>
             </Row>
         </Grid>
     );
 };
-
-const Grid = styled.div`
-    display: flex;
-    flex-flow: column wrap;
-    gap: 12px;
-    justify-content: center ${(props) => props.justify};
-    width: ${(props) => props.width}%;
-`;
-
-const media = {
-    xs: (styles) => `
-        @media only screen and (max-width: 480px) {
-            ${styles}
-        }
-    `,
-    m: (styles) => `
-        @media only screen and (max-width: 1024px) {
-            ${styles}
-        }
-    `,
-}
-
-const Row = styled.div`
-    display: flex;
-    flex-flow: wrap;
-    gap: 12px;
-    justify-content: center ${(props) => props.justify};
-    ${(props) => props.colwrap && media[props.colwrap](`
-        flex-flow: column wrap;
-    `)};
-    min-height: ${(props) => props.minheight}px;
-    align-items: ${(props) => props.align};
-`;
-
-const Col = styled.div`
-    flex: ${(props) => props.size};
-    background-color: ${(props) => props.backgroundColor};
-    padding: ${(props) => props.padding}px;
-`;
-
-const StyledButton = styled.button`
-    background-color: #696969;
-    border: 1px solid #000;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 8px 12px;
-    margin: 0px 5px;
-    text-decoration: none;
-
-    &:disabled {
-        cursor: default;
-    }
-`;
-
-const StyledInput = styled.input`
-    width: 50%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: none;
-    border-bottom: 4px solid grey;
-`;

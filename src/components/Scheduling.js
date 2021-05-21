@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { SchedulingForm } from './SchedulingForm'
 import { SchedulingList } from './SchedulingList'
+import { Col } from './ui/Grid';
  
 export const Scheduling = () => {
 	const [products, setProducts] = useState([]);
@@ -26,10 +27,10 @@ export const Scheduling = () => {
 	};
 
 	return (
-			<div>
+			<Col size={1}>
 				{products.length && <SchedulingForm products={products} update={fetchScheduled} />}
 
 				{<SchedulingList scheduled={scheduled} update={fetchScheduled} />}
-			</div>
+			</Col>
 	);
 };

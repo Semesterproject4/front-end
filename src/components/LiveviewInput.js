@@ -1,5 +1,7 @@
 import React, { useState, useEffect }  from 'react'
-import styled from 'styled-components';
+import { Form } from './ui/Forms';
+import { FormButton, AbortButton } from './ui/Buttons';
+import { Grid, Col, Row } from './ui/Grid'
 
 export const LiveviewInput = (props) => {
 	const [type, setType] = useState("Pilsner");
@@ -78,7 +80,6 @@ export const LiveviewInput = (props) => {
             }
 
         });
-
         return result;
     }
 
@@ -128,18 +129,6 @@ export const LiveviewInput = (props) => {
 		fetchMachine();
     }
 
-	const autoBrewPress = (e) => {
-		//Sends a Patch request
-		fetch("http://localhost:8080/api/machines/" + currentMachine.id + "/autobrew/" + e.target.value, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'}
-        }).then(response => {
-            if(response.status === 200){
-				fetchMachine();
-			}
-        })
-	}
-
 	const disabledStart = () => {
 		if (currentMachine.autobrewing)
 			return true;
@@ -183,78 +172,58 @@ export const LiveviewInput = (props) => {
 	}
 
 	return (
-		<div>
-			<div>
-				<Styledform>
-					<select onChange={changeType}>
-						{products.map((product) => (
-							<option value={product.name} key={product.name}>
-								{product.name} 
-							</option>
-						))}
-					</select>
-
-					<input placeholder = "Amount" value={amount} onChange={changeAmount}></input>
-					<input placeholder ={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={changeSpeed}></input>
-
-				</Styledform>
-			</div>
-			<div>
-				<Styledbutton value="start"	onClick={controlMachineButtonPress} disabled={disabledStart()}>
-					Start
-				</Styledbutton>
-				<Styledbutton value="stop" onClick={controlMachineButtonPress} disabled={disabledStop()}>
-					Stop
-				</Styledbutton>
-				<Styledbutton value="reset" onClick={controlMachineButtonPress} disabled={disabledReset()}>
-					Reset
-				</Styledbutton>
-				<Styledbutton value="clear" onClick={controlMachineButtonPress} disabled={disabledClear()}>
-					Clear
-				</Styledbutton>
-				<Styledbutton value="abort" onClick={controlMachineButtonPress} disabled={disabledAbort()}>
-					Abort
-				</Styledbutton>
-				<Styledbutton value="start"	onClick={autoBrewPress} disabled={currentMachine.autobrewing || props.state === "ABORTED"}>
-					Start Auto Brew
-				</Styledbutton>
-				<Styledbutton value="stop"	onClick={autoBrewPress} disabled={!currentMachine.autobrewing}>
-					Stop Auto Brew
-				</Styledbutton>
-			</div>
-		</div>
+		<Grid width={100}>
+			<Form style={{boxShadow: "0px 0px 0px 0px rgba(0, 0, 0, 0.0)"}}>
+				<Grid>
+					<Row gap={12}>
+						<select onChange={changeType}>
+							{products.map((product) => (
+								<option value={product.name} key={product.name}>
+									{product.name} 
+								</option>
+							))}
+						</select>
+					</Row>
+					<Row gap={12}>
+						<input placeholder = "Amount" value={amount} onChange={changeAmount}></input>
+					</Row>
+					<Row gap={12}>
+						<input placeholder ={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={changeSpeed}></input>
+					</Row>
+				</Grid>
+			</Form>
+			<Grid>
+				<Row gap={12}>
+					<Col size={1}>
+						<FormButton value="start"	onClick={controlMachineButtonPress} disabled={disabledStart()}>
+							Start
+						</FormButton>
+					</Col>
+					<Col size={1}>
+						<FormButton value="stop" onClick={controlMachineButtonPress} disabled={disabledStop()}>
+							Stop
+						</FormButton>
+					</Col>
+				</Row>
+				<Row gap={12}>
+					<Col size={1}>
+						<FormButton value="reset" onClick={controlMachineButtonPress} disabled={disabledReset()}>
+							Reset
+						</FormButton>
+					</Col>
+					<Col size={1}>
+						<FormButton value="clear" onClick={controlMachineButtonPress} disabled={disabledClear()}>
+							Clear
+						</FormButton>
+					</Col>
+				</Row>
+				<Row height={60}>
+					<AbortButton value="abort" onClick={controlMachineButtonPress} disabled={disabledAbort()}>
+						ABORT
+					</AbortButton>
+				</Row>
+			</Grid>
+		</Grid>
 	);
 }
 
-const Styledbutton = styled.button`
-	font-size: 1.1em;
-	width: 10%;
-	height: 41px;
-	cursor: pointer;
-	background: #7ac8ff;
-	outline: none;
-	border: 1px solid black;
-	color: black;
-	margin: 10px;
-
-	&:hover {
-		background: #99d5ff;
-	}
-
-	&:disabled {
-		background: grey;
-		color: white;
-	}
-`
-
-const Styledform = styled.form`
-    margin: 5px 5px;
-	
-	& select {
-		margin: 5px 5px;
-	}
-	& input {
-		margin: 5px 5px;
-	}
-
-`

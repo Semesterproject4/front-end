@@ -1,8 +1,11 @@
 import React, {useState, useEffect} from 'react'
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
-import { LiveviewInput } from './LiveviewInput'
-import { LiveviewData } from './LiveviewData'
+import { LiveviewInput } from './LiveviewInput';
+import { LiveviewData } from './LiveviewData';
+import { LiveviewBars } from './LiveviewBars'
+import { Grid, Col, Row } from './ui/Grid';
+import { LiveDataProgress } from './LiveDataProgress';
  
 export const Liveview = (props) => {
 	const [stompClient, setStompClient] = useState(null);
@@ -86,16 +89,51 @@ export const Liveview = (props) => {
     }
 
 	return (
-			<div>
-				{<LiveviewInput 
-					currentMachine = {props.currentMachine}
-					state = {livedata.state}
-				/>}
+			<Grid width={100}>
+				<Row colwrap="m" gap={12}> 
+					<Col size={2}>
+						<Grid>
+							<Row>
+								<Col size={1} padding={10} backgroundColor={"#e0e0e0"}>
+									<LiveviewInput 
+										currentMachine = {props.currentMachine}
+										state = {livedata.state}
+									/>
+								</Col>			
+							</Row>
+							<Row>
+								<Col size={1} padding={10} backgroundColor={"#e0e0e0"} >
+									<LiveviewBars 
+										livedata = {livedata}
+									/>
 
-				{<LiveviewData 
-					currentMachine = {props.currentMachine}
-					livedata = {livedata}
-				/>}
-			</div>
+								</Col>			
+							</Row>
+						</Grid>
+					</Col>
+					<Col size={3}>
+						<Grid>
+							<Row>
+								<Col size={1} padding={10} backgroundColor={"#e0e0e0"}>
+									<LiveviewData 
+										currentMachine = {props.currentMachine}
+										livedata = {livedata}
+									/>
+								</Col>
+							</Row>
+							<Row>
+								<Col size={1} padding={10} backgroundColor={"#e0e0e0"}>
+									<LiveDataProgress 
+										label="Maintenance"
+										data={30000 - livedata.maintenance}
+										max="30000"
+										text={(livedata.maintenance / 30000 * 100).toFixed(1) + "%"}
+									/>
+								</Col>
+							</Row>
+						</Grid>
+					</Col>
+				</Row>
+			</Grid>
 	);
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components';
-import { LiveDataItem } from './LiveDataItem';
+import { DataDiv } from './DataDiv';
 import { LiveDataProgress } from './LiveDataProgress';
+import { Grid, Col, Row } from './ui/Grid'
 
 export const LiveviewData = (props) => {
 	const [batchData, setBatchData] = useState(
@@ -36,122 +36,53 @@ export const LiveviewData = (props) => {
 
 
 	return (
-		<div>
-			<Grid>
-				<Row style={{gap: "2%"}}>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="jam-bottle-f" text="Type" data={batchData.productType.charAt(0) + batchData.productType.slice(1).toLowerCase().replace('_', '\u00A0')} />
-					</Col>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="cil-speedometer" text="Speed" data={batchData.desiredSpeed} />
-					</Col>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="bx-bxs-flag-checkered" text="Amount" data={batchData.amountToProduce} />
-					</Col>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="mdi-state-machine" text="State" data={props.livedata.state} />
-					</Col>
-				</Row>
-	
-				<Row style={{gap: "2%"}}>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="carbon:rain-drop" text="Humidity" data={Math.round(props.livedata.humidity)} />
-					</Col>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="ph-vibrate" text="Vibration" data={Math.round(props.livedata.vibration)} />
-					</Col>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="fluent:temperature-24-regular" text="Temperature" data={Math.round(props.livedata.temperature)} />
-					</Col>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="jam-bottle" text="Produced" data={props.livedata.processed} />
-					</Col>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="fluent:checkmark-16-regular" text="Acceptable" data={props.livedata.acceptableProducts} />
-					</Col>
-					<Col size={1} padding={5}>
-						<LiveDataItem icon="akar-icons:cross" text="Defect" data={props.livedata.defectProducts} />
-					</Col>
-				</Row>
+		<Grid width={100}>
+            <Row gap={12}>
+				<Col size={1} textAlign="center" backgroundColor="#efefef" padding={5}>
+                	<h3>Batch ID: {batchData.id}</h3>
+				</Col>
+            </Row>
 
-				<Row>
-					<h1>
-						Batch ID: {batchData.id}
-					</h1>
-				</Row>
+			<Row gap={12} colwrap="xs">
+				<Col size={1}>
+					<DataDiv icon="jam-bottle-f" id="Type" value={batchData.productType.charAt(0) + batchData.productType.slice(1).toLowerCase().replace('_', '\u00A0')} />
+				</Col>
+				<Col size={1}>
+					<DataDiv icon="cil-speedometer" id="Speed" value={batchData.desiredSpeed} />
+				</Col>
+			</Row>
+			<Row gap={12} colwrap="xs">
+				<Col size={1}>
+					<DataDiv icon="bx-bxs-flag-checkered" id="Amount" value={batchData.amountToProduce} />
+				</Col>
+				<Col size={1}>
+					<DataDiv icon="mdi-state-machine" id="State" value={props.livedata.state} />
+				</Col>
+			</Row>
 
-				<Row>
-					<Col size={1}>
-						<LiveDataProgress label="Maintenance" data={props.livedata.maintenance} max="30000" text={(props.livedata.maintenance / 30000 * 100).toFixed(1) + "%"} />
-					</Col>
-				</Row>
-
-				<Row style={{gap: "2.5%"}}>
-					<Col size={1}l>
-						<LiveDataProgress label="Barley" data={props.livedata.ingredients.barley} max="35000" text={props.livedata.ingredients.barley} />
-					</Col>
-					<Col size={1}>
-						<LiveDataProgress label="Hops" data={props.livedata.ingredients.hops} max="35000" text={props.livedata.ingredients.hops} />
-					</Col>
-					<Col size={1}>
-						<LiveDataProgress label="Malt" data={props.livedata.ingredients.malt} max="35000" text={props.livedata.ingredients.malt} />
-					</Col>
-					<Col size={1}>
-						<LiveDataProgress label="Wheat" data={props.livedata.ingredients.wheat} max="35000" text={props.livedata.ingredients.wheat} />
-					</Col>
-					<Col size={1}>
-						<LiveDataProgress label="Yeast" data={props.livedata.ingredients.yeast} max="35000" text={props.livedata.ingredients.yeast} />
-					</Col>
-				</Row>
-			</Grid>
-
-
-		</div>
+			<Row gap={12} colwrap="xs">
+				<Col size={1}>
+					<DataDiv icon="jam-bottle" id="Produced" value={props.livedata.processed} />
+				</Col>
+				<Col size={1}>
+					<DataDiv icon="fluent:checkmark-16-regular" id="Acceptable" value={props.livedata.acceptableProducts} />
+				</Col>
+				<Col size={1}>
+					<DataDiv icon="akar-icons:cross" id="Defect" value={props.livedata.defectProducts} />
+				</Col>
+			</Row>
+			<Row gap={12} colwrap="xs">
+				<Col size={1}>
+					<DataDiv icon="carbon:rain-drop" id="Humidity" value={Math.round(props.livedata.humidity)} />
+				</Col>
+				<Col size={1}>
+					<DataDiv icon="ph-vibrate" id="Vibration" value={Math.round(props.livedata.vibration)} />
+				</Col>
+				<Col size={1}>
+					<DataDiv icon="fluent:temperature-24-regular" id="Temperature" value={Math.round(props.livedata.temperature)} />
+				</Col>
+			</Row>
+		</Grid>
 	);
 
 }
-
-
-const Grid = styled.div`
-    display: flex;
-    flex-flow: column wrap;
-    gap: 12px;
-    justify-content: center;
-	
-	& h1 {
-		font-size: 1.5em;
-	}
-`
-
-const media = {
-    xs: (styles) => `
-        @media only screen and (max-width: 480px) {
-            ${styles}
-        }
-    `,
-    m: (styles) => `
-        @media only screen and (max-width: 1024px) {
-            ${styles}
-        }
-    `,
-}
-
-const Row = styled.div`
-	width: 60%;
-	margin: auto;
-	padding: 15px 0px;
-    display: flex;
-    flex-flow: wrap;
-    justify-content: center ${(props) => props.justify};
-    ${(props) => props.colwrap && media[props.colwrap](`
-        flex-flow: column wrap;
-    `)};
-    min-height: ${(props) => props.minheight}px;
-    align-items: ${(props) => props.align};
-`;
-
-const Col = styled.div`
-    flex: ${(props) => props.size};
-    background-color: ${(props) => props.backgroundColor};
-    padding: ${(props) => props.padding}px;
-`;

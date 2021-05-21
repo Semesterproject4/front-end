@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
-import Styled from 'styled-components';
 import { Icon } from '@iconify/react-with-api';
 import { Form } from './ui/Forms';
-import { FormButton } from './ui/Buttons';
-import { Grid, Row, Col } from './ui/Grid';
-import { Table, Head, Body } from './ui/Tables';
+import { FormButton, DeleteButton, ConnectButton } from './ui/Buttons';
+import { Row, Col } from './ui/Grid';
+import { Switch, SwitchSlider, SwitchInput } from './ui/Switch';
+import { Table, Head, Body, HidingTH, HidingTD } from './ui/Tables';
 
 
 export const MachineList = (props) => {
@@ -101,6 +101,23 @@ export const MachineList = (props) => {
 		setSelected(e.target.parentNode.getAttribute('id'));
 	}
 
+	const toggleAutobrew = (e) => {
+		let command = "";
+		e.target.checked ? command = "start" : command = "stop";
+
+
+		fetch("http://localhost:8080/api/machines/" + e.target.id + "/autobrew/" + command, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            if(response.status === 200){
+				updateMachineList();
+			}
+        })
+
+	}
+
+
 	return (
 		<Col size={1} justify="center">
 			<Form width={100}>
@@ -122,7 +139,7 @@ export const MachineList = (props) => {
 					<Head>
 						<tr>
 							<th>Name</th>
-							<th>IP</th>
+							<HidingTH>IP</HidingTH>
 							<th>Autobrewing</th>
 							<th></th>
 							<th></th>
@@ -130,19 +147,25 @@ export const MachineList = (props) => {
 					</Head>
 					<Body>
 						{machines.map((element) => (
-							<tr id={element.id} autobrewing={element.autobrewing.toString()} machine={element} key={element.id} style={selected === element.id ? {background: "#7ac8ff"} : {fontSize: "1.0em"}}>
+							<tr id={element.id} autobrewing={element.autobrewing.toString()} machine={element} key={element.id}>
 								<td>{element.name}</td>
-								<td>{element.ip}</td>
-								<td>{element.autobrewing ? 
+								<HidingTD>{element.ip}</HidingTD>
+								<td>
+									<Switch>
+										<SwitchInput id={element.id} type="checkbox" checked={element.autobrewing} onClick={toggleAutobrew}></SwitchInput>
+										<SwitchSlider></SwitchSlider>
+									</Switch>
+								</td>
+								{/* <td>{element.autobrewing ? 
 									<Icon icon="bi:circle-fill" color="#2cb833" width="20" pointerEvents="none" style={{transform: "translateX(0px) translateY(2px)"}}/>
 									: 
 									<Icon icon="bi:slash-circle-fill" color="#b8352c" width="20" pointerEvents="none" style={{transform: "translateX(0px) translateY(2px)"}}/>}
-								</td>
+								</td> */}
 																																
-								<td style={{textAlign: "right", width: "10px"}} onClick={removeConnection}><Deletebutton> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none" /></Deletebutton></td>
+								<td style={{textAlign: "right", width: "10px"}} onClick={removeConnection}><DeleteButton> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none" /></DeleteButton></td>
 								<td style={{textAlign: "right", width: "30px"}} onClick={selectMachineHandler}>
 									<Link to="/control">
-										<Connectbutton> CONNECT </Connectbutton>
+										<ConnectButton> CONNECT </ConnectButton>
 									</Link>
 								</td>
 							</tr>
@@ -153,32 +176,3 @@ export const MachineList = (props) => {
 		</Col>
 	);
 }
-
-
-const Deletebutton = Styled.button`
-	background-color: #eb5f54;
-	width: 40px;
-	height: 100%;
-	border-top-left-radius: 8px;
-  	border-bottom-left-radius: 8px;
-	outline: none;
-	border: none;
-  	cursor: pointer;
-
-	&:hover {
-		background-color: #f44336;		
-	}
-`
-
-const Connectbutton = Styled.button`
-	background-color: #38d39f;
-	width: 120px;
-	height: 100%;
-	outline: none;
-	border: none;
-  	cursor: pointer;
-
-	&:hover {
-		background-color: #1af0a8;		
-	}
-`
