@@ -1,7 +1,7 @@
 import React, { useState, useEffect }  from 'react'
-import { Form } from './ui/Forms';
-import { FormButton, AbortButton } from './ui/Buttons';
-import { Grid, Col, Row } from './ui/Grid'
+import { Form } from '../../ui/Forms';
+import { FormButton, AbortButton } from '../../ui/Buttons';
+import { Grid, Col, Row } from '../../ui/Grid'
 
 export const LiveviewInput = (props) => {
 	const [type, setType] = useState("Pilsner");

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { DataDiv } from './DataDiv';
+import { DataDiv } from '../../ui/DataDiv';
 import { LiveDataProgress } from './LiveDataProgress';
-import { Grid, Col, Row } from './ui/Grid'
+import { Grid, Col, Row } from '../../ui/Grid'
 
 export const LiveviewData = (props) => {
 	const [batchData, setBatchData] = useState(

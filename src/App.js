@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Styled from 'styled-components';
 import { BrowserRouter as Router, Route} from 'react-router-dom';
-import { Header } from "./components/layout/Header";
-import { Batches } from "./components/Batches";
-import { Scheduling } from './components/Scheduling';
-import { Liveview } from './components/Liveview';
-import { MachineList } from './components/MachineList';
+import { Header } from "./components/header/Header";
+import { Batches } from "./components/views/batchview/Batches";
+import { Scheduling } from './components/views/scheduleview/Scheduling';
+import { Liveview } from './components/views/liveview/Liveview';
+import { MachineList } from './components/views/homeview/MachineList';
 import { Grid, Row, Col } from './components/ui/Grid';
 import './App.css';
 

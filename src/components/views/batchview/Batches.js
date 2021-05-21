@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import CanvasJSReact from './assets/canvasjs.react';
+import CanvasJSReact from '../../assets/canvasjs.react';
 import { BatchList } from './BatchList';
 import { BatchDataGrid } from './BatchDataGrid';
-import { Form } from './ui/Forms';
-import { FormButton } from './ui/Buttons';
-import { Grid, Col, Row } from './ui/Grid'
+import { Form } from '../../ui/Forms';
+import { FormButton } from '../../ui/Buttons';
+import { Grid, Col, Row } from '../../ui/Grid'
 
 export const Batches = () => {
 

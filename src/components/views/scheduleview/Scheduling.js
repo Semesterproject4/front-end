@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { SchedulingForm } from './SchedulingForm'
 import { SchedulingList } from './SchedulingList'
-import { Col } from './ui/Grid';
+import { Col } from '../../ui/Grid';
  
 export const Scheduling = () => {
 	const [products, setProducts] = useState([]);

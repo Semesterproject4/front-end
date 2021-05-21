@@ -1,7 +1,7 @@
 import React, { useState, useEffect }  from 'react'
-import { Form } from './ui/Forms';
-import { FormButton } from './ui/Buttons';
-import { Row, Col } from './ui/Grid';
+import { Form } from '../../ui/Forms';
+import { FormButton } from '../../ui/Buttons';
+import { Row, Col } from '../../ui/Grid';
  
 export const SchedulingForm = (props) => {
 	const [amount, setAmount] = useState('');

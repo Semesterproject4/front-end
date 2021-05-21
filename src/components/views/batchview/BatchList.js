@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { FormButton } from './ui/Buttons';
-import { Grid, Row, Col } from './ui/Grid';
-import { Table, Head, Body } from './ui/Tables';
+import { FormButton } from '../../ui/Buttons';
+import { Grid, Row, Col } from '../../ui/Grid';
+import { Table, Head, Body } from '../../ui/Tables';
 
 export const BatchList = (props) => {
 

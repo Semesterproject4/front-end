@@ -1,6 +1,6 @@
 import React from 'react'
 import Styled from 'styled-components';
-import { Grid, Col, Row } from './ui/Grid';
+import { Col, Row } from '../../ui/Grid';
 
 export const LiveDataProgress = (props) => {
 	return (

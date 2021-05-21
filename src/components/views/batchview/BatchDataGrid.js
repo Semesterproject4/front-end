@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from 'styled-components';
 import { Icon } from '@iconify/react-with-api';
-import { ValueButton } from './ValueButton';
-import { FormButton } from './ui/Buttons';
-import { DataDiv } from './DataDiv';
-import { Grid, Col, Row } from './ui/Grid';
+import { ValueButton } from '../../ui/ValueButton';
+import { FormButton } from '../../ui/Buttons';
+import { DataDiv } from '../../ui/DataDiv';
+import { Grid, Col, Row } from '../../ui/Grid';
 
 export const BatchDataGrid = (props) => {
 
