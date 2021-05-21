@@ -163,9 +163,11 @@ export const Batches = () => {
 
     const onSearchChanged = (e) => {
         setSearchVal(e.target.value);
+        console.log(e.target.value);
     }
 
-    const search = () => {
+    const search = (e) => {
+        e.preventDefault();
         let checkForHexRegExp = /^[a-f\d]{24}$/i
         if (checkForHexRegExp.test(searchVal)) {
             setSelectedBatchID(searchVal);
@@ -195,7 +197,7 @@ export const Batches = () => {
                             <Col size={7} alignContent="stretch">
 						        <input onChange={onSearchChanged} placeholder="Batch ID"></input>
                             </Col>
-							<Col size={1} alignContent="stretch">
+							<Col size={1}>
 						        <FormButton onClick={search}>Search</FormButton>
 							</Col>
                         </Row>
