@@ -163,7 +163,6 @@ export const Batches = () => {
 
     const onSearchChanged = (e) => {
         setSearchVal(e.target.value);
-        console.log(e.target.value);
     }
 
     const search = (e) => {
@@ -190,20 +189,18 @@ export const Batches = () => {
     
     return (
         <Grid width={100}>
-            <Row>
-                <Col size={1}>
-					<Form width={100}>
-                        <Row justify="center" align="stretch">
-                            <Col size={7} alignContent="stretch">
-						        <input onChange={onSearchChanged} placeholder="Batch ID"></input>
-                            </Col>
-							<Col size={1}>
-						        <FormButton onClick={search}>Search</FormButton>
-							</Col>
-                        </Row>
-					</Form>
-                </Col>
-            </Row>
+            <Col size={1}>
+				<Form width={100}>
+                    <Row justify="center" align="stretch">
+                        <Col size={7} alignContent="stretch">
+					        <input onChange={onSearchChanged} placeholder="Batch ID"></input>
+                        </Col>
+						<Col size={1}>
+					        <FormButton onClick={search}>Search</FormButton>
+						</Col>
+                    </Row>
+				</Form>
+            </Col>
             <Row colwrap="m" gap={12}> 
                 <Col size={2} padding={10} backgroundColor={"#E0E0E0"}>
                     <BatchList selectedBatchID={selectedBatchID} setSelectedBatchID={setSelectedBatchID} />
@@ -212,11 +209,9 @@ export const Batches = () => {
 					<BatchDataGrid  selectedBatchID={selectedBatchID} selectedValue={selectedValue} chosenBatch={chosenBatch} setGraphData={setGraphData}/>
                 </Col>
             </Row>
-            <Row gap={12}>
-                <Col size={1} padding={10} backgroundColor={"#E0E0E0"}>
-                    <CanvasJSChart options = {options} />
-                </Col>
-            </Row>
+            <Col size={1} padding={10} backgroundColor={"#E0E0E0"}>
+                <CanvasJSChart options = {options} />
+            </Col>
         </Grid>
     );
 };
