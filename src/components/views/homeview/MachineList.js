@@ -10,7 +10,6 @@ import { Table, Head, Body, HidingTH, HidingTD } from '../../ui/Tables';
 
 export const MachineList = (props) => {
 	const [machines, setMachines] = useState([]);
-	const [selected, setSelected] = useState(null);
 	const [machineIP, setMachineIP] = useState("");
 	const [machineName, setMachineName] = useState("");
 	const [validIP, setValidIP] = useState(false);
@@ -26,11 +25,6 @@ export const MachineList = (props) => {
             if (response.status === 200) {
                 response.json().then(data => {
 					setMachines(data);
-
-                    //Sets first machine as default as the list will have it selected initially
-                    if (machines.length !== 0) {
-						setSelected(machines[0].id)
-                    }
                 })
             }
         });
@@ -73,9 +67,7 @@ export const MachineList = (props) => {
 					})
 				}
 			}
-        })	
-
-		
+        })			
 	}
 
 	const ipChanged = (e) =>{
@@ -97,10 +89,6 @@ export const MachineList = (props) => {
 		})
 	}
 
-	const selectRow = (e) => {
-		setSelected(e.target.parentNode.getAttribute('id'));
-	}
-
 	const toggleAutobrew = (e) => {
 		let command = "";
 		e.target.checked ? command = "start" : command = "stop";
@@ -114,7 +102,6 @@ export const MachineList = (props) => {
 				updateMachineList();
 			}
         })
-
 	}
 
 
@@ -135,7 +122,7 @@ export const MachineList = (props) => {
 			</Form>
 
 			<Row>	
-				<Table id="table" onClick={selectRow}>
+				<Table id="table">
 					<Head>
 						<tr>
 							<th>Name</th>
