@@ -139,7 +139,7 @@ export const MachineList = (props) => {
 								<HidingTD>{element.ip}</HidingTD>
 								<td>
 									<Switch>
-										<SwitchInput id={element.id} type="checkbox" checked={element.autobrewing} onClick={toggleAutobrew}></SwitchInput>
+										<SwitchInput id={element.id} type="checkbox" checked={element.autobrewing} onChange={toggleAutobrew}></SwitchInput>
 										<SwitchSlider></SwitchSlider>
 									</Switch>
 								</td>																																
