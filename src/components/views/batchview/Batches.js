@@ -180,7 +180,6 @@ export const Batches = () => {
     
     const setGraphData = (id) => {
         if (id === 'State') {
-            console.log("State chosen");
             setIsStateGraph(true);
         } else {
             setIsStateGraph(false);
