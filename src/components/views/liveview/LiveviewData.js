@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { DataDiv } from '../../ui/DataDiv';
-import { LiveDataProgress } from './LiveDataProgress';
-import { Grid, Col, Row } from '../../ui/Grid'
+import { Grid, Col, Row } from '../../ui/Grid';
 
 export const LiveviewData = (props) => {
 	const [batchData, setBatchData] = useState(
@@ -28,10 +27,12 @@ export const LiveviewData = (props) => {
 
 
 	const fetchBatch = async () => {
-		const url = 'http://localhost:8080/api/batches/newest-batch-of-machine/' + props.currentMachine.id;
-		const data = await fetch(url);
-		const result = await data.json();
-		setBatchData(result);
+		if (props.currentMachine.id !== "") {
+			const url = 'http://localhost:8080/api/batches/newest-batch-of-machine/' + props.currentMachine.id;
+			const data = await fetch(url);
+			const result = await data.json();
+			setBatchData(result);
+		}
 	};
 
 

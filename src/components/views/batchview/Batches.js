@@ -92,73 +92,75 @@ export const Batches = () => {
     };
 
     const fetchChosenBatch = (id) => {
-        chosenBatch.Humidity.length = 0;
-        chosenBatch.Vibration.length = 0;
-        chosenBatch.Temperature.length = 0;
-        chosenBatch.State.length = 0;
+		if (id !== "") {
+			chosenBatch.Humidity.length = 0;
+			chosenBatch.Vibration.length = 0;
+			chosenBatch.Temperature.length = 0;
+			chosenBatch.State.length = 0;
 
-        const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
-        fetch(url).then(response => {
-            if (response.status === 200) {
-                response.json().then(result => {
+			const url = 'http://localhost:8080/api/batches/' + id + '/dashboard';
+			fetch(url).then(response => {
+				if (response.status === 200) {
+					response.json().then(result => {
 
-                    let tempHumArray = [];
-                    let tempVibArray = [];
-                    let tempTempArray = [];
-                    let tempStateArray = [];
+						let tempHumArray = [];
+						let tempVibArray = [];
+						let tempTempArray = [];
+						let tempStateArray = [];
 
-                    result.batch.data.forEach(element => {
-                        let timestamp = CanvasJS.formatDate(
-                            new Date(
-                                element.timestamp.date.year,
-                                element.timestamp.date.month-1,
-                                element.timestamp.date.day,
-                                element.timestamp.time.hour,
-                                element.timestamp.time.minute,
-                                element.timestamp.time.second),
-                                "HH:mm:ss"
-                            );
-                        
-                        tempHumArray.push({label: timestamp, y: element.humidity});
-                        tempVibArray.push({label: timestamp, y: element.vibration});
-                        tempTempArray.push({label: timestamp, y: element.temperature});
+						result.batch.data.forEach(element => {
+							let timestamp = CanvasJS.formatDate(
+								new Date(
+									element.timestamp.date.year,
+									element.timestamp.date.month-1,
+									element.timestamp.date.day,
+									element.timestamp.time.hour,
+									element.timestamp.time.minute,
+									element.timestamp.time.second),
+									"HH:mm:ss"
+								);
+							
+							tempHumArray.push({label: timestamp, y: element.humidity});
+							tempVibArray.push({label: timestamp, y: element.vibration});
+							tempTempArray.push({label: timestamp, y: element.temperature});
 
-                        if (machineStates.states !== 0) {
-                            let stateInt;
-                            machineStates.states.map( state => {
-                                if (state.name.toUpperCase() === element.state) {
-                                    stateInt = state.value;
-                                }
-                            });
-                            tempStateArray.push({label: timestamp, y: stateInt});
-                        }
-                    });
-                    
-                    let lastDataEntry = result.batch.data.length - 1;
-                    let data = {
-                        buttonData: {
-                            avgHumidity: result.avgHumidity,
-                            avgVibration: result.avgVibration,
-                            avgTemperature: result.avgTemp,
-                            state: result.batch.data[lastDataEntry].state,
-                            atp: result.batch.amountToProduce,
-                            speed: result.batch.desiredSpeed,
-                            produced: result.batch.data[lastDataEntry].processed,
-                            accepted: result.batch.data[lastDataEntry].acceptableProducts,
-                            rejected: result.batch.data[lastDataEntry].defectProducts,
-                            oee: round(result.oee)
-                        },
-                        Humidity: tempHumArray,
-                        Vibration: tempVibArray,
-                        Temperature: tempTempArray,
-                        State: tempStateArray
-                    };
+							if (machineStates.states !== 0) {
+								let stateInt;
+								machineStates.states.map( state => {
+									if (state.name.toUpperCase() === element.state) {
+										stateInt = state.value;
+									}
+								});
+								tempStateArray.push({label: timestamp, y: stateInt});
+							}
+						});
+						
+						let lastDataEntry = result.batch.data.length - 1;
+						let data = {
+							buttonData: {
+								avgHumidity: result.avgHumidity,
+								avgVibration: result.avgVibration,
+								avgTemperature: result.avgTemp,
+								state: result.batch.data[lastDataEntry].state,
+								atp: result.batch.amountToProduce,
+								speed: result.batch.desiredSpeed,
+								produced: result.batch.data[lastDataEntry].processed,
+								accepted: result.batch.data[lastDataEntry].acceptableProducts,
+								rejected: result.batch.data[lastDataEntry].defectProducts,
+								oee: round(result.oee)
+							},
+							Humidity: tempHumArray,
+							Vibration: tempVibArray,
+							Temperature: tempTempArray,
+							State: tempStateArray
+						};
 
-                    setChosenBatch(data);
-                    setGraphInterval(lastDataEntry / 10);
-                });
-            }
-        });
+						setChosenBatch(data);
+						setGraphInterval(lastDataEntry / 10);
+					});
+				}
+			});
+		}
     };
 
     const onSearchChanged = (e) => {

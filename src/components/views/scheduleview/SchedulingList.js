@@ -1,5 +1,4 @@
 import React, { useState }  from 'react'
-import styled from 'styled-components';
 import { Icon } from '@iconify/react-with-api';
 import { Table, Head, SortableBody } from '../../ui/Tables';
 import { DeleteButton } from '../../ui/Buttons';

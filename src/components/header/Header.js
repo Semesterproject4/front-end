@@ -7,7 +7,6 @@ import { Grid, Row, HeaderCol, HeaderRow } from '../ui/Grid';
 export const Header = (props) => {
 	return (
 		<StyledHeader>
-			{console.log(useLocation().pathname)}
 			<Grid align="center">
 				<HeaderRow align="baseline" justify="center">
 					<HeaderCol size={1} textAlign="left">

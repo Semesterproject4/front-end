@@ -155,13 +155,7 @@ export const MachineList = (props) => {
 										<SwitchInput id={element.id} type="checkbox" checked={element.autobrewing} onClick={toggleAutobrew}></SwitchInput>
 										<SwitchSlider></SwitchSlider>
 									</Switch>
-								</td>
-								{/* <td>{element.autobrewing ? 
-									<Icon icon="bi:circle-fill" color="#2cb833" width="20" pointerEvents="none" style={{transform: "translateX(0px) translateY(2px)"}}/>
-									: 
-									<Icon icon="bi:slash-circle-fill" color="#b8352c" width="20" pointerEvents="none" style={{transform: "translateX(0px) translateY(2px)"}}/>}
-								</td> */}
-																																
+								</td>																																
 								<td style={{textAlign: "right", width: "10px"}} onClick={removeConnection}><DeleteButton> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none" /></DeleteButton></td>
 								<td style={{textAlign: "right", width: "30px"}} onClick={selectMachineHandler}>
 									<Link to="/control">
