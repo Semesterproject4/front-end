@@ -101,7 +101,7 @@ export const LiveviewInput = (props) => {
         if (data.command === "start") {
             //Set variables as json
             let variables = {
-                beerType: type,
+				beerType: type.toUpperCase().replace(' ', '_'),
                 batchSize: amount,
                 speed: speed
             }

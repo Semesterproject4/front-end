@@ -36,6 +36,13 @@ export const AbortButton = Styled(Button)`
 	&:hover {
 		background: #E42535;
 	}
+
+	&:disabled {
+		background: #E84855;
+		opacity: 0.5;
+		color: black;
+		cursor: not-allowed;
+	}
 `
 
 
