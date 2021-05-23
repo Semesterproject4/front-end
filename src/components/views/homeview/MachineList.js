@@ -110,10 +110,10 @@ export const MachineList = (props) => {
 			<Form width={100}>
 				<Row justify="center" align="stretch">
 					<Col size={3} alignContent="stretch">
-						<input placeholder = "opc.tcp://<ip address>:<port>" value = {machineIP} onChange = {ipChanged}></input>
+						<input placeholder = "Machine name" value = {machineName} onChange = {machineNameChanged}/>
 					</Col>
 					<Col size={3} alignContent="stretch" style={{borderLeft: "1px solid #EFEFEF"}}>
-						<input placeholder = "Machine name" value = {machineName} onChange = {machineNameChanged}/>
+						<input placeholder = "opc.tcp://<ip address>:<port>" value = {machineIP} onChange = {ipChanged}></input>
 					</Col>
 					<Col size={1} alignContent="stretch">
 						<FormButton onClick = {addMachineHandler} disabled = {!(validIP && validName)}>Add machine</FormButton>
