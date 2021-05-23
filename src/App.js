@@ -61,6 +61,7 @@ export class App extends Component {
 								<Route exact path="/control" render={props => (
 									<Liveview
 										currentMachine={this.state.currentMachine}
+										setCurrentMachine = {this.setCurrentMachine}
 									/>
 								)} />
 
