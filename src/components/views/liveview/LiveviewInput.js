@@ -2,6 +2,7 @@ import React, { useState, useEffect }  from 'react'
 import { Form } from '../../ui/Forms';
 import { FormButton, AbortButton } from '../../ui/Buttons';
 import { Grid, Col, Row } from '../../ui/Grid'
+import { Switch, SwitchSlider, SwitchInput } from '../../ui/Switch';
 
 export const LiveviewInput = (props) => {
 	const [type, setType] = useState("Pilsner");
@@ -10,12 +11,11 @@ export const LiveviewInput = (props) => {
 	const [products, setProducts] = useState([]);
 	const [validAmount, setValidAmount] = useState(false);
 	const [validSpeed, setValidSpeed] = useState(false);
-	const [currentMachine, setCurrentMachine] = useState("");
+	const [currentMachine, setCurrentMachine] = useState(props.currentMachine);
 
 	useEffect(() => {
 		fetchProducts();
-		setCurrentMachine(props.currentMachine);
-	}, [props.currentMachine])
+	}, [])
 
 	const fetchProducts = async () => {
 		const url = 'http://localhost:8080/api/machines/products';
@@ -171,11 +171,37 @@ export const LiveviewInput = (props) => {
 		return false;
 	}
 
+	const toggleAutobrew = (e) => {
+		let command = "";
+		e.target.checked ? command = "start" : command = "stop";
+
+		fetch("http://localhost:8080/api/machines/" + e.target.id + "/autobrew/" + command, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'}
+        }).then(response => {
+            if(response.status === 200){
+				fetchMachine();
+			}
+        })
+	}
+
 	return (
 		<Grid width={100}>
+			<Row style={{backgroundColor:"#efefef", padding:"5px 0px 5px 15px"}}>
+				<p style={{paddingRight:"10px"}}>AutoBrew</p>
+				<Switch>
+					<SwitchInput
+						id={currentMachine.id}
+						type="checkbox"
+						checked={currentMachine.autobrewing}
+						onChange={toggleAutobrew}
+					></SwitchInput>
+					<SwitchSlider></SwitchSlider>
+				</Switch>
+			</Row>
 			<Form style={{boxShadow: "0px 0px 0px 0px rgba(0, 0, 0, 0.0)"}}>
 				<Grid>
-					<Row gap={12}>
+					<Row>
 						<select onChange={changeType}>
 							{products.map((product) => (
 								<option value={product.name} key={product.name}>
@@ -185,17 +211,19 @@ export const LiveviewInput = (props) => {
 						</select>
 					</Row>
 					<Row gap={12}>
-						<input placeholder = "Amount" value={amount} onChange={changeAmount}></input>
-					</Row>
-					<Row gap={12}>
-						<input placeholder ={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={changeSpeed}></input>
+						<Col size={1}>
+							<input placeholder = "Amount" value={amount} onChange={changeAmount} style={{padding:"15px"}}></input>
+						</Col>
+						<Col size={1}>
+							<input placeholder ={"Speed <= " + getMaxSpeed(type) + " | Best = " + getOptimalSpeed(type) } value={speed} onChange={changeSpeed} style={{padding:"15px"}}></input>
+						</Col>
 					</Row>
 				</Grid>
 			</Form>
 			<Grid>
 				<Row gap={12}>
 					<Col size={1}>
-						<FormButton value="start"	onClick={controlMachineButtonPress} disabled={disabledStart()}>
+						<FormButton value="start" onClick={controlMachineButtonPress} disabled={disabledStart()}>
 							Start
 						</FormButton>
 					</Col>
@@ -217,7 +245,7 @@ export const LiveviewInput = (props) => {
 						</FormButton>
 					</Col>
 				</Row>
-				<Row height={60}>
+				<Row height={62}>
 					<AbortButton value="abort" onClick={controlMachineButtonPress} disabled={disabledAbort()}>
 						ABORT
 					</AbortButton>
