@@ -25,6 +25,11 @@ export const MachineList = (props) => {
             if (response.status === 200) {
                 response.json().then(data => {
 					setMachines(data);
+					data.forEach((element) => {
+						if (props.currentMachine.id === element.id) {
+							props.setCurrentMachine(element);
+						}
+					})
                 })
             }
         });
@@ -127,7 +132,7 @@ export const MachineList = (props) => {
 						<tr>
 							<th>Name</th>
 							<HidingTH>IP</HidingTH>
-							<th>Autobrewing</th>
+							<th>AutoBrew</th>
 							<th></th>
 							<th></th>
 						</tr>
