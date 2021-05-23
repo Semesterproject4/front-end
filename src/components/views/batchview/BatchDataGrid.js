@@ -1,8 +1,10 @@
 import React from 'react'
 import styled from 'styled-components';
 import { Icon } from '@iconify/react-with-api';
-import { ValueButton } from './ValueButton';
-import { DataDiv } from './DataDiv';
+import { ValueButton } from '../../ui/ValueButton';
+import { FormButton } from '../../ui/Buttons';
+import { DataDiv } from '../../ui/DataDiv';
+import { Grid, Col, Row } from '../../ui/Grid';
 
 export const BatchDataGrid = (props) => {
 
@@ -16,12 +18,14 @@ export const BatchDataGrid = (props) => {
     };
 
     return (
-        <Grid>
+        <Grid width={100}>
             <Row>
-                <h3>Batch ID: {props.selectedBatchID}</h3>
+				<Col size={1} textAlign="center" backgroundColor="#EFEFEF" padding={5}>
+                	<h3>Batch ID: {props.selectedBatchID}</h3>
+				</Col>
             </Row>
 
-            <Row colwrap="xs">
+            <Row colwrap="xs" gap={12}>
 
                 <Col size={1}>
                     <ValueButton    setGraphDataOnClick={setGraphDataOnClick} 
@@ -48,7 +52,7 @@ export const BatchDataGrid = (props) => {
                     />
                 </Col>
             </Row>
-            <Row colwrap="xs">
+            <Row colwrap="xs" gap={12}>
                 <Col size={1}>
                     <ValueButton    setGraphDataOnClick={setGraphDataOnClick} 
                                     selectedValue={props.selectedValue}
@@ -72,7 +76,7 @@ export const BatchDataGrid = (props) => {
                     />
                 </Col>
             </Row>
-            <Row colwrap="xs">
+            <Row colwrap="xs" gap={12}>
                 <Col size={1}>
                     <DataDiv    icon={"jam-bottle"}
                                 id={'Produced'}
@@ -97,7 +101,7 @@ export const BatchDataGrid = (props) => {
             </Row>
             <Row>
                 <StyledValueDiv>
-                    <Row align={"center"}>
+                    <Row justify="center" align="center" gap={12}>
                         <Icon icon="wi:wind-direction-e" style={{ width: "40px", height: "40px" }} />
                         <p>OEE:</p>
                         <p>{props.chosenBatch.buttonData.oee}%</p>
@@ -106,70 +110,15 @@ export const BatchDataGrid = (props) => {
             </Row>
 
             <Row>
-                <StyledButton onClick={generatePDF}>Generate Report</StyledButton>
+                <FormButton onClick={generatePDF}>Generate Report</FormButton>
             </Row>
         </Grid>
     );
 }
 
-const Grid = styled.div`
-    display: flex;
-    flex-flow: column wrap;
-    gap: 12px;
-    justify-content: center ${(props) => props.justify};
-    width: ${(props) => props.width}%;
-`;
-
-const media = {
-    xs: (styles) => `
-        @media only screen and (max-width: 480px) {
-            ${styles}
-        }
-    `,
-    m: (styles) => `
-        @media only screen and (max-width: 1024px) {
-            ${styles}
-        }
-    `,
-}
-
-const Row = styled.div`
-    display: flex;
-    flex-flow: wrap;
-    gap: 12px;
-    justify-content: center ${(props) => props.justify};
-    ${(props) => props.colwrap && media[props.colwrap](`
-        flex-flow: column wrap;
-    `)};
-    min-height: ${(props) => props.minheight}px;
-    align-items: ${(props) => props.align};
-`;
-
-const Col = styled.div`
-    flex: ${(props) => props.size};
-    background-color: ${(props) => props.backgroundColor};
-    padding: ${(props) => props.padding}px;
-`;
-
 const StyledValueDiv = styled.div`
-    height: 72px;
     width: 100%;
-    padding: 16px 10px;
-    background-color: #b7b7b7;
+    padding: 14.5px 0px;
+    background-color: #EFEFEF;
     user-select: none;
-`;
-
-const StyledButton = styled.button`
-    background-color: #696969;
-    border: 1px solid #000;
-    color: #fff;
-    font-size: 14px;
-    font-weight: bold;
-    padding: 8px 12px;
-    margin: 0px 5px;
-    text-decoration: none;
-
-    &:disabled {
-        cursor: default;
-    }
 `;

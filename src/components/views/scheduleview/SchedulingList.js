@@ -1,6 +1,7 @@
 import React, { useState }  from 'react'
-import styled from 'styled-components';
 import { Icon } from '@iconify/react-with-api';
+import { Table, Head, SortableBody } from '../../ui/Tables';
+import { DeleteButton } from '../../ui/Buttons';
 
 export const SchedulingList = (props) => {
 	const [selected, setSelected] = useState('');
@@ -73,8 +74,8 @@ export const SchedulingList = (props) => {
 
 	return (
 		<div>
-			<Styledtable id="table" onClick={selectRow}>
-				<Styledthead>
+			<Table id="table" onClick={selectRow}>
+				<Head>
 					<tr>
 						<th></th>
 						<th>Product</th>
@@ -82,8 +83,8 @@ export const SchedulingList = (props) => {
 						<th>Speed</th>
 						<th></th>
 					</tr>
-				</Styledthead>
-				<Styledbody>
+				</Head>
+				<SortableBody>
 					{props.scheduled.map((element) => (
 						<tr id={element.id} key={element.id} style={selected === element.id ? {background: "#7ac8ff"} : {fontSize: "1.0em"}} draggable='true' onDragStart={dragStart} onDragOver={dragOver} onDragEnd={dragStop}>
 							<td style={{textAlign: "center", width: "6%", borderRight: "1px solid whitesmoke", cursor: "grab"}}>☰</td>
@@ -91,83 +92,12 @@ export const SchedulingList = (props) => {
 							<td>{element.amount}</td>
 							<td>{element.speed}</td>
 																															
-							<td style={{textAlign: "right", width: "10px"}}><Deletebutton onClick={removeScheduledBatch}> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none"/></Deletebutton></td>
+							<td style={{textAlign: "right", width: "10px"}}><DeleteButton onClick={removeScheduledBatch}> <Icon icon="akar-icons:cross" color="#fff" width="20" pointerEvents="none"/></DeleteButton></td>
 						</tr>
 					))}
-				</Styledbody>
-			</Styledtable>
+				</SortableBody>
+			</Table>
 		</div>
 	);
 };
 
-
-const Styledtable = styled.table`
-	margin: auto;
-	width: 60%;
-	border-collapse: collapse;
-	background: white;  
-	counter-reset: row-num;
-	-webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1);
-		box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.1); 
-
-`
-
-const Styledthead = styled.thead`
-	& tr {
-		& th {
-			font-size: 1.2em;
-			height: 25px;
-			font-weight: bold;
-			padding: 20px;
-			user-select: none;
-		}
-	}
-`
-
-const Styledbody = styled.tbody`
-	& tr {
-		cursor: pointer;
-		counter-increment: row-num;
-
-		& td:first-child::after {
-			content: " #" counter(row-num);
-			font-size: 0.8em;
-		}
-
-		& td {
-			font-size: 1.0em;
-			padding: 0px;  
-			height: 40px;
-			user-select: none;
-			border-top: 1px solid whitesmoke;
-		}
-
-		&:nth-child(even) {
-			background-color: #f7f7f7;
-		}
-
-		&:nth-child(odd) {
-			background-color: #ffffff;
-		}  
-
-		&:hover {
-			background: #dbf0ff;
-		}
-
-	}
-`
-
-const Deletebutton = styled.button`
-	background-color: #eb5f54;
-	width: 40px;
-	height: 100%;
-	border-top-left-radius: 8px;
-  	border-bottom-left-radius: 8px;
-	outline: none;
-	border: none;
-  	cursor: pointer;
-
-	&:hover {
-		background-color: #f44336;		
-	}
-`

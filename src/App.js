@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import Styled from 'styled-components';
 import { BrowserRouter as Router, Route} from 'react-router-dom';
-import { Header } from "./components/layout/Header";
-import { Batches } from "./components/Batches"
-import { Scheduling } from './components/Scheduling'
-import { Liveview } from './components/Liveview'
-import { MachineList } from './components/MachineList'
+import { Header } from "./components/header/Header";
+import { Batches } from "./components/views/batchview/Batches";
+import { Scheduling } from './components/views/scheduleview/Scheduling';
+import { Liveview } from './components/views/liveview/Liveview';
+import { MachineList } from './components/views/homeview/MachineList';
+import { Grid, Row, Col } from './components/ui/Grid';
 import './App.css';
 
 export class App extends Component {
@@ -33,42 +35,71 @@ export class App extends Component {
 	render() {
 		return (
 			<Router>
-				<div className="App">
-					<Header 
-						currentMachine={this.state.currentMachine}
-					/>
-					<div className="container">
-						
-						<Route exact path="/" render={props => (
-								<MachineList 
-									currentMachine={this.state.currentMachine}
-									setCurrentMachine = {this.setCurrentMachine}
-								/>
-						)} />
-
-						<Route exact path="/batch" render={props => (
-							<React.Fragment>
-								<Batches/>
-							</React.Fragment>
-						)} />
-
-						<Route exact path="/control" render={props => (
-							<Liveview
+				<Grid width={100}>
+					<Col size={1} justify="center">
+						<Row justify="center">
+							<Header 
 								currentMachine={this.state.currentMachine}
 							/>
-						)} />
+						</Row>
+						<Row justify="center">
+							<Container>
+								
+								<Route exact path="/" render={props => (
+										<MachineList 
+											currentMachine={this.state.currentMachine}
+											setCurrentMachine = {this.setCurrentMachine}
+										/>
+								)} />
 
-						<Route exact path="/schedule" render={props => (
-							<React.Fragment>
-								<Scheduling/>
-							</React.Fragment>
-						)} />
+								<Route exact path="/batch" render={props => (
+									<React.Fragment>
+										<Batches/>
+									</React.Fragment>
+								)} />
 
-					</div>
-				</div>
+								<Route exact path="/control" render={props => (
+									<Liveview
+										currentMachine={this.state.currentMachine}
+									/>
+								)} />
+
+								<Route exact path="/schedule" render={props => (
+									<React.Fragment>
+										<Scheduling/>
+									</React.Fragment>
+								)} />
+
+							</Container>						
+						</Row>
+					</Col>
+				</Grid>
 			</Router>
 		)
 	}
 }
 
 export default App
+
+
+export const Container = Styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 70%;
+	padding-top: 20px;
+
+	@media only screen and (max-width: 1500px) {
+		width: 80%;
+	}
+
+	@media only screen and (max-width: 1100px) {
+		width: 90%;
+	}
+
+	/* @media only screen and (max-width: 800px) {
+		width: 95%;
+	} */
+
+`
+
