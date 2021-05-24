@@ -97,6 +97,7 @@ export const Liveview = (props) => {
 								<Col size={1} padding={10} backgroundColor={"#e0e0e0"}>
 									<LiveviewInput 
 										currentMachine = {props.currentMachine}
+										setCurrentMachine = {props.setCurrentMachine}
 										state = {livedata.state}
 									/>
 								</Col>			

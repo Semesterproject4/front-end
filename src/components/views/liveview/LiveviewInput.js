@@ -29,6 +29,7 @@ export const LiveviewInput = (props) => {
 		const data = await fetch(url);
 		const result = await data.json();
 		setCurrentMachine(result);
+		props.setCurrentMachine(result);
 	};
 
     const changeType = (e) => {
@@ -83,13 +84,18 @@ export const LiveviewInput = (props) => {
         return result;
     }
 
+
+
 	const controlMachineButtonPress = (e) => {
 		if (e.target.value === "abort") {
-		//Sends a Patch request
-		fetch("http://localhost:8080/api/machines/" + currentMachine.id + "/autobrew/stop", {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'}
-        })
+			//Sends a Patch request
+			fetch("http://localhost:8080/api/machines/" + currentMachine.id + "/autobrew/stop", {
+				method: 'PATCH',
+				headers: {'Content-Type': 'application/json'}
+			})
+
+			fetchMachine();
+
 		}
 
         //Created a JSON object with "command: {the command stored on the respective button}"
