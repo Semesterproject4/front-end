@@ -138,12 +138,12 @@ export const Batches = () => {
 						let lastDataEntry = result.batch.data.length - 1;
 						let data = {
 							buttonData: {
-								avgHumidity: result.avgHumidity,
-								avgVibration: result.avgVibration,
-								avgTemperature: result.avgTemp,
+								avgHumidity: round(result.avgHumidity),
+								avgVibration: round(result.avgVibration),
+								avgTemperature: round(result.avgTemp),
 								state: result.batch.data[lastDataEntry].state,
 								atp: result.batch.amountToProduce,
-								speed: result.batch.desiredSpeed,
+								speed: round(result.batch.desiredSpeed),
 								produced: result.batch.data[lastDataEntry].processed,
 								accepted: result.batch.data[lastDataEntry].acceptableProducts,
 								rejected: result.batch.data[lastDataEntry].defectProducts,
