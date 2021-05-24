@@ -10,7 +10,7 @@ export const Header = (props) => {
 			<Grid align="center">
 				<HeaderRow align="baseline" justify="center">
 					<HeaderCol size={1} textAlign="left">
-						<h1>BrewMES</h1>
+						<StyledLink to="/" style={{fontWeight:'bold', fontSize:'2em'}}>BrewMES</StyledLink>
 					</HeaderCol>
 					<HeaderCol size={2}>
 						<Row justify="center" gap={20}>
