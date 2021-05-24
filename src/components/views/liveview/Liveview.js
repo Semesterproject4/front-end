@@ -56,7 +56,6 @@ export const Liveview = (props) => {
 
 
 	const connect = () => {
-
         stompClient.connect({}, (frame) => {
             //Send initial info to backend to start the sending of data
             stompClient.send("/app/connect/" + props.currentMachine.id, {}, JSON.stringify({'name': "filler value"})); 
@@ -67,7 +66,7 @@ export const Liveview = (props) => {
 				storeData(data.body);
 				
                 //Send random info to backend to "trigger" it to send a few set of data.
-                stompClient.send("/app/connect/" + props.currentMachine.id, {}, JSON.stringify({'name': "filler value"})); 
+                //stompClient.send("/app/connect/" + props.currentMachine.id, {}, JSON.stringify({'name': "filler value"})); 
             });
         });
 	}
