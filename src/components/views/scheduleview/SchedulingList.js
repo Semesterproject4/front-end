@@ -47,7 +47,7 @@ export const SchedulingList = (props) => {
 	}
 
 	const reprioritizeList = (list) => {
-		fetch("http://localhost:8080/api/scheduled-batches/prioritizeQueue", {
+		fetch("http://localhost:8080/api/scheduled-batches/prioritize-queue", {
 			method: 'PATCH',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(list)
