@@ -5,7 +5,7 @@ import { Header } from "./components/header/Header";
 import { Batches } from "./components/views/batchview/Batches";
 import { Scheduling } from './components/views/scheduleview/Scheduling';
 import { Liveview } from './components/views/liveview/Liveview';
-import { MachineList } from './components/views/homeview/MachineList';
+import { Homeview } from './components/views/homeview/Homeview';
 import { Grid, Row, Col } from './components/ui/Grid';
 import './App.css';
 
@@ -46,7 +46,7 @@ export class App extends Component {
 							<Container>
 								
 								<Route exact path="/" render={props => (
-										<MachineList 
+										<Homeview 
 											currentMachine={this.state.currentMachine}
 											setCurrentMachine = {this.setCurrentMachine}
 										/>

@@ -57,16 +57,10 @@ export const Liveview = (props) => {
 
 	const connect = () => {
         stompClient.connect({}, (frame) => {
-            //Send initial info to backend to start the sending of data
             stompClient.send("/app/connect/" + props.currentMachine.id, {}, JSON.stringify({'name': "filler value"})); 
-			//Start subscription (when we get data we send random data which triggers the backend to send data)
-            //Essentially we just loop through this forever.
+
             stompClient.subscribe('/topic/' + props.currentMachine.id + '/livedata', (data) => {
-                //Send new data to function storeData
 				storeData(data.body);
-				
-                //Send random info to backend to "trigger" it to send a few set of data.
-                //stompClient.send("/app/connect/" + props.currentMachine.id, {}, JSON.stringify({'name': "filler value"})); 
             });
         });
 	}
