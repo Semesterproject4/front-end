@@ -4,7 +4,7 @@ import { FormButton, AbortButton } from '../../ui/Buttons';
 import { Grid, Col, Row } from '../../ui/Grid'
 import { Switch, SwitchSlider, SwitchInput } from '../../ui/Switch';
 
-export const LiveviewInput = (props) => {
+export const ControlInput = (props) => {
 	const [type, setType] = useState("Pilsner");
 	const [amount, setAmount] = useState("");
 	const [speed, setSpeed] = useState("");

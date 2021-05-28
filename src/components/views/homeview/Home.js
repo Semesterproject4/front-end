@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import { Col } from '../../ui/Grid';
-import { HomeviewInput } from './HomeviewInput';
-import { HomeviewList } from './HomeviewList';
+import { HomeInput } from './HomeInput';
+import { HomeList } from './HomeList';
 
-export const Homeview = (props) => {
+export const Home = (props) => {
 	const [machines, setMachines] = useState([]);
 
 	useEffect(() => {
@@ -28,9 +28,9 @@ export const Homeview = (props) => {
 
 	return (
 		<Col size={1} justify="center">
-			<HomeviewInput update={updateMachineList} />
+			<HomeInput update={updateMachineList} />
 
-			<HomeviewList machines={machines} update={updateMachineList} currentMachine={props.currentMachine} setCurrentMachine={props.setCurrentMachine} />
+			<HomeList machines={machines} update={updateMachineList} currentMachine={props.currentMachine} setCurrentMachine={props.setCurrentMachine} />
 		</Col>
 	);
 }
