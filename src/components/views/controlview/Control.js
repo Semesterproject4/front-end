@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from 'react'
 import * as SockJS from 'sockjs-client';
 import * as Stomp from 'stompjs';
-import { LiveviewInput } from './LiveviewInput';
-import { LiveviewData } from './LiveviewData';
-import { LiveviewBars } from './LiveviewBars'
 import { Grid, Col, Row } from '../../ui/Grid';
-import { LiveDataProgress } from './LiveDataProgress';
+import { ControlInput } from './ControlInput';
+import { ControlData } from './ControlData';
+import { ControlBars } from './ControlBars'
+import { DataProgress } from './DataProgress';
  
-export const Liveview = (props) => {
+export const Control = (props) => {
 	const [stompClient, setStompClient] = useState(null);
 	const [socket, setSocket] = useState(null);
 	const [livedata, setLivedata] = 
@@ -88,7 +88,7 @@ export const Liveview = (props) => {
 						<Grid>
 							<Row>
 								<Col size={1} padding={10} backgroundColor={"#e0e0e0"}>
-									<LiveviewInput 
+									<ControlInput 
 										currentMachine = {props.currentMachine}
 										setCurrentMachine = {props.setCurrentMachine}
 										state = {livedata.state}
@@ -97,7 +97,7 @@ export const Liveview = (props) => {
 							</Row>
 							<Row>
 								<Col size={1} padding={10} backgroundColor={"#e0e0e0"} >
-									<LiveviewBars 
+									<ControlBars 
 										livedata = {livedata}
 									/>
 
@@ -109,7 +109,7 @@ export const Liveview = (props) => {
 						<Grid>
 							<Row>
 								<Col size={1} padding={10} backgroundColor={"#e0e0e0"}>
-									<LiveviewData 
+									<ControlData 
 										currentMachine = {props.currentMachine}
 										livedata = {livedata}
 									/>
@@ -117,7 +117,7 @@ export const Liveview = (props) => {
 							</Row>
 							<Row>
 								<Col size={1} padding={10} backgroundColor={"#e0e0e0"}>
-									<LiveDataProgress 
+									<DataProgress 
 										label="Maintenance"
 										data={30000 - livedata.maintenance}
 										max="30000"

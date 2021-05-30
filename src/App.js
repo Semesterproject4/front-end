@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Route} from 'react-router-dom';
 import { Header } from "./components/header/Header";
 import { Batches } from "./components/views/batchview/Batches";
 import { Scheduling } from './components/views/scheduleview/Scheduling';
-import { Liveview } from './components/views/liveview/Liveview';
-import { Homeview } from './components/views/homeview/Homeview';
+import { Home } from './components/views/homeview/Home';
+import { Control } from './components/views/controlview/Control';
 import { Grid, Row, Col } from './components/ui/Grid';
 import './App.css';
 
@@ -46,29 +46,25 @@ export class App extends Component {
 							<Container>
 								
 								<Route exact path="/" render={props => (
-										<Homeview 
-											currentMachine={this.state.currentMachine}
-											setCurrentMachine = {this.setCurrentMachine}
-										/>
+									<Home 
+										currentMachine={this.state.currentMachine}
+										setCurrentMachine = {this.setCurrentMachine}
+									/>
 								)} />
 
 								<Route exact path="/batch" render={props => (
-									<React.Fragment>
-										<Batches/>
-									</React.Fragment>
+									<Batches/>
 								)} />
 
 								<Route exact path="/control" render={props => (
-									<Liveview
+									<Control
 										currentMachine={this.state.currentMachine}
 										setCurrentMachine = {this.setCurrentMachine}
 									/>
 								)} />
 
 								<Route exact path="/schedule" render={props => (
-									<React.Fragment>
-										<Scheduling/>
-									</React.Fragment>
+									<Scheduling/>
 								)} />
 
 							</Container>						

@@ -7,7 +7,7 @@ import { Switch, SwitchSlider, SwitchInput } from '../../ui/Switch';
 import { Table, Head, Body, HidingTH, HidingTD } from '../../ui/Tables';
 
 
-export const HomeviewList = (props) => { 
+export const HomeList = (props) => { 
 
 	const removeConnection = (e) => {
 		e.preventDefault(); 

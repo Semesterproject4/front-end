@@ -3,7 +3,7 @@ import { Form } from '../../ui/Forms';
 import { FormButton } from '../../ui/Buttons';
 import { Row, Col } from '../../ui/Grid';
 
-export const HomeviewInput = (props) => { 
+export const HomeInput = (props) => { 
 	const [machineIP, setMachineIP] = useState("");
 	const [machineName, setMachineName] = useState("");
 	const [validIP, setValidIP] = useState(false);

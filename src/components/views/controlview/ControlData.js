@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { DataDiv } from '../../ui/DataDiv';
 import { Grid, Col, Row } from '../../ui/Grid';
 
-export const LiveviewData = (props) => {
+export const ControlData = (props) => {
 	const [batchData, setBatchData] = useState(
 		{
 			"id": "0",
